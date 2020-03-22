@@ -5,6 +5,10 @@ VisualStudioVersion = 16.0.29613.14
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CleanersNextDoor", "CleanersNextDoor\CleanersNextDoor.csproj", "{FBAE7BA3-922B-4096-93C5-2723D3DD4CC5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "Domain\Domain.csproj", "{0275EBDE-9886-4032-99A6-65B20637174E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{891796EF-3809-4A12-84D4-9D9973BA6F62}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{FBAE7BA3-922B-4096-93C5-2723D3DD4CC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FBAE7BA3-922B-4096-93C5-2723D3DD4CC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FBAE7BA3-922B-4096-93C5-2723D3DD4CC5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0275EBDE-9886-4032-99A6-65B20637174E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0275EBDE-9886-4032-99A6-65B20637174E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0275EBDE-9886-4032-99A6-65B20637174E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0275EBDE-9886-4032-99A6-65B20637174E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{891796EF-3809-4A12-84D4-9D9973BA6F62}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{891796EF-3809-4A12-84D4-9D9973BA6F62}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{891796EF-3809-4A12-84D4-9D9973BA6F62}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{891796EF-3809-4A12-84D4-9D9973BA6F62}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
