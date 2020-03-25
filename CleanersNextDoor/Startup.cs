@@ -1,5 +1,7 @@
+using Application;
 using Application.Common.Mappings;
 using AutoMapper;
+using Infrastructure;
 using Infrastructure.Data;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
@@ -24,9 +26,8 @@ namespace CleanersNextDoor
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            //Register database context (dependency injection)
-            services.AddDbContext<CleanersNextDoorContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddInfrastructure(Configuration);
+            services.AddApplication(Configuration);
 
             services.AddControllersWithViews();
 
@@ -35,18 +36,7 @@ namespace CleanersNextDoor
             {
                 configuration.RootPath = "ClientApp/build";
             });
-            var mappingConfig = new MapperConfiguration(mc =>
-            {
-                mc.AddProfile(new MappingProfile());
-            });
-            IMapper mapper = mappingConfig.CreateMapper();
-            services.AddSingleton(mapper);
-            services.AddScoped(typeof(ICleanersNextDoorContext), typeof(CleanersNextDoorContext));
-            services.AddMediatR( new[] {
-                typeof(Application.Users.Queries.GetUserByUsername.GetUserByUsernameQueryHandler),
-                typeof(Application.Users.Commands.CreateUser.CreateUserCommandHandler),
-                typeof(Application.Users.Queries.GetUser.GetUserQueryHandler),
-            });
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

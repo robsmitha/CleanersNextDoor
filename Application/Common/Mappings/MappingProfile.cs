@@ -13,8 +13,7 @@ namespace Application.Common.Mappings
     {
         public MappingProfile()
         {
-            CreateMap<User, UserModel>().ReverseMap();
-            //ApplyMappingsFromAssembly(Assembly.GetExecutingAssembly());
+            ApplyMappingsFromAssembly(Assembly.GetExecutingAssembly());
         }
         private void ApplyMappingsFromAssembly(Assembly assembly)
         {

@@ -1,10 +1,12 @@
-﻿using System;
+﻿using Application.Common.Mappings;
+using Domain.Entities;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Domain.Models
 {
-    public class UserModel
+    public class UserModel : IMapFrom<User>
     {
         public int ID { get; set; }
         public DateTime CreatedAt { get; set; }

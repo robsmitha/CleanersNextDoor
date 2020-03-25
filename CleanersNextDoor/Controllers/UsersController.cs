@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Application.Common.Utilities;
 using Application.Users.Commands.CreateUser;
 using Application.Users.Queries.GetUser;
 using Application.Users.Queries.GetUserByUsername;
+using Application.Common.Utilities;
 using Domain.Models;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
