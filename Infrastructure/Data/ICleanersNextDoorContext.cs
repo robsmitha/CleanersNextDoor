@@ -2,15 +2,14 @@
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Infrastructure.Data
 {
-    public class CleanersNextDoorContext : DbContext, ICleanersNextDoorContext
+    public interface ICleanersNextDoorContext
     {
-        public CleanersNextDoorContext(DbContextOptions<CleanersNextDoorContext> options) : base(options) { }
-       
         public DbSet<Authorization> Authorizations { get; set; }
         public DbSet<AuthorizationType> AuthorizationTypes { get; set; }
         public DbSet<CardType> CardTypes { get; set; }
@@ -44,46 +43,7 @@ namespace Infrastructure.Data
         public DbSet<UnitType> UnitTypes { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<VoidReasonType> VoidReasonTypes { get; set; }
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<Authorization>();
-            modelBuilder.Entity<AuthorizationType>();
-            modelBuilder.Entity<CardType>();
-            modelBuilder.Entity<CashEvent>();
-            modelBuilder.Entity<CashEventType>();
-            modelBuilder.Entity<Credit>();
-            modelBuilder.Entity<Customer>();
-            modelBuilder.Entity<Discount>();
-            modelBuilder.Entity<DrivingSession>();
-            modelBuilder.Entity<Item>();
-            modelBuilder.Entity<ItemType>();
-            modelBuilder.Entity<LineItem>();
-            modelBuilder.Entity<Merchant>();
-            modelBuilder.Entity<MerchantType>();
-            modelBuilder.Entity<MerchantUser>();
-            modelBuilder.Entity<Order>();
-            modelBuilder.Entity<OrderStatusType>();
-            modelBuilder.Entity<Payment>();
-            modelBuilder.Entity<PaymentStatusType>();
-            modelBuilder.Entity<PaymentType>();
-            modelBuilder.Entity<Permission>();
-            modelBuilder.Entity<PriceType>();
-            modelBuilder.Entity<Refund>();
-            modelBuilder.Entity<Role>();
-            modelBuilder.Entity<RolePermission>();
-            modelBuilder.Entity<ServiceRequest>();
-            modelBuilder.Entity<ServiceRequestStatusType>();
-            modelBuilder.Entity<State>();
-            modelBuilder.Entity<TaxRate>();
-            modelBuilder.Entity<TaxType>();
-            modelBuilder.Entity<UnitType>();
-            modelBuilder.Entity<User>();
-            modelBuilder.Entity<VoidReasonType>();
 
-            modelBuilder.Model.GetEntityTypes()
-                .SelectMany(e => e.GetForeignKeys())
-                .ToList()
-                .ForEach(r => r.DeleteBehavior = DeleteBehavior.Restrict);
-        }
+        Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     }
 }

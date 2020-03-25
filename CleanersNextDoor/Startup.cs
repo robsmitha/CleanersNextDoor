@@ -1,7 +1,9 @@
+using Application.Common.Mappings;
+using AutoMapper;
 using Infrastructure.Data;
+using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -32,6 +34,18 @@ namespace CleanersNextDoor
             services.AddSpaStaticFiles(configuration =>
             {
                 configuration.RootPath = "ClientApp/build";
+            });
+            var mappingConfig = new MapperConfiguration(mc =>
+            {
+                mc.AddProfile(new MappingProfile());
+            });
+            IMapper mapper = mappingConfig.CreateMapper();
+            services.AddSingleton(mapper);
+            services.AddScoped(typeof(ICleanersNextDoorContext), typeof(CleanersNextDoorContext));
+            services.AddMediatR( new[] {
+                typeof(Application.Users.Queries.GetUserByUsername.GetUserByUsernameQueryHandler),
+                typeof(Application.Users.Commands.CreateUser.CreateUserCommandHandler),
+                typeof(Application.Users.Queries.GetUser.GetUserQueryHandler),
             });
         }
 
