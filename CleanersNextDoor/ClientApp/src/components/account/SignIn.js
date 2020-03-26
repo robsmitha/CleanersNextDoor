@@ -69,6 +69,9 @@ export class SignIn extends Component {
 
     requestSignIn = (event) => {
         event.preventDefault();
+        this.setState({
+            formIsValid: false
+        });
         var user = {
             username: this.state.formControls.username.value,
             password: this.state.formControls.password.value
@@ -87,14 +90,13 @@ export class SignIn extends Component {
         const data = await response.json();
         if (data && data.id > 0) {
             Authentication.setUserId(data.id);
-            document.getElementById('nav_sign_in').hidden = true;
-            document.getElementById('nav_sign_up').hidden = true;
-            document.getElementById('nav_profile').hidden = false;
-            document.getElementById('nav_sign_out').hidden = false;
             this.props.history.push('/profile')
         }
         else {
             alert('The username or password was incorrect.')
+            this.setState({
+                formIsValid: true
+            });
         }
     }
 

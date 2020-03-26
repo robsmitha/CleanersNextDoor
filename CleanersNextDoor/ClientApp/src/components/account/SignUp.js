@@ -119,6 +119,9 @@ export class SignUp extends Component {
 
     requestSignUp = (event) => {
         event.preventDefault();
+        this.setState({
+            formIsValid: true
+        });
         var user = {
             username: this.state.formControls.username.value,
             password: this.state.formControls.password.value,
@@ -140,14 +143,13 @@ export class SignUp extends Component {
         const data = await response.json();
         if (data && data.id > 0) {
             Authentication.setUserId(data.id);
-            document.getElementById('nav_sign_in').hidden = true;
-            document.getElementById('nav_sign_up').hidden = true;
-            document.getElementById('nav_profile').hidden = false;
-            document.getElementById('nav_sign_out').hidden = false;
             this.props.history.push('/profile')
         }
         else {
             alert('An error occurred. Please try again.')
+            this.setState({
+                formIsValid: true
+            });
         }
     }
 
@@ -192,7 +194,6 @@ export class SignUp extends Component {
                 formIsValid: false
             });
         }
-        
     }
 
     render() {

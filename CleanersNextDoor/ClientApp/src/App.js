@@ -8,6 +8,8 @@ import { SignUp } from './components/account/SignUp';
 import { SignOut } from './components/account/SignOut';
 
 import './custom.css'
+import { MerchantList } from './components/merchants/MerchantList';
+import { MerchantDetails } from './components/merchants/MerchantDetails';
 
 export default class App extends Component {
   static displayName = App.name;
@@ -20,6 +22,8 @@ export default class App extends Component {
             <Route path='/sign-up' component={SignUp} />
             <Route path='/profile' component={Profile} />
             <Route path='/sign-out' component={SignOut} />
+            <Route path='/merchants' component={MerchantList} />
+            <Route path='/merchant/:id' component={MerchantDetails} />
       </Layout>
     );
   }

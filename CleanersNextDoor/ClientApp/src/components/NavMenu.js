@@ -35,6 +35,9 @@ export class NavMenu extends Component {
                                 <NavItem>
                                     <NavLink tag={Link} to="/">Home</NavLink>
                                 </NavItem>
+                                <NavItem>
+                                    <NavLink tag={Link} to="/merchants">Merchants</NavLink>
+                                </NavItem>
                             </ul>
                             <ul className="navbar-nav ml-auto">
                                 <NavItem id="nav_sign_in" hidden={this.state.authenticated}>

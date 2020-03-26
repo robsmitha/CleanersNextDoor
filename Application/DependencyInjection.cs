@@ -6,7 +6,7 @@ using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using System.Linq;
 using System.Reflection;
-using Application.Users.Behaviors;
+using Application.Common.Behaviors;
 
 namespace Application
 {
@@ -22,13 +22,6 @@ namespace Application
                 typeof(RequestValidationBehavior<,>));
 
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
-
-            //var mappingConfig = new MapperConfiguration(mc =>
-            //{
-            //    mc.AddProfile(new MappingProfile());
-            //});
-            //IMapper mapper = mappingConfig.CreateMapper();
-            //services.AddSingleton(mapper);
 
             services.AddAllRequestValidators();
 

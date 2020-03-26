@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Application.Users.Behaviors
+namespace Application.Common.Behaviors
 {
     public class RequestValidationBehavior<TRequest, TResponse>
     : IPipelineBehavior<TRequest, TResponse>

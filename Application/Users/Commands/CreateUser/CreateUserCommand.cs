@@ -34,7 +34,17 @@ namespace Application.Users.Commands.CreateUser
         }
         public async Task<UserModel> Handle(CreateUserCommand request, CancellationToken cancellationToken)
         {
-            var entity = _mapper.Map<User>(request.User);
+            var entity = new User
+            {
+                Username = request.User.Username,
+                Email = request.User.Email,
+                Password = request.User.Password,
+                FirstName = request.User.FirstName,
+                MiddleName = request.User.MiddleName,
+                LastName = request.User.LastName,
+                Active = true,
+                CreatedAt = DateTime.Now,
+            };
             _context.Users.Add(entity);
             await _context.SaveChangesAsync(cancellationToken);
             return _mapper.Map<UserModel>(entity);
