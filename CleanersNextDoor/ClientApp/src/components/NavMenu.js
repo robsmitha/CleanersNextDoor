@@ -23,10 +23,17 @@ export class NavMenu extends Component {
         });
     }
 
+    componentDidMount() {
+        document.addEventListener('DOMContentLoaded', function () {
+            var navbar = document.querySelector('#main_nav').clientHeight;
+            document.querySelector('body').style = 'padding-top: ' + navbar + 'px';
+        }, false);
+    }
+
     render() {
         return (
             <header>
-                <Navbar className="navbar-expand-sm navbar-toggleable-sm ng-white border-bottom box-shadow" dark color="dark">
+                <Navbar id="main_nav" className="navbar-expand-sm navbar-toggleable-sm box-shadow fixed-top bg-white border-bottom shadow-sm navbar-light">
                     <Container>
                         <NavbarBrand tag={Link} to="/">CleanersNextDoor</NavbarBrand>
                         <NavbarToggler onClick={this.toggleNavbar} className="mr-2" />
@@ -34,9 +41,6 @@ export class NavMenu extends Component {
                             <ul className="navbar-nav">
                                 <NavItem>
                                     <NavLink tag={Link} to="/">Home</NavLink>
-                                </NavItem>
-                                <NavItem>
-                                    <NavLink tag={Link} to="/merchants">Merchants</NavLink>
                                 </NavItem>
                             </ul>
                             <ul className="navbar-nav ml-auto">

@@ -7,6 +7,7 @@ namespace Application.Models
     {
         public int ID { get; set; }
         public string Name { get; set; }
+        public string Description { get; set; }
         public string WebsiteUrl { get; set; }
         public int MerchantTypeID { get; set; }
         public bool Active { get; set; }
