@@ -75,6 +75,10 @@ namespace CleanersNextDoor
                     spa.UseReactDevelopmentServer(npmScript: "start");
                 }
             });
+
+            using var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope();
+            var context = serviceScope.ServiceProvider.GetRequiredService<ICleanersNextDoorContext>();
+            DbInitializer.Initialize(context);
         }
     }
 }

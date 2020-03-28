@@ -4,22 +4,23 @@ import TextInput from '../TextInput';
 import PasswordInput from '../PasswordInput';
 import validate from '../Validate'
 
-export class SignUp extends Component {
+export class CustomerSignUp extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            formIsValid: false, 
+            formIsValid: false,
             formControls: {
-                username: {
+                email: {
                     value: '',
-                    placeholder: 'Enter your username',
-                    label: 'Username',
+                    placeholder: 'Enter your email',
+                    label: 'Email',
                     valid: false,
                     touched: false,
                     validationRules: {
                         isRequired: true,
-                        minLength: 3
+                        isEmail: true,
+                        minLength: 5
                     },
                     errors: []
                 },
@@ -71,16 +72,15 @@ export class SignUp extends Component {
                     },
                     errors: []
                 },
-                email: {
+                phone: {
                     value: '',
-                    placeholder: 'Enter your email',
-                    label: 'Email',
+                    placeholder: 'Enter your phone number',
+                    label: 'Phone Number',
                     valid: false,
                     touched: false,
                     validationRules: {
                         isRequired: true,
-                        isEmail: true,
-                        minLength: 5
+                        minLength: 9
                     },
                     errors: []
                 }
@@ -122,28 +122,28 @@ export class SignUp extends Component {
         this.setState({
             formIsValid: true
         });
-        var user = {
-            username: this.state.formControls.username.value,
+        var customer = {
             password: this.state.formControls.password.value,
             firstName: this.state.formControls.firstName.value,
             lastName: this.state.formControls.lastName.value,
-            email: this.state.formControls.email.value
+            email: this.state.formControls.email.value,
+            phone: this.state.formControls.phone.value
         };
-        this.trySignUp(user);
+        this.trySignUp(customer);
     }
 
-    async trySignUp(user) {
-        const response = await fetch('users/signup', {
+    async trySignUp(customer) {
+        const response = await fetch('customers/signup', {
             method: 'post',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(user)
+            body: JSON.stringify(customer)
         });
         const data = await response.json();
         if (data && data.id > 0) {
-            Authentication.setUserId(data.id);
-            this.props.history.push('/profile')
+            Authentication.setCustomerId(data.id);
+            this.props.history.push('/customers/profile')
         }
         else {
             alert('An error occurred. Please try again.')
@@ -153,9 +153,9 @@ export class SignUp extends Component {
         }
     }
 
-    checkUsernameBlur = event => {
-        if (this.state.formControls.username.valid) {
-            this.checkUsername()
+    checkEmailBlur = event => {
+        if (this.state.formControls.email.valid) {
+            this.checkEmail()
         }
     }
 
@@ -177,17 +177,17 @@ export class SignUp extends Component {
         }
     }
 
-    checkUsername = async () => {
-        const response = await fetch(`users/CheckUsernameAvailability/${this.state.formControls.username.value}`);
+    checkEmail = async () => {
+        const response = await fetch(`customers/CheckEmailAvailability/${this.state.formControls.email.value}`);
         const data = await response.json();
         if (!data.isAvailable) {
             const updatedControls = {
                 ...this.state.formControls
             };
 
-            updatedControls.username.valid = false;
-            updatedControls.username.errors = []
-            updatedControls.username.errors.push(`The username ${this.state.formControls.username.value} is already taken`)
+            updatedControls.email.valid = false;
+            updatedControls.email.errors = []
+            updatedControls.email.errors.push(`The email ${this.state.formControls.email.value} is already in use.`)
 
             this.setState({
                 formControls: updatedControls,
@@ -204,15 +204,15 @@ export class SignUp extends Component {
                         <h1>Sign Up</h1>
                         <form method="post" onSubmit={this.requestSignUp}>
 
-                            <TextInput name="username"
-                                placeholder={this.state.formControls.username.placeholder}
-                                label={this.state.formControls.username.label}
-                                value={this.state.formControls.username.value}
+                            <TextInput name="email"
+                                placeholder={this.state.formControls.email.placeholder}
+                                label={this.state.formControls.email.label}
+                                value={this.state.formControls.email.value}
                                 onChange={this.changeHandler}
-                                touched={this.state.formControls.username.touched ? 1 : 0}
-                                valid={this.state.formControls.username.valid ? 1 : 0}
-                                onBlur={this.checkUsernameBlur}
-                                errors={this.state.formControls.username.errors} />
+                                onBlur={this.checkEmail}
+                                touched={this.state.formControls.email.touched ? 1 : 0}
+                                valid={this.state.formControls.email.valid ? 1 : 0}
+                                errors={this.state.formControls.email.errors} />
 
                             <PasswordInput name="password"
                                 placeholder={this.state.formControls.password.placeholder}
@@ -252,14 +252,14 @@ export class SignUp extends Component {
                                 valid={this.state.formControls.lastName.valid ? 1 : 0}
                                 errors={this.state.formControls.lastName.errors} />
 
-                            <TextInput name="email"
-                                placeholder={this.state.formControls.email.placeholder}
-                                label={this.state.formControls.email.label}
-                                value={this.state.formControls.email.value}
+                            <TextInput name="phone"
+                                placeholder={this.state.formControls.phone.placeholder}
+                                label={this.state.formControls.phone.label}
+                                value={this.state.formControls.phone.value}
                                 onChange={this.changeHandler}
-                                touched={this.state.formControls.email.touched ? 1 : 0}
-                                valid={this.state.formControls.email.valid ? 1 : 0}
-                                errors={this.state.formControls.email.errors} />
+                                touched={this.state.formControls.phone.touched ? 1 : 0}
+                                valid={this.state.formControls.phone.valid ? 1 : 0}
+                                errors={this.state.formControls.phone.errors} />
 
                             <button className="btn btn-primary" type="submit" disabled={!this.state.formIsValid}>Sign in</button>
                         </form>

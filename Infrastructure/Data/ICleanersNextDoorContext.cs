@@ -1,5 +1,6 @@
 ﻿using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -10,6 +11,7 @@ namespace Infrastructure.Data
 {
     public interface ICleanersNextDoorContext
     {
+        public bool EnsureCreated();
         public DbSet<Authorization> Authorizations { get; set; }
         public DbSet<AuthorizationType> AuthorizationTypes { get; set; }
         public DbSet<CardType> CardTypes { get; set; }
@@ -45,5 +47,6 @@ namespace Infrastructure.Data
         public DbSet<VoidReasonType> VoidReasonTypes { get; set; }
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);
+        int SaveChanges();
     }
 }

@@ -1,11 +1,11 @@
 ﻿import React, { Component } from 'react';
 import { Authentication } from '../../services/authentication'
 
-export class Profile extends Component {
+export class CustomerProfile extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            user: null,
+            customer: null,
             loading: true
         }
     }
@@ -13,30 +13,31 @@ export class Profile extends Component {
     componentDidMount() {
         this.populateProfileInformation()
     }
-    static renderProfile(user) {
+    static renderProfile(customer) {
         return (
             <div>
-                {user.username}
+                {customer.email}<br />
+                {customer.phone}
             </div>
-            )
+        )
     }
 
     render() {
         let contents = this.state.loading
             ? <p><em>Loading...</em></p>
-            : Profile.renderProfile(this.state.user);
+            : CustomerProfile.renderProfile(this.state.customer);
         return (
             <div className="container">
                 Profile
                 {contents}
             </div>
-            )
+        )
     }
 
     async populateProfileInformation() {
-        const userId = Authentication.getUserId()
-        const response = await fetch(`users/${userId}`);
+        const customerId = Authentication.getCustomerId()
+        const response = await fetch(`customers/${customerId}`);
         const data = await response.json();
-        this.setState({ user: data, loading: false });
+        this.setState({ customer: data, loading: false });
     }
 }

@@ -15,8 +15,7 @@ namespace Infrastructure
             IConfiguration configuration)
         {
             services.AddDbContext<ICleanersNextDoorContext, CleanersNextDoorContext>(options =>
-                options.UseSqlServer(
-                    configuration.GetConnectionString("DefaultConnection")));
+                options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
 
             return services;
         }

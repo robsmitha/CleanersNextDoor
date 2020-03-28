@@ -1,10 +1,16 @@
 ﻿import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
+import { GiHouse } from "react-icons/gi";
+import { Authentication } from '../services/authentication'
+
 export class Footer extends Component {
     static displayName = Footer.name;
 
     constructor(props) {
         super(props);
+        this.state = {
+            userAuthenticated: Authentication.getUserId() > 0
+        }
     }
     render() {
         return (
@@ -12,30 +18,36 @@ export class Footer extends Component {
                 <footer className="pt-4 my-md-5 pt-md-5 border-top">
                     <div className="row">
                         <div className="col-12 col-md">
-                            <img className="mb-2" src="/docs/4.4/assets/brand/bootstrap-solid.svg" alt="" width="24" height="24" />
-                            <small className="d-block mb-3 text-muted">&copy; 2017-2019</small>
+                            <GiHouse />
+                            <small className="mb-3 text-muted">
+                                &nbsp;CleanersNextDoor
+                                &copy;{new Date().getFullYear()}
+                            </small>
                         </div>
                         <div className="col-6 col-md">
                             <h5>Services</h5>
                             <ul className="list-unstyled text-small">
-                                <li><a className="text-muted" href="#">Laundry</a></li>
-                                <li><a className="text-muted" href="#">Alteration Services</a></li>
-                                <li><a className="text-muted" href="#">Suit & Jacket Cleaning</a></li>
-                                <li><a className="text-muted" href="#">Dress Cleaning</a></li>
+                                <li><Link className="text-muted" to="/">Laundry</Link></li>
+                                <li><Link className="text-muted" to="/">Alteration Services</Link></li>
+                                <li><Link className="text-muted" to="/">Suit & Jacket Cleaning</Link></li>
+                                <li><Link className="text-muted" to="/">Dress Cleaning</Link></li>
                             </ul>
                         </div>
                         <div className="col-6 col-md">
                             <h5>About</h5>
                             <ul className="list-unstyled text-small">
-                                <li><a className="text-muted" href="#">How it Works</a></li>
+                                <li><Link className="text-muted" to="/">How it Works</Link></li>
+                                <li><Link className="text-muted" to="/">Become a Driver</Link></li>
                             </ul>
                         </div>
                         <div className="col-6 col-md">
-                            <h5>About</h5>
+                            <h5>Businesses</h5>
                             <ul className="list-unstyled text-small">
-                                <li><a className="text-muted" href="#">Sign In</a></li>
-                                <li><a className="text-muted" href="#">Sign Up</a></li>
-                                <li><a className="text-muted" href="#">Locations</a></li>
+                                <li><Link className="text-muted" to="/users/sign-in" id="nav_sign_in" hidden={this.state.userAuthenticated}>Sign In</Link></li>
+                                <li><Link className="text-muted" to="/users/sign-up" id="nav_sign_up" hidden={this.state.userAuthenticated}>Sign Up</Link></li>
+                                <li><Link className="text-muted" to="/users/profile" id="nav_profile" hidden={!this.state.userAuthenticated}>Profile</Link></li>
+                                <li><Link className="text-muted" to="/users/sign-out" id="nav_sign_out" hidden={!this.state.userAuthenticated}>Sign out</Link></li>
+                                <li><Link className="text-muted" to="/">Locations</Link></li>
                             </ul>
                         </div>
                     </div>

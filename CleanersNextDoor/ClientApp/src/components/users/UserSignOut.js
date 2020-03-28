@@ -1,7 +1,7 @@
 ﻿import React, { Component } from 'react';
 import { Authentication } from '../../services/authentication'
 
-export class SignOut extends Component {
+export class UserSignOut extends Component {
     constructor(props) {
         super(props)
     }

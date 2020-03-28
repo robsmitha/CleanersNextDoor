@@ -14,4 +14,17 @@ export class Authentication {
     static clearLocalStorage() {
         this.setUserId(0)
     }
+    static clearCustomerLocalStorage() {
+        this.setCustomerId(0)
+    }
+    static getCustomerId() {
+        return JSON.parse(localStorage.getItem('CUSTOMER_ID') || 0)
+    }
+    static setCustomerId(id) {
+        document.getElementById('nav_customer_sign_in').hidden = true;
+        document.getElementById('nav_customer_sign_up').hidden = true;
+        document.getElementById('nav_customer_profile').hidden = false;
+        document.getElementById('nav_customer_sign_out').hidden = false;
+        localStorage.setItem('CUSTOMER_ID', id)
+    }
 }

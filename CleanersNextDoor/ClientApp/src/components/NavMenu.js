@@ -3,6 +3,7 @@ import { Collapse, Container, Navbar, NavbarBrand, NavbarToggler, NavItem, NavLi
 import { Link } from 'react-router-dom';
 import './NavMenu.css';
 import { Authentication } from '../services/authentication'
+import { GiHouse } from "react-icons/gi";
 
 export class NavMenu extends Component {
     static displayName = NavMenu.name;
@@ -13,7 +14,7 @@ export class NavMenu extends Component {
         this.toggleNavbar = this.toggleNavbar.bind(this);
         this.state = {
             collapsed: true,
-            authenticated: Authentication.getUserId() > 0
+            customerAuthenticated: Authentication.getCustomerId() > 0
         };
     }
 
@@ -35,7 +36,11 @@ export class NavMenu extends Component {
             <header>
                 <Navbar id="main_nav" className="navbar-expand-sm navbar-toggleable-sm box-shadow fixed-top bg-white border-bottom shadow-sm navbar-light">
                     <Container>
-                        <NavbarBrand tag={Link} to="/">CleanersNextDoor</NavbarBrand>
+                        <NavbarBrand tag={Link} to="/">
+                            <GiHouse />
+                            &nbsp;
+                            CleanersNextDoor
+                        </NavbarBrand>
                         <NavbarToggler onClick={this.toggleNavbar} className="mr-2" />
                         <Collapse isOpen={!this.state.collapsed} navbar>
                             <ul className="navbar-nav">
@@ -44,17 +49,17 @@ export class NavMenu extends Component {
                                 </NavItem>
                             </ul>
                             <ul className="navbar-nav ml-auto">
-                                <NavItem id="nav_sign_in" hidden={this.state.authenticated}>
-                                    <NavLink tag={Link} to="/sign-in">Sign in</NavLink>
+                                <NavItem id="nav_customer_sign_in" hidden={this.state.customerAuthenticated}>
+                                    <NavLink tag={Link} to="/customers/sign-in">Sign in</NavLink>
                                 </NavItem>
-                                <NavItem id="nav_sign_up" hidden={this.state.authenticated}>
-                                    <NavLink tag={Link} to="/sign-up">Sign up</NavLink>
+                                <NavItem id="nav_customer_sign_up" hidden={this.state.customerAuthenticated}>
+                                    <NavLink tag={Link} to="/customers/sign-up">Sign up</NavLink>
                                 </NavItem>
-                                <NavItem id="nav_profile" hidden={!this.state.authenticated}>
-                                    <NavLink tag={Link} to="/profile">Profile</NavLink>
+                                <NavItem id="nav_customer_profile" hidden={!this.state.customerAuthenticated}>
+                                    <NavLink tag={Link} to="/customers/profile">Profile</NavLink>
                                 </NavItem>
-                                <NavItem id="nav_sign_out" hidden={!this.state.authenticated}>
-                                    <NavLink tag={Link} to="/sign-out">Sign out</NavLink>
+                                <NavItem id="nav_customer_sign_out" hidden={!this.state.customerAuthenticated}>
+                                    <NavLink tag={Link} to="/customers/sign-out">Sign out</NavLink>
                                 </NavItem>
                             </ul>
                         </Collapse>

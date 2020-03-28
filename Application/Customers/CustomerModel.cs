@@ -1,13 +1,14 @@
-﻿using System;
+﻿using Application.Common.Mappings;
+using Domain.Entities;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Text;
 
-namespace Domain.Entities
+namespace Application.Customers
 {
-    public class Customer : BaseEntity
+    public class CustomerModel : IMapFrom<Customer>
     {
+        public int ID { get; set; }
         public string FirstName { get; set; }
         public string MiddleName { get; set; }
         public string LastName { get; set; }

@@ -9,6 +9,10 @@ namespace Infrastructure.Data
 {
     public class CleanersNextDoorContext : DbContext, ICleanersNextDoorContext
     {
+        public bool EnsureCreated()
+        {
+            return Database.EnsureCreated();
+        }
         public CleanersNextDoorContext(DbContextOptions<CleanersNextDoorContext> options) : base(options) { }
        
         public DbSet<Authorization> Authorizations { get; set; }

@@ -4,21 +4,22 @@ import TextInput from '../TextInput';
 import PasswordInput from '../PasswordInput';
 import validate from '../Validate'
 
-export class SignIn extends Component {
+export class CustomerSignIn extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
             formIsValid: false, //we will use this to track the overall form validity
             formControls: {
-                username: {
+                email: {
                     value: '',
-                    placeholder: 'Username',
-                    label: 'Username',
+                    placeholder: 'Email',
+                    label: 'Email',
                     valid: false,
                     touched: false,
                     validationRules: {
-                        isRequired: true
+                        isRequired: true,
+                        isEmail: true
                     },
                     errors: []
                 },
@@ -72,28 +73,28 @@ export class SignIn extends Component {
         this.setState({
             formIsValid: false
         });
-        var user = {
-            username: this.state.formControls.username.value,
+        var customer = {
+            email: this.state.formControls.email.value,
             password: this.state.formControls.password.value
         };
-        this.trySignIn(user);
+        this.trySignIn(customer);
     }
 
-    async trySignIn(user) {
-        const response = await fetch('users/signin', {
+    async trySignIn(customer) {
+        const response = await fetch('customers/signin', {
             method: 'post',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(user)
+            body: JSON.stringify(customer)
         });
         const data = await response.json();
         if (data && data.id > 0) {
-            Authentication.setUserId(data.id);
-            this.props.history.push('/profile')
+            Authentication.setCustomerId(data.id);
+            this.props.history.push('/customers/profile')
         }
         else {
-            alert('The username or password was incorrect.')
+            alert('The email or password was incorrect.')
             this.setState({
                 formIsValid: true
             });
@@ -107,14 +108,15 @@ export class SignIn extends Component {
                     <div className="col-md-4">
                         <h1>Sign In</h1>
                         <form method="post" onSubmit={this.requestSignIn}>
-                            <TextInput name="username"
-                                placeholder={this.state.formControls.username.placeholder}
-                                label={this.state.formControls.username.label}
-                                value={this.state.formControls.username.value}
+                            <TextInput name="email"
+                                placeholder={this.state.formControls.email.placeholder}
+                                label={this.state.formControls.email.label}
+                                value={this.state.formControls.email.value}
                                 onChange={this.changeHandler}
-                                touched={this.state.formControls.username.touched ? 1 : 0}
-                                valid={this.state.formControls.username.valid ? 1 : 0}
-                                errors={this.state.formControls.username.errors} />
+                                touched={this.state.formControls.email.touched ? 1 : 0}
+                                valid={this.state.formControls.email.valid ? 1 : 0}
+                                errors={this.state.formControls.email.errors} />
+
                             <PasswordInput name="password"
                                 placeholder={this.state.formControls.password.placeholder}
                                 label={this.state.formControls.password.label}
@@ -128,6 +130,6 @@ export class SignIn extends Component {
                     </div>
                 </div>
             </div>
-            )
+        )
     }
 }

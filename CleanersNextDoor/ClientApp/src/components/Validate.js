@@ -23,7 +23,7 @@
             case 'isEmail':
                 if (!emailValidator(value)) {
                     isValid = false;
-                    if (value.length > 5) {
+                    if (value.length > 0) {
                         errorMessages.push(`"${value}" is not a valid email address.`);
                     }
                 }
