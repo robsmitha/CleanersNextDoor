@@ -11,7 +11,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Application.Users.Queries.GetUser
+namespace Application.Customers.Queries.GetCustomer
 {
     public class GetCustomerQuery : IRequest<CustomerModel>
     {

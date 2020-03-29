@@ -1,182 +1,205 @@
 ﻿import React, { Component } from 'react';
+import { Link } from 'react-router-dom'
 import { Authentication } from '../../services/authentication';
-import TextInput from '../TextInput';
-import PasswordInput from '../PasswordInput';
-import validate from '../Validate'
-import { GiDrippingKnife } from 'react-icons/gi';
 
 export class RequestService extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            merchantId: this.props.match.params.id,
-            formIsValid: false,
-            formControls: {
-                firstName: {
-                    value: '',
-                    placeholder: 'Enter your first name',
-                    label: 'First Name',
-                    valid: false,
-                    touched: false,
-                    validationRules: {
-                        isRequired: true,
-                        minLength: 2
-                    },
-                    errors: []
-                },
-                lastName: {
-                    value: '',
-                    placeholder: 'Enter your last name',
-                    label: 'Last Name',
-                    valid: false,
-                    touched: false,
-                    validationRules: {
-                        isRequired: true,
-                        minLength: 2
-                    },
-                    errors: []
-                },
-                email: {
-                    value: '',
-                    placeholder: 'Enter your email',
-                    label: 'Email',
-                    valid: false,
-                    touched: false,
-                    validationRules: {
-                        isRequired: true,
-                        isEmail: true,
-                        minLength: 5
-                    },
-                    errors: []
-                },
-                phone: {
-                    value: '',
-                    placeholder: 'Enter your phone',
-                    label: 'Phone',
-                    valid: false,
-                    touched: false,
-                    validationRules: {
-                        isRequired: true,
-                        minLength: 9
-                    },
-                    errors: []
-                }
-            }
+            items: [],
+            itemsLoading: true,
+            cart: [],
+            cartLoading: true,
+            merchantId: Number(this.props.match.params.id),
+            orderId: 0,
+            customerId: Authentication.getCustomerId()
         };
+
+        this.addToCart = this.addToCart.bind(this);
+        this.removeCartItem = this.removeCartItem.bind(this);
     }
 
-    changeHandler = event => {
-        const name = event.target.name;
-        const value = event.target.value;
+    componentDidMount() {
+        this.populateMerchantItems()
+        this.populateCustomerCart()
+    }
 
-        const updatedControls = {
-            ...this.state.formControls
-        };
+    async populateMerchantItems() {
+        const merchantId = this.state.merchantId
+        const response = await fetch(`merchants/${merchantId}/items`);
+        const data = await response.json();
+        this.setState({ items: data, itemsLoading: false });
+    }
 
-        const updatedFormElement = {
-            ...updatedControls[name]
-        };
-
-        updatedFormElement.value = value;
-        updatedFormElement.touched = true;
-        var validation = validate(value, updatedFormElement.validationRules, updatedFormElement.label);
-        updatedFormElement.valid = validation.isValid;
-        updatedFormElement.errors = validation.errorMessages;
-
-        updatedControls[name] = updatedFormElement;
-
-        let formIsValid = true;
-        for (let inputIdentifier in updatedControls) {
-            formIsValid = updatedControls[inputIdentifier].valid && formIsValid;
+    async populateCustomerCart() {
+        const customerId = Authentication.getCustomerId();
+        const merchantId = this.state.merchantId
+        const response = await fetch(`customers/${customerId}/cart/${merchantId}`);
+        const data = await response.json();
+        if (this.state.orderId === 0 && data && data.cartItems.length > 0) {
+            this.setState({
+                orderId: data.cartItems[0].orderID
+            })
         }
-
-        this.setState({
-            formControls: updatedControls,
-            formIsValid: formIsValid
-        });
+        this.setState({ cart: data, cartLoading: false });
     }
 
-    requestCreateServiceRequest = (event) => {
-        event.preventDefault();
-        this.setState({
-            formIsValid: false
-        });
-        var serviceRequest = {
-
+    addToCart = (id) => {
+        var cartItemTransaction = {
+            itemID: Number(id),
+            customerId: this.state.customerId,
+            orderId: this.state.orderId,
+            newQty: null
         };
-        this.CreateServiceRequest(serviceRequest);
+        this.tryCartTransaction(cartItemTransaction)
     }
 
-    async CreateServiceRequest(serviceRequest) {
-        const response = await fetch('merchants/CreateServiceRequest', {
+    removeCartItem = (id) => {
+        this.tryRemoveCartItem(id)
+    }
+
+    handleQtyChange = (event) => {
+        var newQty = event.target.value;
+        var itemId = event.target.name;
+
+        var cartItemTransaction = {
+            itemID: Number(itemId),
+            customerId: this.state.customerId,
+            orderId: this.state.orderId,
+            newQty: Number(newQty)
+        };
+
+        this.tryCartTransaction(cartItemTransaction);
+    }
+
+    async tryCartTransaction(cartItemTransaction) {
+
+        const response = await fetch(`customers/${this.state.customerId}/addtocart`, {
             method: 'post',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(serviceRequest)
+            body: JSON.stringify(cartItemTransaction)
         });
+
         const data = await response.json();
-        if (data && data.id > 0) {
-            this.props.history.push(`/merchant/${this.state.merchantId}/service-request/${data.id}`)
+
+        if (response.status === 500) {
+            alert(data)
         }
         else {
-            alert('The username or password was incorrect.')
-            this.setState({
-                formIsValid: true
-            });
+            this.populateCustomerCart()
         }
     }
+    async tryRemoveCartItem(id) {
 
+        var removeCartItem = {
+            itemID: Number(id),
+            orderId: this.state.orderId,
+        };
+
+        const response = await fetch(`customers/${this.state.customerId}/removeCartItem`, {
+            method: 'post',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(removeCartItem)
+        });
+
+        const success = await response.json();
+        if (success) {
+            this.populateCustomerCart()
+        }
+    }
     render() {
+        let contents = this.state.itemsLoading
+            ? <p><em>Loading Items...</em></p>
+            : this.renderMerchantItems(this.state.items);
+
+        let currentOrderContents = this.state.cartLoading
+            ? <p><em>Loading Cart...</em></p>
+            : this.renderCart(this.state.cart);
+
         return (
             <div className="container">
+                <h1>Start Service Request</h1>
+                <h3>Select Services</h3>
+                <hr />
                 <div className="row">
                     <div className="col-md-4">
-                        <h1>Request Pick Up Service</h1>
-                        <form method="post" onSubmit={this.requestCreateServiceRequest}>
-                            <TextInput name="firstName"
-                                placeholder={this.state.formControls.firstName.placeholder}
-                                label={this.state.formControls.firstName.label}
-                                value={this.state.formControls.firstName.value}
-                                onChange={this.changeHandler}
-                                touched={this.state.formControls.firstName.touched ? 1 : 0}
-                                valid={this.state.formControls.firstName.valid ? 1 : 0}
-                                errors={this.state.formControls.firstName.errors} />
-
-                            <TextInput name="lastName"
-                                placeholder={this.state.formControls.lastName.placeholder}
-                                label={this.state.formControls.lastName.label}
-                                value={this.state.formControls.lastName.value}
-                                onChange={this.changeHandler}
-                                touched={this.state.formControls.lastName.touched ? 1 : 0}
-                                valid={this.state.formControls.lastName.valid ? 1 : 0}
-                                errors={this.state.formControls.lastName.errors} />
-
-                            <TextInput name="email"
-                                placeholder={this.state.formControls.email.placeholder}
-                                label={this.state.formControls.email.label}
-                                value={this.state.formControls.email.value}
-                                onChange={this.changeHandler}
-                                touched={this.state.formControls.email.touched ? 1 : 0}
-                                valid={this.state.formControls.email.valid ? 1 : 0}
-                                errors={this.state.formControls.email.errors} />
-
-                            <TextInput name="phone"
-                                placeholder={this.state.formControls.phone.placeholder}
-                                label={this.state.formControls.phone.label}
-                                value={this.state.formControls.phone.value}
-                                onChange={this.changeHandler}
-                                touched={this.state.formControls.phone.touched ? 1 : 0}
-                                valid={this.state.formControls.phone.valid ? 1 : 0}
-                                errors={this.state.formControls.phone.errors} />
-
-                            <button className="btn btn-primary" type="submit" disabled={!this.state.formIsValid}>
-                                Request Services
-                            </button>
-                        </form>
+                        {currentOrderContents}
+                    </div>
+                    <div className="col-md-8">
+                        {contents}
                     </div>
                 </div>
+            </div>
+        )
+    }
+
+    renderMerchantItems(items) {
+        return (
+            <div>
+                <div className="list-group">
+                    {items.map(i =>
+                        <button key={i.id} value={i.id} type="button" className="list-group-item list-group-item-action" onClick={() => this.addToCart(i.id)}>
+                            <div className="d-flex w-100 justify-content-between">
+                                <h5 className="mb-1"> {i.name}</h5>
+                                <small>{i.displayPrice}</small>
+                            </div>
+                            <p className="mb-1">{i.description}</p>
+                            <small>Max Allowed: {i.maxAllowed}</small>
+                        </button>
+                    )}
+                </div>
+            </div>
+        )
+    }
+
+
+    renderCart(cart) {
+        let cartItems = cart.cartItems;
+        return (
+            <div>
+                <div className="list-group list-group-flush">
+                    {cartItems.map(c =>
+                        <div className="list-group-item" key={c.id}>
+                            <div className="d-flex w-100 justify-content-between">
+                                <h5 className="mb-1"> {c.itemName}</h5>
+                                <small>{c.displayPrice}</small>
+                            </div>
+                            <div className="form-row">
+                                <div className="col">
+                                    <label htmlFor="qty">QTY: </label>
+                                    <select value={c.currentQuantity} name={c.itemID} className="form-control  form-control-sm" onChange={this.handleQtyChange}>
+                                        {[...Array(c.itemMaxAllowed + 1)].map((x, i) =>
+                                            <option key={i} value={i}>{i}</option>
+                                        )}
+                                    </select>
+                                </div>
+                                <div className="col-auto">
+                                    <br />
+                                    <button type="button" className="btn btn-danger btn-sm mt-2" onClick={() => this.removeCartItem(c.itemID)}>
+                                        Remove
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                    <div className="list-group-item">
+                        <strong>Total (USD):</strong>
+                        <span className="float-right">
+                            {cart.displayPrice}
+                        </span>
+                    </div>
+                </div>
+                <Link to={'/payment/:id'.replace(':id', this.state.merchantId)} className="btn btn-primary btn-block">
+                    Pay Now
+                </Link>
+                <Link to={'/merchant/:id'.replace(':id', this.state.merchantId)} className="btn btn-secondary btn-block">
+                    Go Back
+                </Link>
             </div>
         )
     }

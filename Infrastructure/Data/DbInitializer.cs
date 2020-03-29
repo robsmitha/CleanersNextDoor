@@ -30,35 +30,67 @@ namespace Infrastructure.Data
             {
                 new Merchant
                 {
-                    Active = true,
-                    CreatedAt = DateTime.Now,
                     MerchantTypeID = merchantType.ID,
-                    Name = "First Star Cleaners",
-                    Description = "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Rem magni quas ex numquam, maxime minus quam molestias corporis quod, ea minima accusamus."
+                    Name = "Five Star Cleaners",
+                    Description = "Founded in 1987 by the Hernandez brothers, our establishment has been serving up rich coffee sourced from artisan farmers in various regions of South and Central America. We are dedicated to travelling the world, finding the best coffee, and bringing back to you here in our cafe.",
+                    Street1 = "3481 Melrose Place",
+                    City = "Beverly Hills",
+                    StateAbbreviation = "CA",
+                    Zip = "90210",
+                    Phone = "(123) 456-7890",
+                    ContactEmail = "name@example.com",
+                    OperatingHours = "Monday - Friday: 9:00 AM to 5:00 PM",
+                    WebsiteUrl = "robsmitha.com",
+                    CallToAction = "Once you try it, our coffee will be a blissful addition to your everyday morning routine - we guarantee it!",
+                    ShortDescription = "Every cup of our quality artisan coffee starts with locally sourced, hand picked ingredients.",
                 },
                 new Merchant
                 {
-                    Active = true,
-                    CreatedAt = DateTime.Now,
                     MerchantTypeID = merchantType.ID,
                     Name = "Second Base Cleaners",
-                    Description = "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Rem magni quas ex numquam, maxime minus quam molestias corporis quod, ea minima accusamus."
+                    Description = "Founded in 1987 by the Hernandez brothers, our establishment has been serving up rich coffee sourced from artisan farmers in various regions of South and Central America. We are dedicated to travelling the world, finding the best coffee, and bringing back to you here in our cafe.",
+                    Street1 = "3481 Melrose Place",
+                    City = "Beverly Hills",
+                    StateAbbreviation = "CA",
+                    Zip = "90210",
+                    Phone = "(123) 456-7890",
+                    ContactEmail = "name@example.com",
+                    OperatingHours = "Monday - Friday: 9:00 AM to 5:00 PM",
+                    WebsiteUrl = "robsmitha.com",
+                    CallToAction = "Once you try it, our coffee will be a blissful addition to your everyday morning routine - we guarantee it!",
+                    ShortDescription = "Every cup of our quality artisan coffee starts with locally sourced, hand picked ingredients.",
                 },
                 new Merchant
                 {
-                    Active = true,
-                    CreatedAt = DateTime.Now,
                     MerchantTypeID = merchantType.ID,
                     Name = "Third Time's the Charm Cleaners",
-                    Description = "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Rem magni quas ex numquam, maxime minus quam molestias corporis quod, ea minima accusamus."
+                    Description = "Founded in 1987 by the Hernandez brothers, our establishment has been serving up rich coffee sourced from artisan farmers in various regions of South and Central America. We are dedicated to travelling the world, finding the best coffee, and bringing back to you here in our cafe.",
+                    Street1 = "3481 Melrose Place",
+                    City = "Beverly Hills",
+                    StateAbbreviation = "CA",
+                    Zip = "90210",
+                    Phone = "(123) 456-7890",
+                    ContactEmail = "name@example.com",
+                    OperatingHours = "Monday - Friday: 9:00 AM to 5:00 PM",
+                    WebsiteUrl = "robsmitha.com",
+                    CallToAction = "Once you try it, our coffee will be a blissful addition to your everyday morning routine - we guarantee it!",
+                    ShortDescription = "Every cup of our quality artisan coffee starts with locally sourced, hand picked ingredients.",
                 },
                 new Merchant
                 {
-                    Active = true,
-                    CreatedAt = DateTime.Now,
                     MerchantTypeID = merchantType.ID,
                     Name = "Forty Oz Cleaners",
-                    Description = "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Rem magni quas ex numquam, maxime minus quam molestias corporis quod, ea minima accusamus."
+                    Description = "Founded in 1987 by the Hernandez brothers, our establishment has been serving up rich coffee sourced from artisan farmers in various regions of South and Central America. We are dedicated to travelling the world, finding the best coffee, and bringing back to you here in our cafe.",
+                    Street1 = "3481 Melrose Place",
+                    City = "Beverly Hills",
+                    StateAbbreviation = "CA",
+                    Zip = "90210",
+                    Phone = "(123) 456-7890",
+                    ContactEmail = "name@example.com",
+                    OperatingHours = "Monday - Friday: 9:00 AM to 5:00 PM",
+                    WebsiteUrl = "robsmitha.com",
+                    CallToAction = "Once you try it, our coffee will be a blissful addition to your everyday morning routine - we guarantee it!",
+                    ShortDescription = "Every cup of our quality artisan coffee starts with locally sourced, hand picked ingredients.",
                 },
             };
             context.Merchants.AddRange(merchants);
@@ -115,6 +147,13 @@ namespace Infrastructure.Data
                     CreatedAt = DateTime.Now,
                     Name = "Alteration",
                     Description = "Alteration Services"
+                },
+                new ItemType
+                {
+                    Active = true,
+                    CreatedAt = DateTime.Now,
+                    Name = "Fee",
+                    Description = "Service Fee"
                 },
             };
             context.ItemTypes.AddRange(itemTypes);
@@ -237,7 +276,7 @@ namespace Infrastructure.Data
                },
                new PaymentType
                {
-                   Name = "Check",
+                    Name = "Check",
                     Description = "Check",
                     CreatedAt = DateTime.UtcNow,
                     Active = true,
@@ -245,6 +284,65 @@ namespace Infrastructure.Data
             };
 
             context.PaymentTypes.AddRange(paymentTypes);
+
+            context.SaveChanges();
+
+            var items = new List<Item>();
+            foreach(var merchant in merchants)
+            {
+                items.Add(new Item
+                {
+                    ItemTypeID = itemTypes.Single(t => t.Name == "Laundry").ID,
+                    MerchantID = merchant.ID,
+                    Cost = 0,
+                    Price = 1.99M,
+                    PriceTypeID = priceTypes.First().ID,
+                    UnitTypeID = unitTypes.First().ID,
+                    Name = "Laundry item",
+                    Description = "A single laundry item. Lorem ipsum dolor sit amet, consectetur adipisicing elit.",
+                    MaxAllowed = 10
+                });
+
+                items.Add(new Item
+                {
+                    ItemTypeID = itemTypes.Single(t => t.Name == "Alteration").ID,
+                    MerchantID = merchant.ID,
+                    Cost = 0,
+                    Price = 5.99M,
+                    PriceTypeID = priceTypes.First().ID,
+                    UnitTypeID = unitTypes.First().ID,
+                    Name = "Clothing Alteration",
+                    Description = "Alteration services. Lorem ipsum dolor sit amet, consectetur adipisicing elit.",
+                    MaxAllowed = 7
+                });
+
+                items.Add(new Item
+                {
+                    ItemTypeID = itemTypes.Single(t => t.Name == "Dress").ID,
+                    MerchantID = merchant.ID,
+                    Cost = 0,
+                    Price = 4.99M,
+                    PriceTypeID = priceTypes.First().ID,
+                    UnitTypeID = unitTypes.First().ID,
+                    Name = "Dress Cleaning",
+                    Description = "Dress cleaning services. Lorem ipsum dolor sit amet, consectetur adipisicing elit.",
+                    MaxAllowed = 5
+                });
+
+                items.Add(new Item
+                {
+                    ItemTypeID = itemTypes.Single(t => t.Name == "Suit").ID,
+                    MerchantID = merchant.ID,
+                    Cost = 0,
+                    Price = 4.99M,
+                    PriceTypeID = priceTypes.First().ID,
+                    UnitTypeID = unitTypes.First().ID,
+                    Name = "Suit & Jacket Cleaning",
+                    Description = "Suit & Jacket Cleaning services. Lorem ipsum dolor sit amet, consectetur adipisicing elit.",
+                    MaxAllowed = 5
+                });
+            }
+            context.Items.AddRange(items);
             context.SaveChanges();
         }
     }

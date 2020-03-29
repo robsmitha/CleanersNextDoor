@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import './NavMenu.css';
 import { Authentication } from '../services/authentication'
 import { GiHouse } from "react-icons/gi";
+import { FaSignOutAlt, FaUser, FaUserPlus, FaSignInAlt } from 'react-icons/fa'
 
 export class NavMenu extends Component {
     static displayName = NavMenu.name;
@@ -49,17 +50,25 @@ export class NavMenu extends Component {
                                 </NavItem>
                             </ul>
                             <ul className="navbar-nav ml-auto">
-                                <NavItem id="nav_customer_sign_in" hidden={this.state.customerAuthenticated}>
-                                    <NavLink tag={Link} to="/customers/sign-in">Sign in</NavLink>
-                                </NavItem>
                                 <NavItem id="nav_customer_sign_up" hidden={this.state.customerAuthenticated}>
-                                    <NavLink tag={Link} to="/customers/sign-up">Sign up</NavLink>
+                                    <NavLink tag={Link} to="/customers/sign-up">
+                                        <FaUserPlus />&nbsp;Sign up
+                                    </NavLink>
+                                </NavItem>
+                                <NavItem id="nav_customer_sign_in" hidden={this.state.customerAuthenticated}>
+                                    <NavLink tag={Link} to="/customers/sign-in">
+                                        <FaSignInAlt />&nbsp;Sign in
+                                    </NavLink>
                                 </NavItem>
                                 <NavItem id="nav_customer_profile" hidden={!this.state.customerAuthenticated}>
-                                    <NavLink tag={Link} to="/customers/profile">Profile</NavLink>
+                                    <NavLink tag={Link} to="/customers/profile">
+                                        <FaUser />&nbsp;Account
+                                    </NavLink>
                                 </NavItem>
                                 <NavItem id="nav_customer_sign_out" hidden={!this.state.customerAuthenticated}>
-                                    <NavLink tag={Link} to="/customers/sign-out">Sign out</NavLink>
+                                    <NavLink tag={Link} to="/customers/sign-out">
+                                        <FaSignOutAlt />&nbsp;Sign out
+                                    </NavLink>
                                 </NavItem>
                             </ul>
                         </Collapse>

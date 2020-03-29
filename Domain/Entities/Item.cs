@@ -21,6 +21,7 @@ namespace Domain.Entities
         public bool IsRevenue { get; set; }
         public string LookupCode { get; set; }
         public decimal? Percentage { get; set; }
+        public int? MaxAllowed { get; set; }
 
         [ForeignKey("MerchantID")]
         public Merchant Merchant { get; set; }

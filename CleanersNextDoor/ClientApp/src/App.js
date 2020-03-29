@@ -6,6 +6,7 @@ import { Home } from './components/Home';
 import './custom.css'
 import { MerchantDetails } from './components/merchants/MerchantDetails';
 import { RequestService } from './components/merchants/RequestService';
+import { Payment } from './components/merchants/Payment';
 
 import { UserProfile } from './components/users/UserProfile';
 import { UserSignIn } from './components/users/UserSignIn';
@@ -16,6 +17,7 @@ import { CustomerProfile } from './components/customers/CustomerProfile'
 import { CustomerSignIn } from './components/customers/CustomerSignIn'
 import { CustomerSignOut } from './components/customers/CustomerSignOut'
 import { CustomerSignUp } from './components/customers/CustomerSignUp'
+import { HowItWorks } from './components/HowItWorks';
 
 export default class App extends Component {
   static displayName = App.name;
@@ -34,6 +36,8 @@ export default class App extends Component {
             <Route path='/customers/sign-out' component={CustomerSignOut} />
             <Route path='/merchant/:id' component={MerchantDetails} />
             <Route path='/request-service/:id' component={RequestService} />
+            <Route path='/payment/:id' component={Payment} />
+            <Route path='/how-it-works' component={HowItWorks} />
       </Layout>
     );
   }

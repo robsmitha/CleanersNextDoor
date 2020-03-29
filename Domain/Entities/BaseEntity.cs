@@ -10,5 +10,10 @@ namespace Domain.Entities
         public DateTime CreatedAt { get; set; }
         public bool Active { get; set; }
         public DateTime? ModifiedTime { get; set; }
+        public BaseEntity()
+        {
+            CreatedAt = DateTime.Now;
+            Active = true;
+        }
     }
 }

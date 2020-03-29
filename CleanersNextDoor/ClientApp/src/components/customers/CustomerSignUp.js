@@ -1,4 +1,5 @@
 ﻿import React, { Component } from 'react';
+import { Link } from 'react-router-dom'
 import { Authentication } from '../../services/authentication'
 import TextInput from '../TextInput';
 import PasswordInput from '../PasswordInput';
@@ -19,8 +20,7 @@ export class CustomerSignUp extends Component {
                     touched: false,
                     validationRules: {
                         isRequired: true,
-                        isEmail: true,
-                        minLength: 5
+                        isEmail: true
                     },
                     errors: []
                 },
@@ -198,10 +198,10 @@ export class CustomerSignUp extends Component {
 
     render() {
         return (
-            <div className="container">
-                <div className="row">
+            <div className="container my-md-5">
+                <div className="row justify-content-center align-items-center h-100">
                     <div className="col-md-4">
-                        <h1>Sign Up</h1>
+                        <h1 className="text-center">Sign up.</h1>
                         <form method="post" onSubmit={this.requestSignUp}>
 
                             <TextInput name="email"
@@ -261,7 +261,8 @@ export class CustomerSignUp extends Component {
                                 valid={this.state.formControls.phone.valid ? 1 : 0}
                                 errors={this.state.formControls.phone.errors} />
 
-                            <button className="btn btn-primary" type="submit" disabled={!this.state.formIsValid}>Sign in</button>
+                            <button className="btn btn-primary btn-block" type="submit" disabled={!this.state.formIsValid}>Sign up</button>
+                            <Link to="/customers/sign-in" className="btn btn-secondary btn-block">Sign in</Link>
                         </form>
                     </div>
                 </div>

@@ -1,4 +1,5 @@
 ﻿import React, { Component } from 'react';
+import { Link } from 'react-router-dom'
 import { Authentication } from '../../services/authentication';
 import TextInput from '../TextInput';
 import PasswordInput from '../PasswordInput';
@@ -103,10 +104,10 @@ export class CustomerSignIn extends Component {
 
     render() {
         return (
-            <div className="container">
-                <div className="row">
+            <div className="container my-md-5">
+                <div className="row justify-content-center align-items-center h-100">
                     <div className="col-md-4">
-                        <h1>Sign In</h1>
+                        <h1 className="text-center">Sign in.</h1>
                         <form method="post" onSubmit={this.requestSignIn}>
                             <TextInput name="email"
                                 placeholder={this.state.formControls.email.placeholder}
@@ -125,10 +126,12 @@ export class CustomerSignIn extends Component {
                                 touched={this.state.formControls.password.touched ? 1 : 0}
                                 valid={this.state.formControls.password.valid ? 1 : 0}
                                 errors={this.state.formControls.password.errors} />
-                            <button className="btn btn-primary" type="submit" disabled={!this.state.formIsValid}>Sign in</button>
+                            <button className="btn btn-primary btn-block" type="submit" disabled={!this.state.formIsValid}>Sign in</button>
+                            <Link to="/customers/sign-up" className="btn btn-secondary btn-block">Sign up</Link>
                         </form>
                     </div>
                 </div>
+
             </div>
         )
     }

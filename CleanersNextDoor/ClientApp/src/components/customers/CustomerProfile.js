@@ -28,7 +28,7 @@ export class CustomerProfile extends Component {
             : CustomerProfile.renderProfile(this.state.customer);
         return (
             <div className="container">
-                Profile
+                My Account
                 {contents}
             </div>
         )
