@@ -1,5 +1,4 @@
 ﻿import React, { Component } from 'react';
-import { Authentication } from '../../services/authentication';
 import TextInput from '../TextInput';
 import PasswordInput from '../PasswordInput';
 import validate from '../Validate'
@@ -89,7 +88,6 @@ export class UserSignIn extends Component {
         });
         const data = await response.json();
         if (data && data.id > 0) {
-            Authentication.setUserId(data.id);
             this.props.history.push('/users/profile')
         }
         else {

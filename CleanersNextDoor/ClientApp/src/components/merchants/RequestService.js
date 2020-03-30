@@ -13,7 +13,7 @@ export class RequestService extends Component {
             cartLoading: true,
             merchantId: Number(this.props.match.params.id),
             orderId: 0,
-            customerId: Authentication.getCustomerId()
+            customerId: 0
         };
 
         this.addToCart = this.addToCart.bind(this);
@@ -21,8 +21,14 @@ export class RequestService extends Component {
     }
 
     componentDidMount() {
+        this.checkAuthenticated()
         this.populateMerchantItems()
         this.populateCustomerCart()
+    }
+
+    async checkAuthenticated() {
+        var claimId = await Authentication.getClaimId();
+        this.setState({ customerId: claimId })
     }
 
     async populateMerchantItems() {
@@ -33,7 +39,7 @@ export class RequestService extends Component {
     }
 
     async populateCustomerCart() {
-        const customerId = Authentication.getCustomerId();
+        const customerId = this.state.customerId
         const merchantId = this.state.merchantId
         const response = await fetch(`customers/${customerId}/cart/${merchantId}`);
         const data = await response.json();
@@ -83,10 +89,9 @@ export class RequestService extends Component {
             body: JSON.stringify(cartItemTransaction)
         });
 
-        const data = await response.json();
-
         if (response.status === 500) {
-            alert(data)
+            const data = await response.json();
+            console.log(data)
         }
         else {
             this.populateCustomerCart()
@@ -123,7 +128,7 @@ export class RequestService extends Component {
 
         return (
             <div className="container">
-                <h1>Start Service Request</h1>
+                <h1>Start Pick up Request</h1>
                 <h3>Select Services</h3>
                 <hr />
                 <div className="row">

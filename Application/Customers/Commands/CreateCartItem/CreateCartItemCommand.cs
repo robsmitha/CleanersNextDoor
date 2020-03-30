@@ -18,6 +18,7 @@ namespace Application.Customers.Commands.CreateCartItem
         public int ItemID { get; set; }
         public int? OrderID { get; set; }
         public int? NewQty { get; set; }
+        public bool AddSingleItem => NewQty == null;
         public CreateCartItemCommand(CreateCartItemModel model)
         {
             CustomerID = model.CustomerID;
@@ -63,6 +64,7 @@ namespace Application.Customers.Commands.CreateCartItem
             #endregion
 
             var lineItemAmount = 0M;
+
             #region Determine Price
             switch (item.PriceTypeID)
             {
@@ -74,10 +76,13 @@ namespace Application.Customers.Commands.CreateCartItem
 
             try
             {
-                var lineItems = _context.LineItems.Where(l => l.OrderID == request.OrderID && l.ItemID == request.ItemID).ToList();
+                var lineItems = _context.LineItems
+                    .Where(l => l.OrderID == request.OrderID && l.ItemID == request.ItemID)
+                    .ToList();
+
                 var currentQty = lineItems.Count;
 
-                if (request.NewQty == null)
+                if (request.AddSingleItem)
                 {
                     //add single item
                     _context.LineItems.Add(new LineItem

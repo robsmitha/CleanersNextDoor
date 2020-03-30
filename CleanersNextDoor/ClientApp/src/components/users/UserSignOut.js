@@ -11,11 +11,7 @@ export class UserSignOut extends Component {
     }
 
     signOut = () => {
-        Authentication.clearLocalStorage();
-        document.getElementById('nav_sign_in').hidden = false;
-        document.getElementById('nav_sign_up').hidden = false;
-        document.getElementById('nav_profile').hidden = true;
-        document.getElementById('nav_sign_out').hidden = true;
+        Authentication.clearSession();
         this.props.history.push('/')
     }
 

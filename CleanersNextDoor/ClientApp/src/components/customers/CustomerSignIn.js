@@ -1,6 +1,5 @@
 ﻿import React, { Component } from 'react';
 import { Link } from 'react-router-dom'
-import { Authentication } from '../../services/authentication';
 import TextInput from '../TextInput';
 import PasswordInput from '../PasswordInput';
 import validate from '../Validate'
@@ -91,7 +90,10 @@ export class CustomerSignIn extends Component {
         });
         const data = await response.json();
         if (data && data.id > 0) {
-            Authentication.setCustomerId(data.id);
+            document.getElementById('nav_customer_sign_in').hidden = true;
+            document.getElementById('nav_customer_sign_up').hidden = true;
+            document.getElementById('nav_customer_profile').hidden = false;
+            document.getElementById('nav_customer_sign_out').hidden = false;
             this.props.history.push('/customers/profile')
         }
         else {

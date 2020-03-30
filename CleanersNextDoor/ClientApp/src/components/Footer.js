@@ -9,8 +9,15 @@ export class Footer extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            userAuthenticated: Authentication.getUserId() > 0
+            authenticated: false
         }
+    }
+    componentDidMount() {
+        this.checkAuthentication()
+    }
+    async checkAuthentication() {
+        const claimId = await Authentication.getClaimId()
+        this.setState({ authenticated: claimId > 0 })
     }
     render() {
         return (
@@ -45,7 +52,7 @@ export class Footer extends Component {
                                 <h5>Businesses</h5>
                                 <ul className="list-unstyled text-small">
                                     <li><Link className="text-muted" to="/users/sign-in" id="nav_sign_in" hidden={this.state.userAuthenticated}>Merchant Sign In</Link></li>
-                                    <li><Link className="text-muted" to="/users/sign-up" id="nav_sign_up" hidden={this.state.userAuthenticated}>Become Merchant</Link></li>
+                                    <li><Link className="text-muted" to="/users/sign-up" id="nav_sign_up" hidden={this.state.userAuthenticated}>Become a Merchant</Link></li>
                                     <li><Link className="text-muted" to="/users/profile" id="nav_profile" hidden={!this.state.userAuthenticated}>Profile</Link></li>
                                     <li><Link className="text-muted" to="/users/sign-out" id="nav_sign_out" hidden={!this.state.userAuthenticated}>Sign out</Link></li>
                                     <li><Link className="text-muted" to="/">Locations</Link></li>

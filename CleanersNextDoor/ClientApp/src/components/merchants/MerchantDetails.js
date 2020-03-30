@@ -11,13 +11,19 @@ export class MerchantDetails extends Component {
             merchantLoading: true,
             itemsLoading: true,
             items: [],
-            authenticated: Authentication.getCustomerId() > 0
+            authenticated: false
         }
     }
 
     componentDidMount() {
+        this.checkAuthenticated();
         this.populateMerchantInformation()
         this.populateMerchantItems()
+    }
+
+    async checkAuthenticated() {
+        var claimId = await Authentication.getClaimId();
+        this.setState({ authenticated: claimId > 0 })
     }
 
     async populateMerchantInformation() {

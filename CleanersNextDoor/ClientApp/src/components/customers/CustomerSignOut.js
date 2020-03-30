@@ -11,14 +11,16 @@ export class CustomerSignOut extends Component {
     }
 
     signOut = () => {
-        Authentication.clearCustomerLocalStorage();
+        this.trySignOut()
+    }
+    async trySignOut() {
+        await Authentication.clearSession();
         document.getElementById('nav_customer_sign_in').hidden = false;
         document.getElementById('nav_customer_sign_up').hidden = false;
         document.getElementById('nav_customer_profile').hidden = true;
         document.getElementById('nav_customer_sign_out').hidden = true;
         this.props.history.push('/')
     }
-
     render() {
         return (
             <div className="container">

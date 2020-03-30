@@ -9,7 +9,7 @@ using Application.Common.Utilities;
 using Domain.Models;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-
+using CleanersNextDoor.Common;
 
 namespace CleanersNextDoor.Controllers
 {
@@ -35,6 +35,7 @@ namespace CleanersNextDoor.Controllers
             var user = await _mediator.Send(new GetUserByUsernameQuery(data.Username));
             if (!string.IsNullOrEmpty(user?.Password) && SecurePasswordHasher.Verify(data.Password, user.Password))
             {
+                HttpContext.Session.Set(SessionHelper.CLAIM_ID, user.ID);
                 return user;
             }
             return data;
@@ -43,9 +44,9 @@ namespace CleanersNextDoor.Controllers
         public async Task<UserModel> SignUp(UserModel data)
         {
             data.Password = SecurePasswordHasher.Hash(data.Password);
-            data.CreatedAt = DateTime.Now;
-            data.Active = true;
-            return await _mediator.Send(new CreateUserCommand(data));
+            var newUser = await _mediator.Send(new CreateUserCommand(data));
+            HttpContext.Session.Set(SessionHelper.CLAIM_ID, newUser.ID);
+            return newUser;
         }
         [HttpGet("{id}")]
         public async Task<UserModel> GetUser(int id)

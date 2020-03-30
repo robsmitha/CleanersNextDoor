@@ -15,7 +15,7 @@ export class NavMenu extends Component {
         this.toggleNavbar = this.toggleNavbar.bind(this);
         this.state = {
             collapsed: true,
-            customerAuthenticated: Authentication.getCustomerId() > 0
+            authenticated: false
         };
     }
 
@@ -30,7 +30,14 @@ export class NavMenu extends Component {
             var navbar = document.querySelector('#main_nav').clientHeight;
             document.querySelector('body').style = 'padding-top: ' + navbar + 'px';
         }, false);
+        this.checkAuthentication()
     }
+
+    async checkAuthentication() {
+        const claimId = await Authentication.getClaimId()
+        this.setState({ authenticated: claimId > 0 })
+    }
+
 
     render() {
         return (
@@ -48,24 +55,27 @@ export class NavMenu extends Component {
                                 <NavItem>
                                     <NavLink tag={Link} to="/">Home</NavLink>
                                 </NavItem>
+                                <NavItem>
+                                    <NavLink tag={Link} to="/how-it-works">How it works</NavLink>
+                                </NavItem>
                             </ul>
                             <ul className="navbar-nav ml-auto">
-                                <NavItem id="nav_customer_sign_up" hidden={this.state.customerAuthenticated}>
+                                <NavItem id="nav_customer_sign_up" hidden={this.state.authenticated}>
                                     <NavLink tag={Link} to="/customers/sign-up">
                                         <FaUserPlus />&nbsp;Sign up
                                     </NavLink>
                                 </NavItem>
-                                <NavItem id="nav_customer_sign_in" hidden={this.state.customerAuthenticated}>
+                                <NavItem id="nav_customer_sign_in" hidden={this.state.authenticated}>
                                     <NavLink tag={Link} to="/customers/sign-in">
                                         <FaSignInAlt />&nbsp;Sign in
                                     </NavLink>
                                 </NavItem>
-                                <NavItem id="nav_customer_profile" hidden={!this.state.customerAuthenticated}>
+                                <NavItem id="nav_customer_profile" hidden={!this.state.authenticated}>
                                     <NavLink tag={Link} to="/customers/profile">
                                         <FaUser />&nbsp;Account
                                     </NavLink>
                                 </NavItem>
-                                <NavItem id="nav_customer_sign_out" hidden={!this.state.customerAuthenticated}>
+                                <NavItem id="nav_customer_sign_out" hidden={!this.state.authenticated}>
                                     <NavLink tag={Link} to="/customers/sign-out">
                                         <FaSignOutAlt />&nbsp;Sign out
                                     </NavLink>

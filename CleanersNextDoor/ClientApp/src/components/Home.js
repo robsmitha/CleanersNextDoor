@@ -8,12 +8,18 @@ export class Home extends Component {
         this.state = {
             merchants: [],
             loading: true,
-            authenticated: Authentication.getCustomerId() > 0
+            authenticated: false
         }
     }
 
     componentDidMount() {
+        this.checkAuthenticated()
         this.fetchMerchants()
+    }
+
+    async checkAuthenticated() {
+        var claimId = await Authentication.getClaimId();
+        this.setState({ authenticated: claimId > 0 })
     }
 
     fetchMerchants() {

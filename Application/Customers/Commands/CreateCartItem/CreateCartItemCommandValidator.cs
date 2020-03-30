@@ -39,7 +39,8 @@ namespace Application.Customers.Commands.CreateCartItem
                 .Where(l => l.ItemID == itemId)
                 .Count();
 
-            if (qty == item.MaxAllowed && args.NewQty == null)
+            //prevent adding single item when qty equals max allow
+            if (args.AddSingleItem && qty == item.MaxAllowed )
                 return false;
 
             return qty <= item.MaxAllowed;

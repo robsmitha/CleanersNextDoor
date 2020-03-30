@@ -34,8 +34,8 @@ export class UserProfile extends Component {
     }
 
     async populateProfileInformation() {
-        const userId = Authentication.getUserId()
-        const response = await fetch(`users/${userId}`);
+        const claimId = await Authentication.getClaimId()
+        const response = await fetch(`users/${claimId}`);
         const data = await response.json();
         this.setState({ user: data, loading: false });
     }

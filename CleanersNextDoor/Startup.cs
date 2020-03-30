@@ -1,16 +1,15 @@
 using Application;
-using Application.Common.Mappings;
-using AutoMapper;
+using CleanersNextDoor.Services;
 using Infrastructure;
 using Infrastructure.Data;
-using MediatR;
+using Infrastructure.Identity;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System;
 
 namespace CleanersNextDoor
 {
@@ -28,7 +27,17 @@ namespace CleanersNextDoor
         {
             services.AddInfrastructure(Configuration);
             services.AddApplication(Configuration);
+            services.AddDistributedMemoryCache();
 
+            services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromSeconds(10);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
+
+            services.AddHttpContextAccessor();
+            services.AddScoped<IAuthenticationService, AuthenticationService>();
             services.AddControllersWithViews();
 
             // In production, the React files will be served from this directory
@@ -58,6 +67,11 @@ namespace CleanersNextDoor
             app.UseSpaStaticFiles();
 
             app.UseRouting();
+
+            app.UseSession();
+
+            //app.UseAuthentication();
+            //app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {

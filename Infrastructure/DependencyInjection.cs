@@ -1,4 +1,5 @@
 ﻿using Infrastructure.Data;
+using Infrastructure.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,6 +17,9 @@ namespace Infrastructure
         {
             services.AddDbContext<ICleanersNextDoorContext, CleanersNextDoorContext>(options =>
                 options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+
+
+            services.AddScoped<IIdentityService, IdentityService>();
 
             return services;
         }
