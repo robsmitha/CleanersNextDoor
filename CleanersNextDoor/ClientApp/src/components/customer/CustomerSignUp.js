@@ -1,8 +1,9 @@
 ﻿import React, { Component } from 'react';
-import { Link } from 'react-router-dom'
+import { Link, Redirect } from 'react-router-dom'
 import TextInput from '../TextInput';
 import PasswordInput from '../PasswordInput';
-import validate from '../Validate'
+import handleChange from '../HandleChange';
+import { AuthConsumer } from '../../context/AuthContext'
 
 export class CustomerSignUp extends Component {
 
@@ -90,69 +91,7 @@ export class CustomerSignUp extends Component {
     changeHandler = event => {
         const name = event.target.name;
         const value = event.target.value;
-
-        const updatedControls = {
-            ...this.state.formControls
-        };
-
-        const updatedFormElement = {
-            ...updatedControls[name]
-        };
-        updatedFormElement.value = value;
-        updatedFormElement.touched = true;
-        var validationResult = validate(value, updatedFormElement.validationRules, updatedFormElement.label);
-        updatedFormElement.valid = validationResult.isValid;
-        updatedFormElement.errors = validationResult.errorMessages;
-
-        updatedControls[name] = updatedFormElement;
-
-        let formIsValid = true;
-        for (let inputIdentifier in updatedControls) {
-            formIsValid = updatedControls[inputIdentifier].valid && formIsValid;
-        }
-        this.setState({
-            formControls: updatedControls,
-            formIsValid: formIsValid
-        });
-    }
-
-    requestSignUp = (event) => {
-        event.preventDefault();
-        this.setState({
-            formIsValid: true
-        });
-        var customer = {
-            password: this.state.formControls.password.value,
-            firstName: this.state.formControls.firstName.value,
-            lastName: this.state.formControls.lastName.value,
-            email: this.state.formControls.email.value,
-            phone: this.state.formControls.phone.value
-        };
-        this.trySignUp(customer);
-    }
-
-    async trySignUp(customer) {
-        const response = await fetch('customers/signup', {
-            method: 'post',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(customer)
-        });
-        const data = await response.json();
-        if (data && data.id > 0) {
-            document.getElementById('nav_customer_sign_in').hidden = true;
-            document.getElementById('nav_customer_sign_up').hidden = true;
-            document.getElementById('nav_customer_profile').hidden = false;
-            document.getElementById('nav_customer_sign_out').hidden = false;
-            this.props.history.push('/customers/profile')
-        }
-        else {
-            alert('An error occurred. Please try again.')
-            this.setState({
-                formIsValid: true
-            });
-        }
+        this.setState(handleChange(name, value, this.state.formControls));
     }
 
     checkEmailBlur = event => {
@@ -179,39 +118,61 @@ export class CustomerSignUp extends Component {
         }
     }
 
-    checkEmail = async () => {
-        const response = await fetch(`customers/CheckEmailAvailability/${this.state.formControls.email.value}`);
-        const data = await response.json();
-        if (!data.isAvailable) {
-            const updatedControls = {
-                ...this.state.formControls
-            };
+    checkEmail() {
 
-            updatedControls.email.valid = false;
-            updatedControls.email.errors = []
-            updatedControls.email.errors.push(`The email ${this.state.formControls.email.value} is already in use.`)
+        fetch(`customers/CheckEmailAvailability/${this.state.formControls.email.value}`)
+            .then(response => response.json())
+            .then(data => {
+                if (!data.isAvailable) {
+                    const updatedControls = {
+                        ...this.state.formControls
+                    };
 
-            this.setState({
-                formControls: updatedControls,
-                formIsValid: false
-            });
-        }
+                    updatedControls.email.valid = false;
+                    updatedControls.email.errors = []
+                    updatedControls.email.errors.push(`The email ${this.state.formControls.email.value} is already in use.`)
+
+                    this.setState({
+                        formControls: updatedControls,
+                        formIsValid: false
+                    });
+                }
+
+            })
+            .catch((ex) => { console.log(ex) })
     }
 
     render() {
+        return (
+            <div>
+                <AuthConsumer>
+                    {({ isAuth, customerSignUp, msg }) => (
+                        <div>
+                            {isAuth
+                                ? <Redirect to='/customer/profile' />
+                                : this.renderSignUp(customerSignUp, msg)}
+                        </div>
+                    )}
+                </AuthConsumer>
+            </div>
+        )
+    }
+
+    renderSignUp(customerSignUp, msg) {
         return (
             <div className="container my-md-5">
                 <div className="row justify-content-center align-items-center h-100">
                     <div className="col-md-4">
                         <h1 className="text-center">Sign up.</h1>
-                        <form method="post" onSubmit={this.requestSignUp}>
+                        {msg}
+                        <form method="post" onSubmit={customerSignUp}>
 
                             <TextInput name="email"
                                 placeholder={this.state.formControls.email.placeholder}
                                 label={this.state.formControls.email.label}
                                 value={this.state.formControls.email.value}
                                 onChange={this.changeHandler}
-                                onBlur={this.checkEmail}
+                                onBlur={this.checkEmailBlur}
                                 touched={this.state.formControls.email.touched ? 1 : 0}
                                 valid={this.state.formControls.email.valid ? 1 : 0}
                                 errors={this.state.formControls.email.errors} />
@@ -264,11 +225,11 @@ export class CustomerSignUp extends Component {
                                 errors={this.state.formControls.phone.errors} />
 
                             <button className="btn btn-primary btn-block" type="submit" disabled={!this.state.formIsValid}>Sign up</button>
-                            <Link to="/customers/sign-in" className="btn btn-secondary btn-block">Sign in</Link>
+                            <Link to="/customer/sign-in" className="btn btn-secondary btn-block">Sign in</Link>
                         </form>
                     </div>
                 </div>
             </div>
-        )
+            )
     }
 }

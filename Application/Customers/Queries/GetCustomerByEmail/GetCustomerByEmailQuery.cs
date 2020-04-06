@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Infrastructure.Data;
+using Infrastructure.Identity;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System;

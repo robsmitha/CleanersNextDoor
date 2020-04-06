@@ -12,12 +12,12 @@ namespace Application.Common.Behaviors
     {
         private readonly Stopwatch _timer;
         private readonly ILogger<TRequest> _logger;
-        private readonly IAuthenticationService _authService;
+        private readonly IAuthService _authService;
         private readonly IIdentityService _identityService;
 
         public RequestPerformanceBehaviour(
             ILogger<TRequest> logger,
-            IAuthenticationService authService,
+            IAuthService authService,
             IIdentityService identityService)
         {
             _timer = new Stopwatch();

@@ -4,8 +4,9 @@ using System.Text;
 
 namespace Infrastructure.Identity
 {
-    public interface IAuthenticationService
+    public class ApplicationUser
     {
-        public int ClaimID { get; }
+        public int ID { get; set; }
+        public string Token { get; set; }
     }
 }

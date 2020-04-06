@@ -2,6 +2,7 @@
 import TextInput from '../TextInput';
 import PasswordInput from '../PasswordInput';
 import validate from '../Validate'
+import { authenticationService } from '../../services/authentication.service'
 
 export class UserSignUp extends Component {
 
@@ -121,27 +122,20 @@ export class UserSignUp extends Component {
         this.setState({
             formIsValid: true
         });
-        var user = {
+        var u = {
             username: this.state.formControls.username.value,
             password: this.state.formControls.password.value,
             firstName: this.state.formControls.firstName.value,
             lastName: this.state.formControls.lastName.value,
             email: this.state.formControls.email.value
         };
-        this.trySignUp(user);
+        this.trySignUp(u);
     }
 
-    async trySignUp(user) {
-        const response = await fetch('users/signup', {
-            method: 'post',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(user)
-        });
-        const data = await response.json();
-        if (data && data.id > 0) {
-            this.props.history.push('/profile')
+    async trySignUp(u) {
+        let user = await authenticationService.createUser(u);
+        if (user && user.id > 0) {
+            this.props.history.push('/users/profile')
         }
         else {
             alert('An error occurred. Please try again.')

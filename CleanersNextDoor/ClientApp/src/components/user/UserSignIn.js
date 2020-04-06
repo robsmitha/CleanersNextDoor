@@ -2,6 +2,7 @@
 import TextInput from '../TextInput';
 import PasswordInput from '../PasswordInput';
 import validate from '../Validate'
+import { authenticationService } from '../../services/authentication.service'
 
 export class UserSignIn extends Component {
 
@@ -71,23 +72,16 @@ export class UserSignIn extends Component {
         this.setState({
             formIsValid: false
         });
-        var user = {
+        var data = {
             username: this.state.formControls.username.value,
             password: this.state.formControls.password.value
         };
-        this.trySignIn(user);
+        this.trySignIn(data);
     }
 
-    async trySignIn(user) {
-        const response = await fetch('users/signin', {
-            method: 'post',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(user)
-        });
-        const data = await response.json();
-        if (data && data.id > 0) {
+    async trySignIn(data) {
+        let user = await authenticationService.signInUser(data.username, data.password);
+        if (user && user.id > 0) {
             this.props.history.push('/users/profile')
         }
         else {

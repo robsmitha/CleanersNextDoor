@@ -1,6 +1,7 @@
 ﻿import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { Authentication } from '../../services/authentication';
+import { AuthConsumer } from './../../context/AuthContext'
+import { authenticationService } from '../../services/authentication.service';
 
 export class MerchantDetails extends Component {
     constructor(props) {
@@ -11,33 +12,25 @@ export class MerchantDetails extends Component {
             merchantLoading: true,
             itemsLoading: true,
             items: [],
-            authenticated: false
+            customer: authenticationService.currentUserValue
         }
     }
 
     componentDidMount() {
-        this.checkAuthenticated();
         this.populateMerchantInformation()
         this.populateMerchantItems()
     }
 
-    async checkAuthenticated() {
-        var claimId = await Authentication.getClaimId();
-        this.setState({ authenticated: claimId > 0 })
-    }
-
-    async populateMerchantInformation() {
-        const merchantId = this.state.merchantId
-        const response = await fetch(`merchants/${merchantId}`);
-        const data = await response.json();
-        this.setState({ merchant: data, merchantLoading: false });
+    populateMerchantInformation() {
+        fetch(`merchants/${this.state.merchantId}`)
+            .then(response => response.json())
+            .then(data => this.setState({ merchant: data, merchantLoading: false }))
     }
     
-    async populateMerchantItems() {
-        const merchantId = this.state.merchantId
-        const response = await fetch(`merchants/${merchantId}/items`);
-        const data = await response.json();
-        this.setState({ items: data, itemsLoading: false });
+    populateMerchantItems() {
+        fetch(`merchants/${this.state.merchantId}/items`)
+            .then(response => response.json())
+            .then(data => this.setState({ items: data, itemsLoading: false }))
     }
 
     render() {
@@ -69,12 +62,21 @@ export class MerchantDetails extends Component {
                                     {merchant.name}
                                 </h1>
                                 <p className="lead text-white-50">{merchant.shortDescription}</p>
-                                <Link to={'/request-service/:id'.replace(':id', merchant.id)} className="btn btn-success btn-lg mb-3" hidden={!this.state.authenticated}>
-                                    Start pickup request
-                                </Link>
-                                <Link to="/customers/sign-in/" className="btn btn-success btn-lg mb-3" hidden={this.state.authenticated}>
-                                    Sign in to use service
-                                </Link>
+
+                                <AuthConsumer>
+                                    {({ isAuth }) => (
+                                        <div>
+                                            {isAuth
+                                                ? <Link to={'/request-service/:id'.replace(':id', merchant.id)} className="btn btn-success btn-lg mb-3" hidden={!isAuth}>
+                                                        Start pickup request
+                                                    </Link>
+                                                : <Link to="/customer/sign-in" className="btn btn-success btn-lg mb-3" hidden={isAuth}>
+                                                        Sign in to use service
+                                                    </Link>}
+                                        </div>
+                                    )}
+                                </AuthConsumer>
+                                
                             </div>
                         </div>
                     </div>
@@ -120,31 +122,36 @@ export class MerchantDetails extends Component {
         )
     }
     renderMerchantItems(items) {
-        let message = this.state.authenticated
-            ? <p>Browse services offered by merchant. <Link to={'/request-service/:id'.replace(':id', this.state.merchantId)}>Start a pick up request!</Link></p>
-            : <p><strong>Please sign in</strong> to start a pick up request.</p>
         return (
             <div className="container">
                 <h2 className="border-bottom mb-2">Available Services</h2>
-                {message}
-                <div className="row">
-                    {items.map(i =>
-                        <div key={i.id} className="col-md-4 mb-4">
-                            <Link className="text-decoration-none" to={this.state.authenticated ? '/request-service/:id'.replace(':id', this.state.merchantId) : '/customers/sign-in'}>
-                                <div className="card h-100 shadow">
-                                    <div className="card-body">
-                                        <div className="d-flex w-100 justify-content-between text-dark">
-                                            <h5 className="mb-1"> {i.name}</h5>
-                                            <small>{i.displayPrice}</small>
-                                        </div>
-                                        <p className="mb-1 text-muted">{i.description}</p>
-                                        <small className="text-dark">Max Allowed: {i.maxAllowed}</small>
+                <AuthConsumer>
+                    {({ isAuth }) => (
+                        <div>
+                            {isAuth
+                                ? <p>Browse services offered by merchant. <Link to={'/request-service/:id'.replace(':id', this.state.merchantId)}>Start a pick up request!</Link></p>
+                                : <p><strong>Please sign in</strong> to start a pick up request.</p>}
+                            <div className="row">
+                                {items.map(i =>
+                                    <div key={i.id} className="col-md-4 mb-4">
+                                        <Link className="text-decoration-none" to={isAuth ? '/request-service/:id'.replace(':id', this.state.merchantId) : '/customer/sign-in'}>
+                                            <div className="card h-100 shadow">
+                                                <div className="card-body">
+                                                    <div className="d-flex w-100 justify-content-between text-dark">
+                                                        <h5 className="mb-1"> {i.name}</h5>
+                                                        <small>{i.displayPrice}</small>
+                                                    </div>
+                                                    <p className="mb-1 text-muted">{i.description}</p>
+                                                    <small className="text-dark">Max Allowed: {i.maxAllowed}</small>
+                                                </div>
+                                            </div>
+                                        </Link>
                                     </div>
-                                </div>
-                            </Link>
+                                )}
+                            </div>
                         </div>
                     )}
-                </div>
+                </AuthConsumer>
             </div>
         )
     }

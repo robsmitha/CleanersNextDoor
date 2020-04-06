@@ -1,6 +1,7 @@
 ﻿import React, { Component } from 'react';
-import { Link } from 'react-router-dom'
-import { Authentication } from '../../services/authentication';
+import { Link, Redirect } from 'react-router-dom';
+import { AuthConsumer } from './../../context/AuthContext';
+import { authenticationService } from './../../services/authentication.service';
 
 export class RequestService extends Component {
 
@@ -13,7 +14,7 @@ export class RequestService extends Component {
             cartLoading: true,
             merchantId: Number(this.props.match.params.id),
             orderId: 0,
-            customerId: 0
+            customer: authenticationService.currentUserValue
         };
 
         this.addToCart = this.addToCart.bind(this);
@@ -21,40 +22,37 @@ export class RequestService extends Component {
     }
 
     componentDidMount() {
-        this.checkAuthenticated()
-        this.populateMerchantItems()
         this.populateCustomerCart()
+        this.populateMerchantItems()
     }
 
-    async checkAuthenticated() {
-        var claimId = await Authentication.getClaimId();
-        this.setState({ customerId: claimId })
+    populateMerchantItems() {
+        fetch(`merchants/${this.state.merchantId}/items`)
+            .then(response => response.json())
+            .then(data => this.setState({ items: data, itemsLoading: false }));
     }
 
-    async populateMerchantItems() {
-        const merchantId = this.state.merchantId
-        const response = await fetch(`merchants/${merchantId}/items`);
-        const data = await response.json();
-        this.setState({ items: data, itemsLoading: false });
-    }
-
-    async populateCustomerCart() {
-        const customerId = this.state.customerId
-        const merchantId = this.state.merchantId
-        const response = await fetch(`customers/${customerId}/cart/${merchantId}`);
-        const data = await response.json();
-        if (this.state.orderId === 0 && data && data.cartItems.length > 0) {
-            this.setState({
-                orderId: data.cartItems[0].orderID
-            })
+    populateCustomerCart() {
+        const token = this.state.customer.token;
+        let headers = {
+            headers: !token ? {} : { 'Authorization': `Bearer ${token}` }
         }
-        this.setState({ cart: data, cartLoading: false });
+        fetch(`customers/cart/${this.state.merchantId}`, headers)
+            .then(response => response.json())
+            .then(data => {
+                this.setState({
+                    cart: data,
+                    cartLoading: false,
+                    orderId: data && data.cartItems.length > 0
+                        ? data.cartItems[0].orderID
+                        : 0
+                });
+            })
     }
 
     addToCart = (id) => {
         var cartItemTransaction = {
             itemID: Number(id),
-            customerId: this.state.customerId,
             orderId: this.state.orderId,
             newQty: null
         };
@@ -62,16 +60,33 @@ export class RequestService extends Component {
     }
 
     removeCartItem = (id) => {
-        this.tryRemoveCartItem(id)
+        var removeCartItem = {
+            itemID: Number(id),
+            orderId: this.state.orderId,
+        };
+
+        const headers = {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${this.state.customer.token}`
+        }
+
+        const request = {
+            method: 'post',
+            headers: headers,
+            body: JSON.stringify(removeCartItem)
+        }
+
+        fetch(`customers/removeCartItem`, request)
+            .then(reponse => reponse.json())
+            .then(data => data ? this.populateCustomerCart() : console.log(data))
     }
 
     handleQtyChange = (event) => {
         var newQty = event.target.value;
         var itemId = event.target.name;
 
-        var cartItemTransaction = {
+        const cartItemTransaction = {
             itemID: Number(itemId),
-            customerId: this.state.customerId,
             orderId: this.state.orderId,
             newQty: Number(newQty)
         };
@@ -79,45 +94,41 @@ export class RequestService extends Component {
         this.tryCartTransaction(cartItemTransaction);
     }
 
-    async tryCartTransaction(cartItemTransaction) {
-
-        const response = await fetch(`customers/${this.state.customerId}/addtocart`, {
+    tryCartTransaction(cartItemTransaction) {
+        const headers = {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${this.state.customer.token}`
+        }
+        const request = {
             method: 'post',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: headers,
             body: JSON.stringify(cartItemTransaction)
-        });
-
-        if (response.status === 500) {
-            const data = await response.json();
-            console.log(data)
         }
-        else {
-            this.populateCustomerCart()
-        }
+        fetch(`customers/addtocart`, request)
+            .then(response => response.json())
+            .catch(ex => console.log(ex))
+            .then(data => {
+                this.populateCustomerCart()
+            })
     }
-    async tryRemoveCartItem(id) {
 
-        var removeCartItem = {
-            itemID: Number(id),
-            orderId: this.state.orderId,
-        };
-
-        const response = await fetch(`customers/${this.state.customerId}/removeCartItem`, {
-            method: 'post',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(removeCartItem)
-        });
-
-        const success = await response.json();
-        if (success) {
-            this.populateCustomerCart()
-        }
-    }
     render() {
+        return (
+            <div>
+                <AuthConsumer>
+                    {({ isAuth }) => (
+                        <div>
+                            {!isAuth
+                                ? <Redirect to='/customer/sign-in' />
+                                : this.renderContent()}
+                        </div>
+                    )}
+                </AuthConsumer>
+            </div>
+        )
+    }
+
+    renderContent() {
         let contents = this.state.itemsLoading
             ? <p><em>Loading Items...</em></p>
             : this.renderMerchantItems(this.state.items);
@@ -142,6 +153,7 @@ export class RequestService extends Component {
             </div>
         )
     }
+
 
     renderMerchantItems(items) {
         return (

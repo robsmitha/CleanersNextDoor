@@ -1,7 +1,8 @@
 ﻿import React, { Component } from 'react';
-import { Link } from 'react-router-dom'
+import { Link, Redirect } from 'react-router-dom'
 import TextInput from '../TextInput';
-import validate from '../Validate'
+import handleChange from '../HandleChange';
+import { AuthConsumer } from './../../context/AuthContext'
 
 export class Payment extends Component {
 
@@ -66,32 +67,7 @@ export class Payment extends Component {
     changeHandler = event => {
         const name = event.target.name;
         const value = event.target.value;
-
-        const updatedControls = {
-            ...this.state.formControls
-        };
-
-        const updatedFormElement = {
-            ...updatedControls[name]
-        };
-
-        updatedFormElement.value = value;
-        updatedFormElement.touched = true;
-        var validation = validate(value, updatedFormElement.validationRules, updatedFormElement.label);
-        updatedFormElement.valid = validation.isValid;
-        updatedFormElement.errors = validation.errorMessages;
-
-        updatedControls[name] = updatedFormElement;
-
-        let formIsValid = true;
-        for (let inputIdentifier in updatedControls) {
-            formIsValid = updatedControls[inputIdentifier].valid && formIsValid;
-        }
-
-        this.setState({
-            formControls: updatedControls,
-            formIsValid: formIsValid
-        });
+        this.setState(handleChange(name, value, this.state.formControls));
     }
 
     requestCreateServiceRequest = (event) => {
@@ -126,6 +102,21 @@ export class Payment extends Component {
     }
 
     render() {
+        return (
+            <div>
+                <AuthConsumer>
+                    {({ isAuth }) => (
+                        <div>
+                            {!isAuth
+                                ? <Redirect to='/customer/sign-in' />
+                                : this.renderContent()}
+                        </div>
+                    )}
+                </AuthConsumer>
+            </div>
+        )
+    }
+    renderContent() {
         return (
             <div className="container">
                 <h1>Request Pick Up Service</h1>

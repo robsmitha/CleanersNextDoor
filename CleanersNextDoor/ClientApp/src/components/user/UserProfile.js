@@ -1,12 +1,12 @@
 ﻿import React, { Component } from 'react';
-import { Authentication } from '../../services/authentication'
 
 export class UserProfile extends Component {
     constructor(props) {
         super(props)
         this.state = {
             user: null,
-            loading: true
+            loading: true,
+            currentUser: props.currentUser
         }
     }
 
@@ -34,7 +34,7 @@ export class UserProfile extends Component {
     }
 
     async populateProfileInformation() {
-        const claimId = await Authentication.getClaimId()
+        const claimId = 1; //TODO: get from local, keep id in server session?
         const response = await fetch(`users/${claimId}`);
         const data = await response.json();
         this.setState({ user: data, loading: false });

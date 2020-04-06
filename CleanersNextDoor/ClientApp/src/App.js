@@ -4,41 +4,45 @@ import { Layout } from './components/Layout';
 import { Home } from './components/Home';
 
 import './custom.css'
-import { MerchantDetails } from './components/merchants/MerchantDetails';
-import { RequestService } from './components/merchants/RequestService';
-import { Payment } from './components/merchants/Payment';
+import { MerchantDetails } from './components/merchant/MerchantDetails';
+import { RequestService } from './components/merchant/RequestService';
+import { Payment } from './components/merchant/Payment';
 
-import { UserProfile } from './components/users/UserProfile';
-import { UserSignIn } from './components/users/UserSignIn';
-import { UserSignUp } from './components/users/UserSignUp';
-import { UserSignOut } from './components/users/UserSignOut';
+import { UserProfile } from './components/user/UserProfile';
+import { UserSignIn } from './components/user/UserSignIn';
+import { UserSignUp } from './components/user/UserSignUp';
+import { UserSignOut } from './components/user/UserSignOut';
 
-import { CustomerProfile } from './components/customers/CustomerProfile'
-import { CustomerSignIn } from './components/customers/CustomerSignIn'
-import { CustomerSignOut } from './components/customers/CustomerSignOut'
-import { CustomerSignUp } from './components/customers/CustomerSignUp'
+import { CustomerProfile } from './components/customer/CustomerProfile'
+import { CustomerSignIn } from './components/customer/CustomerSignIn'
+import { CustomerSignOut } from './components/customer/CustomerSignOut'
+import { CustomerSignUp } from './components/customer/CustomerSignUp'
 import { HowItWorks } from './components/HowItWorks';
+import { AuthProvider } from './context/AuthContext'
 
 export default class App extends Component {
-  static displayName = App.name;
-
-  render () {
-    return (
-      <Layout>
-            <Route exact path='/' component={Home} />
-            <Route path='/users/sign-in' component={UserSignIn} />
-            <Route path='/users/sign-up' component={UserSignUp} />
-            <Route path='/users/profile' component={UserProfile} />
-            <Route path='/users/sign-out' component={UserSignOut} />
-            <Route path='/customers/sign-in' component={CustomerSignIn} />
-            <Route path='/customers/sign-up' component={CustomerSignUp} />
-            <Route path='/customers/profile' component={CustomerProfile} />
-            <Route path='/customers/sign-out' component={CustomerSignOut} />
-            <Route path='/merchant/:id' component={MerchantDetails} />
-            <Route path='/request-service/:id' component={RequestService} />
-            <Route path='/payment/:id' component={Payment} />
-            <Route path='/how-it-works' component={HowItWorks} />
-      </Layout>
-    );
-  }
+    static displayName = App.name;
+    render() {
+        return (
+            <div>
+                <AuthProvider>
+                    <Layout>
+                        <Route exact path='/' component={Home} />
+                        <Route path='/user/sign-in' component={UserSignIn} />
+                        <Route path='/user/sign-up' component={UserSignUp} />
+                        <Route path='/user/profile' component={UserProfile} />
+                        <Route path='/user/sign-out' component={UserSignOut} />
+                        <Route path='/customer/sign-in' component={CustomerSignIn} />
+                        <Route path='/customer/sign-up' component={CustomerSignUp} />
+                        <Route path='/customer/profile' component={CustomerProfile} />
+                        <Route path='/customer/sign-out' component={CustomerSignOut} />
+                        <Route path='/merchant/:id' component={MerchantDetails} />
+                        <Route path='/request-service/:id' component={RequestService} />
+                        <Route path='/payment/:id' component={Payment} />
+                        <Route path='/how-it-works' component={HowItWorks} />
+                    </Layout>
+                </AuthProvider>
+            </div>
+        );
+    }
 }

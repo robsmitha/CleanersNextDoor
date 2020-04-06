@@ -1,21 +1,16 @@
 ﻿import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { Authentication } from '../services/authentication';
 
 export class HowItWorks extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            authenticated: false
+            authenticated: props.currentUser != null
         }
     }
 
     componentDidMount() {
-        this.checkAuthentication();
-    }
-    async checkAuthentication() {
-        const claimId = await Authentication.getClaimId()
-        this.setState({ authenticated: claimId > 0 })
+
     }
 
     render() {

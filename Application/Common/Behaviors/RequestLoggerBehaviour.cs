@@ -10,12 +10,12 @@ namespace Application.Common.Behaviors
        : IRequestPreProcessor<TRequest>
     {
         private readonly ILogger _logger;
-        private readonly IAuthenticationService _authService;
+        private readonly IAuthService _authService;
         private readonly IIdentityService _identityService;
 
         public RequestLoggerBehaviour(
             ILogger<TRequest> logger,
-            IAuthenticationService authService,
+            IAuthService authService,
             IIdentityService identityService)
         {
             _logger = logger;

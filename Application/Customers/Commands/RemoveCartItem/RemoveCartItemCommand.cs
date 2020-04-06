@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Infrastructure.Data;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,10 +15,12 @@ namespace Application.Customers.Commands.RemoveCartItem
     {
         public int ItemID { get; set; }
         public int OrderID { get; set; }
-        public RemoveCartItemCommand(RemoveCartItemModel model)
+        public int CustomerID { get; set; }
+        public RemoveCartItemCommand(RemoveCartItemModel model, int customerId)
         {
             ItemID = model.ItemID;
             OrderID = model.OrderID;
+            CustomerID = customerId;
         }
         public RemoveCartItemCommand(int itemId, int orderId)
         {
@@ -42,7 +45,9 @@ namespace Application.Customers.Commands.RemoveCartItem
         {
             try
             {
-                var lineItems = _context.LineItems.Where(l => l.OrderID == request.OrderID && l.ItemID == request.ItemID);
+                var lineItems = _context.LineItems
+                    .Include(o => o.Order)
+                    .Where(l => l.OrderID == request.OrderID && l.ItemID == request.ItemID && l.Order.CustomerID == request.CustomerID);
                 _context.LineItems.RemoveRange(lineItems);
                 await _context.SaveChangesAsync(cancellationToken);
                 return true;

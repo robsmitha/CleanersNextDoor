@@ -19,12 +19,12 @@ namespace Application.Customers.Commands.CreateCartItem
         public int? OrderID { get; set; }
         public int? NewQty { get; set; }
         public bool AddSingleItem => NewQty == null;
-        public CreateCartItemCommand(CreateCartItemModel model)
+        public CreateCartItemCommand(CreateCartItemModel model, int customerId)
         {
-            CustomerID = model.CustomerID;
             ItemID = model.ItemID;
             OrderID = model.OrderID;
             NewQty = model.NewQty;
+            CustomerID = customerId;
         }
     }
     public class CreateCartItemCommandHandler : IRequestHandler<CreateCartItemCommand, CreateCartItemModel>
@@ -132,7 +132,6 @@ namespace Application.Customers.Commands.CreateCartItem
 
                 return new CreateCartItemModel
                 {
-                    CustomerID = request.CustomerID,
                     ItemID = request.ItemID,
                     OrderID = request.OrderID.Value,
                     NewQty = null

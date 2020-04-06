@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Application.Users.Commands.CreateUser;
 using Application.Users.Queries.GetUser;
 using Application.Users.Queries.GetUserByUsername;
-using Application.Common.Utilities;
 using Domain.Models;
+using Infrastructure.Identity;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using CleanersNextDoor.Common;
 
 namespace CleanersNextDoor.Controllers
 {
@@ -35,7 +31,6 @@ namespace CleanersNextDoor.Controllers
             var user = await _mediator.Send(new GetUserByUsernameQuery(data.Username));
             if (!string.IsNullOrEmpty(user?.Password) && SecurePasswordHasher.Verify(data.Password, user.Password))
             {
-                HttpContext.Session.Set(SessionHelper.CLAIM_ID, user.ID);
                 return user;
             }
             return data;
@@ -45,7 +40,6 @@ namespace CleanersNextDoor.Controllers
         {
             data.Password = SecurePasswordHasher.Hash(data.Password);
             var newUser = await _mediator.Send(new CreateUserCommand(data));
-            HttpContext.Session.Set(SessionHelper.CLAIM_ID, newUser.ID);
             return newUser;
         }
         [HttpGet("{id}")]

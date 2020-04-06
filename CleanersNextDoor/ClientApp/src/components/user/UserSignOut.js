@@ -1,17 +1,13 @@
 ﻿import React, { Component } from 'react';
-import { Authentication } from '../../services/authentication'
+import { authenticationService } from '../../services/authentication.service'
 
 export class UserSignOut extends Component {
-    constructor(props) {
-        super(props)
-    }
-
     componentDidMount() {
         this.signOut()
     }
 
     signOut = () => {
-        Authentication.clearSession();
+        authenticationService.logout();
         this.props.history.push('/')
     }
 

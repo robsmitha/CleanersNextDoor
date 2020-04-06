@@ -4,7 +4,8 @@ using System.Text;
 
 namespace Infrastructure.Identity
 {
-    public class Authentication
+    public interface IAuthService
     {
+        public string ClaimID { get; }
     }
 }

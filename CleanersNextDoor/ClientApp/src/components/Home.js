@@ -1,40 +1,34 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { Authentication } from '../services/authentication';
+import { AuthConsumer } from './../context/AuthContext';
 
 export class Home extends Component {
     constructor(props) {
         super(props)
         this.state = {
             merchants: [],
-            loading: true,
-            authenticated: false
+            loading: true
         }
     }
 
     componentDidMount() {
-        this.checkAuthenticated()
         this.fetchMerchants()
-    }
-
-    async checkAuthenticated() {
-        var claimId = await Authentication.getClaimId();
-        this.setState({ authenticated: claimId > 0 })
     }
 
     fetchMerchants() {
         fetch('merchants/GetMerchants')
             .then(response => response.json())
-            .then(data => this.setState({ members: data, loading: false }))
+            .then(data => this.setState({ merchants: data, loading: false }))
+            .catch(() => { console.log('oops') })
     }
 
     render() {
         let contents = this.state.loading
             ? <p><em>Loading Merchants...</em></p>
-            : Home.renderMerchantList(this.state.members);
+            : Home.renderMerchantList(this.state.merchants)
         return (
             <div>
-                <header className="bg-primary py-3 mb-5">
+                <header className="bg-primary py-3 mb-5 shadow">
                     <div className="container h-100">
                         <div className="row h-100 align-items-center">
                             <div className="col-lg-12">
@@ -44,13 +38,20 @@ export class Home extends Component {
                                 <p className="lead text-white-50">
                                     Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ipsa, ipsam, eligendi, in quo sunt possimus non incidunt odit vero aliquid similique quaerat nam nobis illo aspernatur vitae fugiat numquam repellat.
                                 </p>
-                                <div hidden={this.state.authenticated}>
-                                    <Link to="/customers/sign-in" className="btn btn-success btn-lg mr-2">Sign in</Link>
-                                    <Link to="/customers/sign-up" className="btn btn-secondary btn-lg">Sign up</Link>
-                                </div>
-                                <div hidden={!this.state.authenticated}>
-                                    <Link to="/customers/profile" className="btn btn-success btn-lg">My Account</Link>
-                                </div>
+                                <AuthConsumer>
+                                    {({ isAuth }) => (
+                                        <div>
+                                            <div hidden={isAuth}>
+                                                <Link to="/customer/sign-in" className="btn btn-success btn-lg mr-2">Sign in</Link>
+                                                <Link to="/customer/sign-up" className="btn btn-secondary btn-lg">Sign up</Link>
+                                            </div>
+                                            <div hidden={!isAuth}>
+                                                <Link to="/customer/profile" className="btn btn-success btn-lg">My Account</Link>
+                                            </div>
+                                        </div>
+                                    )}
+                                </AuthConsumer>
+                                
                             </div>
                         </div>
                     </div>

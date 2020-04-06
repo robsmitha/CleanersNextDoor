@@ -1,12 +1,13 @@
 ﻿import React, { Component } from 'react';
-import { Link } from 'react-router-dom'
-import { Authentication } from '../../services/authentication'
+import { Link, Redirect } from 'react-router-dom'
+import { AuthConsumer } from '../../context/AuthContext'
+import { authenticationService } from './../../services/authentication.service'
 
 export class CustomerProfile extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            customer: null,
+            customer: authenticationService.currentUserValue,
             loading: true
         }
     }
@@ -15,11 +16,13 @@ export class CustomerProfile extends Component {
         this.populateProfileInformation()
     }
 
-    async populateProfileInformation() {
-        const claimId = await Authentication.getClaimId();
-        const response = await fetch(`customers/${claimId}`);
-        const data = await response.json();
-        this.setState({ customer: data, loading: false });
+    populateProfileInformation() {
+        const token = this.state.customer.token;
+        fetch(`customers/profile`, {
+            headers: !token ? {} : { 'Authorization': `Bearer ${token}` }
+        })
+            .then(response => response.json())
+            .then(data => this.setState({ customer: data, loading: false }))
     }
 
     static renderProfile(customer) {
@@ -55,7 +58,7 @@ export class CustomerProfile extends Component {
         )
     }
 
-    render() {
+    renderProfileLayout() {
         let contents = this.state.loading
             ? <p><em>Loading...</em></p>
             : CustomerProfile.renderProfile(this.state.customer);
@@ -91,7 +94,7 @@ export class CustomerProfile extends Component {
                         </h3>
                         <div className="row">
                             <div className="col-md-4 mb-3">
-                                <Link className="text-decoration-none" to="/customers/edit-profile">
+                                <Link className="text-decoration-none" to="/customer/edit-profile">
                                     <div className="card h-100 shadow">
                                         <div className="card-body">
                                             <div className="d-flex w-100 justify-content-between text-dark">
@@ -103,7 +106,7 @@ export class CustomerProfile extends Component {
                                 </Link>
                             </div>
                             <div className="col-md-4 mb-3">
-                                <Link className="text-decoration-none" to="/customers/payment-methods">
+                                <Link className="text-decoration-none" to="/customer/payment-methods">
                                     <div className="card h-100 shadow">
                                         <div className="card-body">
                                             <div className="d-flex w-100 justify-content-between text-dark">
@@ -115,7 +118,7 @@ export class CustomerProfile extends Component {
                                 </Link>
                             </div>
                             <div className="col-md-4 mb-3">
-                                <Link className="text-decoration-none" to="/customers/orders">
+                                <Link className="text-decoration-none" to="/customer/orders">
                                     <div className="card h-100 shadow">
                                         <div className="card-body">
                                             <div className="d-flex w-100 justify-content-between text-dark">
@@ -127,7 +130,7 @@ export class CustomerProfile extends Component {
                                 </Link>
                             </div>
                             <div className="col-md-4 mb-3">
-                                <Link className="text-decoration-none" to="/customers/orders">
+                                <Link className="text-decoration-none" to="/customer/orders">
                                     <div className="card h-100 shadow">
                                         <div className="card-body">
                                             <div className="d-flex w-100 justify-content-between text-dark">
@@ -143,6 +146,22 @@ export class CustomerProfile extends Component {
                 </div>
             </div>
         )
+    }
+
+    render() {
+        return (
+            <div>
+                <AuthConsumer>
+                    {({ isAuth }) => (
+                        <div>
+                            {!isAuth
+                                ? <Redirect to='/customer/sign-up' />
+                                : this.renderProfileLayout()}
+                        </div>
+                    )}
+                </AuthConsumer>
+            </div>
+            )
     }
 
 }

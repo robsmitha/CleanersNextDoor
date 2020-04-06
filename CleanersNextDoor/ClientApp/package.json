@@ -1,6 +1,10 @@
 {
   "name": "cleanersnextdoor",
   "version": "0.1.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/robsmitha/CleanersNextDoor"
+  },
   "private": true,
   "dependencies": {
     "babel-eslint": "10.0.1",

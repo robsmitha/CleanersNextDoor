@@ -1,13 +1,8 @@
-﻿using Application.Customers;
-using AutoMapper;
-using Domain.Models;
+﻿using AutoMapper;
 using Infrastructure.Data;
+using Infrastructure.Identity;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -25,15 +20,18 @@ namespace Application.Customers.Queries.GetCustomer
     public class GetCustomerQueryHandler : IRequestHandler<GetCustomerQuery, CustomerModel>
     {
         private readonly ICleanersNextDoorContext _context;
+        private readonly IAuthService _auth;
         private IMapper _mapper;
 
         public GetCustomerQueryHandler(
             ICleanersNextDoorContext context,
+            IAuthService auth,
             IMapper mapper
             )
         {
             _context = context;
             _mapper = mapper;
+            _auth = auth;
         }
         public async Task<CustomerModel> Handle(GetCustomerQuery request, CancellationToken cancellationToken)
         {
