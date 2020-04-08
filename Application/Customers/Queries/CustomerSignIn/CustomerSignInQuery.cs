@@ -22,16 +22,13 @@ namespace Application.Customers.Queries.CustomerSignIn
     {
         private readonly ICleanersNextDoorContext _context;
         private readonly IIdentityService _identity;
-        private IMapper _mapper;
 
         public CustomerSignInQueryHandler(
             ICleanersNextDoorContext context,
-            IIdentityService identity,
-            IMapper mapper
+            IIdentityService identity
             )
         {
             _context = context;
-            _mapper = mapper;
             _identity = identity;
         }
         public async Task<ApplicationUser> Handle(CustomerSignInQuery request, CancellationToken cancellationToken)

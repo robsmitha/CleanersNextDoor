@@ -13,8 +13,7 @@ export class RequestService extends Component {
             cart: [],
             cartLoading: true,
             merchantId: Number(this.props.match.params.id),
-            orderId: 0,
-            customer: authenticationService.currentUserValue
+            orderId: 0
         };
 
         this.addToCart = this.addToCart.bind(this);
@@ -33,11 +32,7 @@ export class RequestService extends Component {
     }
 
     populateCustomerCart() {
-        const token = this.state.customer.token;
-        let headers = {
-            headers: !token ? {} : { 'Authorization': `Bearer ${token}` }
-        }
-        fetch(`customers/cart/${this.state.merchantId}`, headers)
+        fetch(`customers/cart/${this.state.merchantId}`)
             .then(response => response.json())
             .then(data => {
                 this.setState({
@@ -65,14 +60,11 @@ export class RequestService extends Component {
             orderId: this.state.orderId,
         };
 
-        const headers = {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${this.state.customer.token}`
-        }
-
         const request = {
             method: 'post',
-            headers: headers,
+            headers: {
+                'Content-Type': 'application/json'
+            },
             body: JSON.stringify(removeCartItem)
         }
 
@@ -95,13 +87,11 @@ export class RequestService extends Component {
     }
 
     tryCartTransaction(cartItemTransaction) {
-        const headers = {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${this.state.customer.token}`
-        }
         const request = {
             method: 'post',
-            headers: headers,
+            headers: {
+                'Content-Type': 'application/json'
+            },
             body: JSON.stringify(cartItemTransaction)
         }
         fetch(`customers/addtocart`, request)
@@ -116,9 +106,9 @@ export class RequestService extends Component {
         return (
             <div>
                 <AuthConsumer>
-                    {({ isAuth }) => (
+                    {({ authenticated }) => (
                         <div>
-                            {!isAuth
+                            {!authenticated
                                 ? <Redirect to='/customer/sign-in' />
                                 : this.renderContent()}
                         </div>

@@ -5,7 +5,9 @@ const AuthContext = React.createContext();
 
 class AuthProvider extends Component {
 
-    state = { isAuth: false }
+    state = {
+        authenticated: false
+    }
 
     constructor(props) {
         super(props)
@@ -14,11 +16,8 @@ class AuthProvider extends Component {
     }
 
     componentDidMount() {
-        authenticationService.currentUser.subscribe(c => {
-            if (c && c.token) {
-                //todo: validate token
-                this.setState({ isAuth: true })
-            }
+        authenticationService.appUser.subscribe(x => {
+            this.setState({ authenticated: x !== null && x.authenticated })
         })
     }
 
@@ -27,53 +26,47 @@ class AuthProvider extends Component {
         let email = event.target.elements["email"].value;
         let password = event.target.elements["password"].value;
         authenticationService.authenticateCustomer(email, password)
-            .then(c => {
-                let auth = c.token && c.token.length > 0;
+            .then(x => {
                 this.setState({
-                    isAuth: auth,
-                    msg: auth ? '' : 'The entered email or password is not valid.'
+                    authenticated: x.authenticated
                 })
+                if (!this.state.authenticated)
+                    alert('The entered email or password is not valid.')
             })
     }
 
     customerSignUp = (event) => {
         event.preventDefault();
         var data = {
-            password: event.target.elements["email"].value,
-            firstName: event.target.elements["password"].value,
-            lastName: event.target.elements["firstName"].value,
-            email: event.target.elements["lastName"].value,
+            password: event.target.elements["password"].value,
+            firstName: event.target.elements["firstName"].value,
+            lastName: event.target.elements["lastName"].value,
+            email: event.target.elements["email"].value,
             phone: event.target.elements["phone"].value
         };
         authenticationService.createCustomer(data)
-            .then(c => {
-                let auth = c.id > 0;
+            .then(x => {
                 this.setState({
-                    isAuth: auth,
-                    msg: auth ? '' : 'An error occurred.'
+                    authenticated: x.authenticated
                 })
+                if (!this.state.authenticated)
+                    alert('An error occurred.')
             })
     }
 
 
     customerLogout() {
         authenticationService.customerLogout();
-        this.setState({ isAuth: false })
-    }
-
-    checkAuth() {
-        authenticationService.currentUser
-            .subscribe(x => this.setState({ user: x, isAuth: x !== undefined }));
+        this.setState({ authenticated: false })
     }
 
     render() {
         return (
             <AuthContext.Provider value={{
-                isAuth: this.state.isAuth,
+                authenticated: this.state.authenticated,
                 customerLogin: this.customerLogin,
                 customerLogout: this.customerLogout,
-                customerSignUp: this.customerSignUp,
-                msg: this.state.msg
+                customerSignUp: this.customerSignUp
             }}>
                 {this.props.children}
             </AuthContext.Provider>

@@ -313,7 +313,7 @@ namespace Infrastructure.Data
                     UnitTypeID = unitTypes.First().ID,
                     Name = "Clothing Alteration",
                     Description = "Alteration services. Lorem ipsum dolor sit amet, consectetur adipisicing elit.",
-                    MaxAllowed = 7
+                    MaxAllowed = 4
                 });
 
                 items.Add(new Item
@@ -326,7 +326,7 @@ namespace Infrastructure.Data
                     UnitTypeID = unitTypes.First().ID,
                     Name = "Dress Cleaning",
                     Description = "Dress cleaning services. Lorem ipsum dolor sit amet, consectetur adipisicing elit.",
-                    MaxAllowed = 5
+                    MaxAllowed = 3
                 });
 
                 items.Add(new Item
@@ -339,10 +339,46 @@ namespace Infrastructure.Data
                     UnitTypeID = unitTypes.First().ID,
                     Name = "Suit & Jacket Cleaning",
                     Description = "Suit & Jacket Cleaning services. Lorem ipsum dolor sit amet, consectetur adipisicing elit.",
-                    MaxAllowed = 5
+                    MaxAllowed = 2
                 });
             }
             context.Items.AddRange(items);
+            context.SaveChanges();
+
+            var serviceRequestStatusTypes = new List<ServiceRequestStatusType>
+            {
+                new ServiceRequestStatusType
+                {
+                    Name = "Created",
+                    Description = "The service request has been created and we are confirming with the merchant."
+                },
+                new ServiceRequestStatusType
+                {
+                    Name = "Acknowledged",
+                    Description = "We have recieved your service request. We are making arrangements to accomodate the request."
+                },
+                new ServiceRequestStatusType
+                {
+                    Name = "Picking Up",
+                    Description = "The driver is picking up your items."
+                },
+                new ServiceRequestStatusType
+                {
+                    Name = "Merchant Recieved",
+                    Description = "The merchant has recieved your service request and is making preparations."
+                },
+                new ServiceRequestStatusType
+                {
+                    Name = "Dropping Off",
+                    Description = "The driver is dropping off your items."
+                },
+                new ServiceRequestStatusType
+                {
+                    Name = "Customer Recieved",
+                    Description = "The driver has dropped off the items and the service request has been completed."
+                },
+            };
+            context.ServiceRequestStatusTypes.AddRange(serviceRequestStatusTypes);
             context.SaveChanges();
         }
     }

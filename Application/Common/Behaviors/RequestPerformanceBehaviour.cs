@@ -43,12 +43,11 @@ namespace Application.Common.Behaviors
             if (elapsedMilliseconds > 500)
             {
                 var requestName = typeof(TRequest).Name;
-                var claimId = _authService.ClaimID;
-                var identifier = await _identityService.GetIdentifier(claimId);
+                var identifier = await _identityService.GetIdentifier(_authService.ClaimID);
 
                 _logger.LogWarning(
                     $"Application Long Running Request: {requestName} " +
-                    $"({elapsedMilliseconds} milliseconds) {claimId} - {identifier}" +
+                    $"({elapsedMilliseconds} milliseconds) {_authService.ClaimID} - {identifier}" +
                     $"{request}");
             }
 

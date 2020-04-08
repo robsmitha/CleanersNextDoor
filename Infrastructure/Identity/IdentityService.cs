@@ -1,5 +1,6 @@
 ﻿using Domain.Entities;
 using Infrastructure.Data;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -13,12 +14,14 @@ namespace Infrastructure.Identity
 {
     public class IdentityService : IIdentityService
     {
+        private readonly IAuthService _auth;
         private AppSettings _appSettings;
-        public IdentityService(IOptions<AppSettings> appSettings)
+        public IdentityService(IOptions<AppSettings> appSettings, IAuthService auth)
         {
             _appSettings = appSettings.Value;
+            _auth = auth;
         }
-        public async Task<string> GetIdentifier(string claimId)
+        public async Task<string> GetIdentifier(int claimId)
         {
             return "unknown";
         }
@@ -26,30 +29,34 @@ namespace Infrastructure.Identity
         {
             if (!string.IsNullOrEmpty(customer?.Password) && SecurePasswordHasher.Verify(password, customer.Password))
             {
-                // authentication successful so generate jwt token
                 var tokenHandler = new JwtSecurityTokenHandler();
                 var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
+                var expiry = DateTime.UtcNow.AddDays(7);
                 var tokenDescriptor = new SecurityTokenDescriptor
                 {
                     Subject = new ClaimsIdentity(new Claim[]
                     {
                         new Claim(ClaimTypes.Name, customer.ID.ToString())
                     }),
-                    Expires = DateTime.UtcNow.AddDays(7),
+                    Expires = expiry,
                     SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
                 };
 
                 var token = tokenHandler.CreateToken(tokenDescriptor);
-                var identity = new ApplicationUser
+                var accessToken = new AccessToken
                 {
-                    ID = customer.ID,
-                    Token = tokenHandler.WriteToken(token)
+                    access_token = tokenHandler.WriteToken(token),
+                    token_type = "",
+                    expires_in = expiry.ToString()
                 };
-                return identity;
+                _auth.SetHttpOnlyJWTCookie(accessToken);
+                return new ApplicationUser
+                {
+                    authenticated = true
+                };
             }
 
-            // return null if user not found
-            return null;
+            return new ApplicationUser();
         }
     }
 }

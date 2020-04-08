@@ -50,11 +50,11 @@ export class CustomerSignIn extends Component {
         return (
             <div>
                 <AuthConsumer>
-                    {({ isAuth, customerLogin, msg }) => (
+                    {({ authenticated, customerLogin }) => (
                         <div>
-                            {isAuth
+                            {authenticated
                                 ? <Redirect to='/customer/profile' />
-                                : this.renderLoginForm(customerLogin, msg)}
+                                : this.renderLoginForm(customerLogin)}
                         </div>
                     )}
                 </AuthConsumer>
@@ -62,15 +62,12 @@ export class CustomerSignIn extends Component {
             )
     }
 
-    renderLoginForm(customerLogin, msg) {
+    renderLoginForm(customerLogin) {
         return (
             <div className="container my-md-5">
                 <div className="row justify-content-center align-items-center h-100">
                     <div className="col-md-4">
                         <h1 className="text-center">Sign in.</h1>
-                        <span className="text-danger">
-                            {msg}
-                        </span>
                         <form method="post" onSubmit={customerLogin}>
                             <TextInput name="email"
                                 placeholder={this.state.formControls.email.placeholder}

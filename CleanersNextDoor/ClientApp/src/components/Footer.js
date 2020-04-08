@@ -6,10 +6,7 @@ export class Footer extends Component {
     static displayName = Footer.name;
 
     constructor(props) {
-        super(props);
-        this.state = {
-            authenticated: props.currentUser != null
-        }
+        super(props)
     }
     componentDidMount() {
 
@@ -46,10 +43,8 @@ export class Footer extends Component {
                             <div className="col-6 col-md">
                                 <h5>Businesses</h5>
                                 <ul className="list-unstyled text-small">
-                                    <li><Link className="text-muted" to="/users/sign-in" id="nav_sign_in" hidden={this.state.userAuthenticated}>Merchant Sign In</Link></li>
-                                    <li><Link className="text-muted" to="/users/sign-up" id="nav_sign_up" hidden={this.state.userAuthenticated}>Become a Merchant</Link></li>
-                                    <li><Link className="text-muted" to="/users/profile" id="nav_profile" hidden={!this.state.userAuthenticated}>Profile</Link></li>
-                                    <li><Link className="text-muted" to="/users/sign-out" id="nav_sign_out" hidden={!this.state.userAuthenticated}>Sign out</Link></li>
+                                    <li><Link className="text-muted" to="/">Merchant Sign In</Link></li>
+                                    <li><Link className="text-muted" to="/">Become a Merchant</Link></li>
                                     <li><Link className="text-muted" to="/">Locations</Link></li>
                                 </ul>
                             </div>

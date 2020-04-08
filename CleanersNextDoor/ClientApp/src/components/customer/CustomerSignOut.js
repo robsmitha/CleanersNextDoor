@@ -7,9 +7,9 @@ export class CustomerSignOut extends Component {
         return (
             <div>
                 <AuthConsumer>
-                    {({ isAuth, customerLogout }) => (
+                    {({ authenticated, customerLogout }) => (
                         <div>
-                            {!isAuth
+                            {!authenticated
                                 ? <Redirect to='/' />
                                 : this.renderSignOut(customerLogout)}
                         </div>

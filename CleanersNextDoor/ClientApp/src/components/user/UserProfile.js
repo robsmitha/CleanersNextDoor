@@ -5,8 +5,7 @@ export class UserProfile extends Component {
         super(props)
         this.state = {
             user: null,
-            loading: true,
-            currentUser: props.currentUser
+            loading: true
         }
     }
 

@@ -6,6 +6,7 @@ namespace Infrastructure.Identity
 {
     public interface IAuthService
     {
-        public string ClaimID { get; }
+        public int ClaimID { get; }
+        public void SetHttpOnlyJWTCookie(AccessToken accessToken);
     }
 }

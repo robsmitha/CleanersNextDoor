@@ -32,23 +32,18 @@ namespace CleanersNextDoor.Controllers
             _auth = auth;
         }
 
-        private int CustomerID => int.TryParse(_auth.ClaimID, out var id) ? id : 0;
-
         [AllowAnonymous]
         [HttpPost("SignIn")]
         public async Task<ApplicationUser> SignIn(CustomerModel data)
         {
-            var appUser = await _mediator.Send(new CustomerSignInQuery(data.Email, data.Password));
-            return appUser;
+            return await _mediator.Send(new CustomerSignInQuery(data.Email, data.Password)); ;
         }
 
         [AllowAnonymous]
         [HttpPost("SignUp")]
-        public async Task<CustomerModel> SignUp(CustomerModel data)
+        public async Task<ApplicationUser> SignUp(CustomerModel data)
         {
-            data.Password = SecurePasswordHasher.Hash(data.Password);
-            var newCustomer = await _mediator.Send(new CreateCustomerCommand(data));
-            return newCustomer;
+            return await _mediator.Send(new CreateCustomerCommand(data)); ;
         }
 
         [AllowAnonymous]
@@ -65,13 +60,13 @@ namespace CleanersNextDoor.Controllers
         [HttpGet("profile")]
         public async Task<CustomerModel> GetCustomerProfile()
         {
-            return await _mediator.Send(new GetCustomerQuery(CustomerID)) ?? new CustomerModel();
+            return await _mediator.Send(new GetCustomerQuery(_auth.ClaimID)) ?? new CustomerModel();
         }
 
         [HttpGet("cart/{merchantId}")]
         public async Task<ActionResult<CustomerCartModel>> GetCustomerCart(int merchantId)
         {
-            return await _mediator.Send(new GetCustomerCartQuery(CustomerID, merchantId));
+            return await _mediator.Send(new GetCustomerCartQuery(_auth.ClaimID, merchantId));
         }
 
         [HttpPost("AddToCart")]
@@ -79,7 +74,7 @@ namespace CleanersNextDoor.Controllers
         {
             try
             {
-                return Ok(await _mediator.Send(new CreateCartItemCommand(data, CustomerID)));
+                return Ok(await _mediator.Send(new CreateCartItemCommand(data, _auth.ClaimID)));
             }
             catch (ValidationException e)
             {
@@ -92,12 +87,25 @@ namespace CleanersNextDoor.Controllers
         {
             try
             {
-                return await _mediator.Send(new RemoveCartItemCommand(data, CustomerID));
+                return await _mediator.Send(new RemoveCartItemCommand(data, _auth.ClaimID));
             }
             catch (ValidationException e)
             {
                 var errors = JsonSerializer.Serialize(e.Errors);
                 return StatusCode(500, errors);
+            }
+        }
+        [HttpPost("SignOut")]
+        public ActionResult<bool> SignOut()
+        {
+            try
+            {
+                _auth.SetHttpOnlyJWTCookie(null);
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
             }
         }
     }

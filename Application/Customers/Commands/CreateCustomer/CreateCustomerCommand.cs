@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Domain.Entities;
 using Infrastructure.Data;
+using Infrastructure.Identity;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Application.Customers.Commands.CreateCustomer
 {
-    public class CreateCustomerCommand : IRequest<CustomerModel>
+    public class CreateCustomerCommand : IRequest<ApplicationUser>
     {
         public string FirstName { get; set; }
         public string MiddleName { get; set; }
@@ -28,36 +29,34 @@ namespace Application.Customers.Commands.CreateCustomer
             Phone = model.Phone;
         }
     }
-    public class CreateCustomerCommandHandler : IRequestHandler<CreateCustomerCommand, CustomerModel>
+    public class CreateCustomerCommandHandler : IRequestHandler<CreateCustomerCommand, ApplicationUser>
     {
         private readonly ICleanersNextDoorContext _context;
-        private IMapper _mapper;
+        private IIdentityService _identity;
 
         public CreateCustomerCommandHandler(
             ICleanersNextDoorContext context,
-            IMapper mapper
+            IIdentityService identity
             )
         {
             _context = context;
-            _mapper = mapper;
+            _identity = identity;
         }
 
-        public async Task<CustomerModel> Handle(CreateCustomerCommand request, CancellationToken cancellationToken)
+        public async Task<ApplicationUser> Handle(CreateCustomerCommand request, CancellationToken cancellationToken)
         {
-            var entity = new Customer
+            var customer = new Customer
             {
-                Active = true,
-                CreatedAt = DateTime.Now,
                 FirstName = request.FirstName,
                 MiddleName = request.MiddleName,
                 LastName = request.LastName,
                 Email = request.Email,
-                Password = request.Password,
+                Password = SecurePasswordHasher.Hash(request.Password),
                 Phone = request.Phone
             };
-            _context.Customers.Add(entity);
+            _context.Customers.Add(customer);
             await _context.SaveChangesAsync(cancellationToken);
-            return _mapper.Map<CustomerModel>(entity);
+            return _identity.AuthenticateCustomer(customer, request.Password);
         }
     }
 }

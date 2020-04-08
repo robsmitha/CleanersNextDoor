@@ -1,14 +1,13 @@
 ﻿import React, { Component } from 'react';
 import { Link, Redirect } from 'react-router-dom'
 import { AuthConsumer } from '../../context/AuthContext'
-import { authenticationService } from './../../services/authentication.service'
 
 export class CustomerProfile extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            customer: authenticationService.currentUserValue,
-            loading: true
+            loading: true,
+            customer: null
         }
     }
 
@@ -17,10 +16,7 @@ export class CustomerProfile extends Component {
     }
 
     populateProfileInformation() {
-        const token = this.state.customer.token;
-        fetch(`customers/profile`, {
-            headers: !token ? {} : { 'Authorization': `Bearer ${token}` }
-        })
+        fetch(`customers/profile`)
             .then(response => response.json())
             .then(data => this.setState({ customer: data, loading: false }))
     }
@@ -152,9 +148,9 @@ export class CustomerProfile extends Component {
         return (
             <div>
                 <AuthConsumer>
-                    {({ isAuth }) => (
+                    {({ authenticated }) => (
                         <div>
-                            {!isAuth
+                            {!authenticated
                                 ? <Redirect to='/customer/sign-up' />
                                 : this.renderProfileLayout()}
                         </div>

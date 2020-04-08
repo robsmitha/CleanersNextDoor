@@ -3,7 +3,9 @@ import { BehaviorSubject } from 'rxjs';
 
 import { handleResponse } from './../helpers/handle-response';
 
-const currentUserSubject = new BehaviorSubject(JSON.parse(localStorage.getItem('currentUser')));
+const _appUserKey = 'appUser';
+
+const appUserSubject = new BehaviorSubject(JSON.parse(localStorage.getItem(_appUserKey)));
 
 export const authenticationService = {
     authenticateUser,
@@ -11,8 +13,8 @@ export const authenticationService = {
     createUser,
     createCustomer,
     customerLogout,
-    currentUser: currentUserSubject.asObservable(),
-    get currentUserValue() { return currentUserSubject.value }
+    appUser: appUserSubject.asObservable(),
+    get appUserValue() { return appUserSubject.value }
 };
 
 
@@ -28,8 +30,8 @@ function createUser(user) {
     return fetch('users/signup', requestOptions)
         .then(handleResponse)
         .then(user => {
-            localStorage.setItem('currentUser', JSON.stringify(user));
-            currentUserSubject.next(user);
+            localStorage.setItem(_appUserKey, JSON.stringify(user));
+            appUserSubject.next(user);
             return user;
         });
 }
@@ -45,8 +47,8 @@ function authenticateUser(username, password) {
     return fetch(`users/signin`, requestOptions)
         .then(handleResponse)
         .then(user => {
-            localStorage.setItem('currentUser', JSON.stringify(user));
-            currentUserSubject.next(user);
+            localStorage.setItem(_appUserKey, JSON.stringify(user));
+            appUserSubject.next(user);
 
             return user;
         });
@@ -62,8 +64,8 @@ function authenticateCustomer(email, password) {
     return fetch(`customers/signin`, requestOptions)
         .then(handleResponse)
         .then(customer => {
-            localStorage.setItem('currentUser', JSON.stringify(customer));
-            currentUserSubject.next(customer);
+            localStorage.setItem(_appUserKey, JSON.stringify(customer));
+            appUserSubject.next(customer);
             return customer;
         });
 }
@@ -80,14 +82,20 @@ function createCustomer(customer) {
     return fetch('customers/signup', requestOptions)
         .then(handleResponse)
         .then(customer => {
-            localStorage.setItem('currentUser', JSON.stringify(customer));
-            currentUserSubject.next(customer);
+            localStorage.setItem(_appUserKey, JSON.stringify(customer));
+            appUserSubject.next(customer);
             return customer;
         });
 }
 
 function customerLogout() {
-    // remove user from local storage to log user out
-    localStorage.removeItem('currentUser');
-    currentUserSubject.next(null);
+    const requestOptions = {
+        method: 'post'
+    };
+    fetch(`customers/signout`, requestOptions)
+        .then(customer => {
+            // remove user from local storage to log user out
+            localStorage.removeItem(_appUserKey);
+            appUserSubject.next(null);
+        });
 }

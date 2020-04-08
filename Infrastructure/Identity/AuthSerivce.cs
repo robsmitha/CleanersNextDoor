@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System.Linq;
 using System.Security.Claims;
+using System.Collections.Generic;
+using System;
+using System.Text.Json;
 
 namespace Infrastructure.Identity
 {
@@ -11,18 +14,41 @@ namespace Infrastructure.Identity
         {
             _httpContextAccessor = httpContextAccessor;
         }
-
-        public string ClaimID
+        private string _claimdId => _httpContextAccessor?
+            .HttpContext
+            .User
+            .Claims.FirstOrDefault(x => x.Type == ClaimTypes.Name)?.Value;
+        public int ClaimID => int.TryParse(_claimdId, out var @int)
+                        ? @int
+                        : 0;
+        public void SetHttpOnlyJWTCookie(AccessToken accessToken)
         {
-
-            get
+            var cookie = _httpContextAccessor?
+                .HttpContext
+                .Request
+                .Cookies["access_token"];
+            
+            if (cookie != null)
             {
-                if(_httpContextAccessor?.HttpContext != null)
-                {
-                    var user = _httpContextAccessor.HttpContext?.User;
-                    return user.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Name)?.Value;
-                }
-                return null;
+                //remove previous if exists
+                _httpContextAccessor?
+                   .HttpContext
+                   .Response
+                   .Cookies.Delete("access_token");
+            }
+
+            if (accessToken != null)
+            {
+                //add or replace token
+                _httpContextAccessor?
+                   .HttpContext
+                   .Response
+                   .Cookies.Append("access_token", JsonSerializer.Serialize(accessToken),
+                    new CookieOptions
+                    {
+                        HttpOnly = true,
+                        Expires = Convert.ToDateTime(accessToken.expires_in)
+                    });
             }
         }
     }

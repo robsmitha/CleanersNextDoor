@@ -6,7 +6,9 @@ namespace Infrastructure.Identity
 {
     public class ApplicationUser
     {
-        public int ID { get; set; }
-        public string Token { get; set; }
+        /// <summary>
+        /// Indicate client's jwt token httpOnlyCookie is valid if exists
+        /// </summary>
+        public bool authenticated { get; set; }
     }
 }

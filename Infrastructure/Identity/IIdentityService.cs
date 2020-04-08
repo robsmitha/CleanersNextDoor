@@ -6,6 +6,6 @@ namespace Infrastructure.Identity
     public interface IIdentityService
     {
         ApplicationUser AuthenticateCustomer(Customer customer, string password);
-        Task<string> GetIdentifier(string claimId);
+        Task<string> GetIdentifier(int claimId);
     }
 }

@@ -1,7 +1,6 @@
 ﻿import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { AuthConsumer } from './../../context/AuthContext'
-import { authenticationService } from '../../services/authentication.service';
 
 export class MerchantDetails extends Component {
     constructor(props) {
@@ -11,8 +10,7 @@ export class MerchantDetails extends Component {
             merchant: null,
             merchantLoading: true,
             itemsLoading: true,
-            items: [],
-            customer: authenticationService.currentUserValue
+            items: []
         }
     }
 
@@ -64,13 +62,13 @@ export class MerchantDetails extends Component {
                                 <p className="lead text-white-50">{merchant.shortDescription}</p>
 
                                 <AuthConsumer>
-                                    {({ isAuth }) => (
+                                    {({ authenticated }) => (
                                         <div>
-                                            {isAuth
-                                                ? <Link to={'/request-service/:id'.replace(':id', merchant.id)} className="btn btn-success btn-lg mb-3" hidden={!isAuth}>
+                                            {authenticated
+                                                ? <Link to={'/request-service/:id'.replace(':id', merchant.id)} className="btn btn-success btn-lg mb-3" hidden={!authenticated}>
                                                         Start pickup request
                                                     </Link>
-                                                : <Link to="/customer/sign-in" className="btn btn-success btn-lg mb-3" hidden={isAuth}>
+                                                : <Link to="/customer/sign-in" className="btn btn-success btn-lg mb-3" hidden={authenticated}>
                                                         Sign in to use service
                                                     </Link>}
                                         </div>
@@ -126,15 +124,15 @@ export class MerchantDetails extends Component {
             <div className="container">
                 <h2 className="border-bottom mb-2">Available Services</h2>
                 <AuthConsumer>
-                    {({ isAuth }) => (
+                    {({ authenticated }) => (
                         <div>
-                            {isAuth
+                            {authenticated
                                 ? <p>Browse services offered by merchant. <Link to={'/request-service/:id'.replace(':id', this.state.merchantId)}>Start a pick up request!</Link></p>
                                 : <p><strong>Please sign in</strong> to start a pick up request.</p>}
                             <div className="row">
                                 {items.map(i =>
                                     <div key={i.id} className="col-md-4 mb-4">
-                                        <Link className="text-decoration-none" to={isAuth ? '/request-service/:id'.replace(':id', this.state.merchantId) : '/customer/sign-in'}>
+                                        <Link className="text-decoration-none" to={authenticated ? '/request-service/:id'.replace(':id', this.state.merchantId) : '/customer/sign-in'}>
                                             <div className="card h-100 shadow">
                                                 <div className="card-body">
                                                     <div className="d-flex w-100 justify-content-between text-dark">

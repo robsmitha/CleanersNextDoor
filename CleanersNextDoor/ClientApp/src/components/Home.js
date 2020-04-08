@@ -39,13 +39,13 @@ export class Home extends Component {
                                     Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ipsa, ipsam, eligendi, in quo sunt possimus non incidunt odit vero aliquid similique quaerat nam nobis illo aspernatur vitae fugiat numquam repellat.
                                 </p>
                                 <AuthConsumer>
-                                    {({ isAuth }) => (
+                                    {({ authenticated }) => (
                                         <div>
-                                            <div hidden={isAuth}>
+                                            <div hidden={authenticated}>
                                                 <Link to="/customer/sign-in" className="btn btn-success btn-lg mr-2">Sign in</Link>
                                                 <Link to="/customer/sign-up" className="btn btn-secondary btn-lg">Sign up</Link>
                                             </div>
-                                            <div hidden={!isAuth}>
+                                            <div hidden={!authenticated}>
                                                 <Link to="/customer/profile" className="btn btn-success btn-lg">My Account</Link>
                                             </div>
                                         </div>

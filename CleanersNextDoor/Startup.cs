@@ -11,6 +11,7 @@ using Microsoft.Extensions.Hosting;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using CleanersNextDoor.Common;
 
 namespace CleanersNextDoor
 {
@@ -87,6 +88,10 @@ namespace CleanersNextDoor
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
+
+            app.UseCustomExceptionHandler();
+            
+            app.UseJWTInHeader();   
 
             app.UseRouting();
 

@@ -12,10 +12,10 @@ export class Payment extends Component {
             merchantId: this.props.match.params.id,
             formIsValid: false,
             formControls: {
-                firstName: {
+                contactName: {
                     value: '',
-                    placeholder: 'Enter your first name',
-                    label: 'First Name',
+                    placeholder: 'Enter the full contact name',
+                    label: 'Name',
                     valid: false,
                     touched: false,
                     validationRules: {
@@ -24,21 +24,9 @@ export class Payment extends Component {
                     },
                     errors: []
                 },
-                lastName: {
+                contactEmail: {
                     value: '',
-                    placeholder: 'Enter your last name',
-                    label: 'Last Name',
-                    valid: false,
-                    touched: false,
-                    validationRules: {
-                        isRequired: true,
-                        minLength: 2
-                    },
-                    errors: []
-                },
-                email: {
-                    value: '',
-                    placeholder: 'Enter your email',
+                    placeholder: 'Enter the contact email',
                     label: 'Email',
                     valid: false,
                     touched: false,
@@ -49,9 +37,9 @@ export class Payment extends Component {
                     },
                     errors: []
                 },
-                phone: {
+                contactPhone: {
                     value: '',
-                    placeholder: 'Enter your phone',
+                    placeholder: 'Enter the contact phone',
                     label: 'Phone',
                     valid: false,
                     touched: false,
@@ -105,9 +93,9 @@ export class Payment extends Component {
         return (
             <div>
                 <AuthConsumer>
-                    {({ isAuth }) => (
+                    {({ authenticated }) => (
                         <div>
-                            {!isAuth
+                            {!authenticated
                                 ? <Redirect to='/customer/sign-in' />
                                 : this.renderContent()}
                         </div>
@@ -126,45 +114,44 @@ export class Payment extends Component {
 
                     <div className="col-md-4">
                         <form method="post" onSubmit={this.requestCreateServiceRequest}>
-                            <TextInput name="firstName"
-                                placeholder={this.state.formControls.firstName.placeholder}
-                                label={this.state.formControls.firstName.label}
-                                value={this.state.formControls.firstName.value}
+                            <h1 className="border-bottom">
+                                Contact Information
+                            </h1>
+                            <TextInput name="contactName"
+                                placeholder={this.state.formControls.contactName.placeholder}
+                                label={this.state.formControls.contactName.label}
+                                value={this.state.formControls.contactName.value}
                                 onChange={this.changeHandler}
-                                touched={this.state.formControls.firstName.touched ? 1 : 0}
-                                valid={this.state.formControls.firstName.valid ? 1 : 0}
-                                errors={this.state.formControls.firstName.errors} />
+                                touched={this.state.formControls.contactName.touched ? 1 : 0}
+                                valid={this.state.formControls.contactName.valid ? 1 : 0}
+                                errors={this.state.formControls.contactName.errors} />
 
-                            <TextInput name="lastName"
-                                placeholder={this.state.formControls.lastName.placeholder}
-                                label={this.state.formControls.lastName.label}
-                                value={this.state.formControls.lastName.value}
+                            <TextInput name="contactEmail"
+                                placeholder={this.state.formControls.contactEmail.placeholder}
+                                label={this.state.formControls.contactEmail.label}
+                                value={this.state.formControls.contactEmail.value}
                                 onChange={this.changeHandler}
-                                touched={this.state.formControls.lastName.touched ? 1 : 0}
-                                valid={this.state.formControls.lastName.valid ? 1 : 0}
-                                errors={this.state.formControls.lastName.errors} />
+                                touched={this.state.formControls.contactEmail.touched ? 1 : 0}
+                                valid={this.state.formControls.contactEmail.valid ? 1 : 0}
+                                errors={this.state.formControls.contactEmail.errors} />
 
-                            <TextInput name="email"
-                                placeholder={this.state.formControls.email.placeholder}
-                                label={this.state.formControls.email.label}
-                                value={this.state.formControls.email.value}
+                            <TextInput name="contactPhone"
+                                placeholder={this.state.formControls.contactPhone.placeholder}
+                                label={this.state.formControls.contactPhone.label}
+                                value={this.state.formControls.contactPhone.value}
                                 onChange={this.changeHandler}
-                                touched={this.state.formControls.email.touched ? 1 : 0}
-                                valid={this.state.formControls.email.valid ? 1 : 0}
-                                errors={this.state.formControls.email.errors} />
+                                touched={this.state.formControls.contactPhone.touched ? 1 : 0}
+                                valid={this.state.formControls.contactPhone.valid ? 1 : 0}
+                                errors={this.state.formControls.contactPhone.errors} />
 
-                            <TextInput name="phone"
-                                placeholder={this.state.formControls.phone.placeholder}
-                                label={this.state.formControls.phone.label}
-                                value={this.state.formControls.phone.value}
-                                onChange={this.changeHandler}
-                                touched={this.state.formControls.phone.touched ? 1 : 0}
-                                valid={this.state.formControls.phone.valid ? 1 : 0}
-                                errors={this.state.formControls.phone.errors} />
+                            <h1 className="border-bottom">
+                                Pick up Information
+                            </h1>
 
                             <button className="btn btn-primary btn-block" type="submit" disabled={!this.state.formIsValid}>
-                                Request Services
+                                Continue to payment
                             </button>
+
                             <Link className="btn btn-secondary btn-block" to={'/request-service/:id'.replace(':id', this.state.merchantId)}>
                                 Go Back
                             </Link>
