@@ -12,6 +12,7 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using CleanersNextDoor.Common;
+using System;
 
 namespace CleanersNextDoor
 {
@@ -27,6 +28,15 @@ namespace CleanersNextDoor
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDistributedMemoryCache();
+
+            services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(30);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
+
             services.AddInfrastructure(Configuration);
             services.AddApplication(Configuration);
 
@@ -53,14 +63,17 @@ namespace CleanersNextDoor
                 x.SaveToken = true;
                 x.TokenValidationParameters = new TokenValidationParameters
                 {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(key),
-                    ValidateIssuer = false,
-                    ValidateAudience = false
+                    ValidIssuer = appSettings.JwtIssuer,
+                    ValidAudience = appSettings.JwtIssuer,
+                    IssuerSigningKey = new SymmetricSecurityKey(key)
                 };
             });
 
-            services.AddScoped<IAuthService, AuthSerivce>();
+            services.AddScoped<IAuthenticationService, AuthenticationSerivce>();
             services.AddScoped<IIdentityService, IdentityService>();
 
             // In production, the React files will be served from this directory
@@ -89,11 +102,13 @@ namespace CleanersNextDoor
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
 
+            //custom middleware
             app.UseCustomExceptionHandler();
-            
             app.UseJWTInHeader();   
 
             app.UseRouting();
+
+            app.UseSession();
 
             // global cors policy
             app.UseCors(x => x

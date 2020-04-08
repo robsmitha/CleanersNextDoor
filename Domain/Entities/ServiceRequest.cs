@@ -7,31 +7,29 @@ namespace Domain.Entities
 {
     public class ServiceRequest : BaseEntity
     {
-        public int CustomerID { get; set; }
-        [ForeignKey("CustomerID")]
-        public Customer Customer { get; set; }
         public string ContactName { get; set; }
         public string ContactPhone { get; set; }
         public string ContactEmail { get; set; }
+
+        /// <summary>
+        /// Customer who placed the service request
+        /// </summary>
+        public int CustomerID { get; set; }
+        [ForeignKey("CustomerID")]
+        public Customer Customer { get; set; }
+
+        /// <summary>
+        /// The order that paid for the service request
+        /// </summary>
         public int OrderID { get; set; }
         [ForeignKey("OrderID")]
         public Order Order { get; set; }
-        public string Note { get; set; }
-        public string Street1 { get; set; }
-        public string Street2 { get; set; }
-        public string City { get; set; }
-        public string StateAbbreviation { get; set; }
-        public string Zip { get; set; }
+
+        /// <summary>
+        /// The overall status of the service request
+        /// </summary>
         public int ServiceRequestStatusTypeID { get; set; }
         [ForeignKey("ServiceRequestStatusTypeID")]
         public ServiceRequestStatusType ServiceRequestStatusType { get; set; }
-        public DateTime PickUp { get; set; }
-        public DateTime DropOff { get; set; }
-        public int PickupDrivingSessionID { get; set; }
-        [ForeignKey("PickupDrivingSessionID")]
-        public DrivingSession PickupDrivingSession { get; set; }
-        public int DropOffDrivingSessionID { get; set; }
-        [ForeignKey("DropOffDrivingSessionID")]
-        public DrivingSession DropOffDrivingSession { get; set; }
     }
 }

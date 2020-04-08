@@ -2,8 +2,10 @@
 using Infrastructure.Data;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
 using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
@@ -14,49 +16,124 @@ namespace Infrastructure.Identity
 {
     public class IdentityService : IIdentityService
     {
-        private readonly IAuthService _auth;
+        private readonly IAuthenticationService _auth;
+        private readonly ICleanersNextDoorContext _context;
         private AppSettings _appSettings;
-        public IdentityService(IOptions<AppSettings> appSettings, IAuthService auth)
+        public IdentityService(IOptions<AppSettings> appSettings, 
+            IAuthenticationService auth, 
+            ICleanersNextDoorContext context)
         {
             _appSettings = appSettings.Value;
             _auth = auth;
+            _context = context;
         }
-        public async Task<string> GetIdentifier(int claimId)
-        {
-            return "unknown";
-        }
+
         public ApplicationUser AuthenticateCustomer(Customer customer, string password)
         {
-            if (!string.IsNullOrEmpty(customer?.Password) && SecurePasswordHasher.Verify(password, customer.Password))
+            //todo: verify w customer.secret
+            var authenticated = !string.IsNullOrEmpty(customer?.Password) 
+                && SecurePasswordHasher.Verify(password, customer.Password) 
+                ? IssueToken(customer)
+                : false;
+            return new ApplicationUser(authenticated);
+        }
+
+        public async Task<ApplicationUser> RefreshToken(AccessToken accessToken)
+        {
+            try
             {
-                var tokenHandler = new JwtSecurityTokenHandler();
-                var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
-                var expiry = DateTime.UtcNow.AddDays(7);
-                var tokenDescriptor = new SecurityTokenDescriptor
+                var claimsPrincipal = ValidateTokenClaimsPrincipal(accessToken.access_token);
+                var id = GetClaimFromPrincipal<int>(claimsPrincipal, ClaimTypes.NameIdentifier);
+                if (id != default)
                 {
-                    Subject = new ClaimsIdentity(new Claim[]
-                    {
-                        new Claim(ClaimTypes.Name, customer.ID.ToString())
-                    }),
-                    Expires = expiry,
-                    SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+                    var customer = await _context.Customers
+                        .FindAsync(id);
+
+                    if (customer?.ID > 0)
+                        return new ApplicationUser(IssueToken(customer));
+                }
+            }
+            catch (Exception) { }
+            _auth.SetAuthentication();
+            return new ApplicationUser();
+        }
+
+        private bool IssueToken(Customer customer)
+        {
+            try
+            {
+                var expires = DateTime.UtcNow.AddDays(7);
+
+                //todo: GetBytes on customer.Secret 
+                var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_appSettings.Secret));
+                var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+                var claims = new[] {
+                    new Claim(ClaimTypes.NameIdentifier, customer.ID.ToString()),
+                    new Claim(ClaimTypes.Email, customer.Email.ToString()),
+                    new Claim(ClaimTypes.MobilePhone, customer.Phone.ToString()),
                 };
 
-                var token = tokenHandler.CreateToken(tokenDescriptor);
+                var token = new JwtSecurityToken(_appSettings.JwtIssuer,
+                  _appSettings.JwtIssuer,
+                  claims: claims,
+                  expires: expires,
+                  signingCredentials: credentials);
+
+                var jwtToken = new JwtSecurityTokenHandler()
+                    .WriteToken(token);
+
                 var accessToken = new AccessToken
                 {
-                    access_token = tokenHandler.WriteToken(token),
+                    access_token = jwtToken,
                     token_type = "",
-                    expires_in = expiry.ToString()
+                    expires_in = expires.ToString()
                 };
-                _auth.SetHttpOnlyJWTCookie(accessToken);
-                return new ApplicationUser
-                {
-                    authenticated = true
-                };
-            }
 
-            return new ApplicationUser();
+                _auth.SetAuthentication(accessToken, claims);
+
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+
+        private T GetClaimFromPrincipal<T>(ClaimsPrincipal claimsPrincipal, string claimType)
+        {
+            var claim = claimsPrincipal?.Claims.FirstOrDefault(x => x.Type == claimType)?.Value;
+            return !string.IsNullOrEmpty(claim) && claim.GetType() != typeof(T)
+                ? (T)Convert.ChangeType(claim, typeof(T))
+                : default;
+        }
+
+        private ClaimsPrincipal ValidateTokenClaimsPrincipal(string jwtToken)
+        {
+            try
+            {
+                IdentityModelEventSource.ShowPII = true;
+
+                var validationParameters = new TokenValidationParameters
+                {
+                    ValidateLifetime = true,
+                    ValidateAudience = true,
+                    ValidateIssuer = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidAudience = _appSettings.JwtIssuer,
+                    ValidIssuer = _appSettings.JwtIssuer,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_appSettings.Secret))
+                };
+
+                var principal = new JwtSecurityTokenHandler()
+                    .ValidateToken(jwtToken, validationParameters, out SecurityToken validatedToken);
+
+                return principal;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
     }
 }

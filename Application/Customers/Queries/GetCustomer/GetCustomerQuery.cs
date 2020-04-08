@@ -20,12 +20,12 @@ namespace Application.Customers.Queries.GetCustomer
     public class GetCustomerQueryHandler : IRequestHandler<GetCustomerQuery, CustomerModel>
     {
         private readonly ICleanersNextDoorContext _context;
-        private readonly IAuthService _auth;
+        private readonly IAuthenticationService _auth;
         private IMapper _mapper;
 
         public GetCustomerQueryHandler(
             ICleanersNextDoorContext context,
-            IAuthService auth,
+            IAuthenticationService auth,
             IMapper mapper
             )
         {

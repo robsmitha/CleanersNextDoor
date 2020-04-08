@@ -51,7 +51,8 @@ namespace Application.Customers.Commands.CreateCustomer
                 MiddleName = request.MiddleName,
                 LastName = request.LastName,
                 Email = request.Email,
-                Password = SecurePasswordHasher.Hash(request.Password),
+                //todo: hash w customer.secret
+                Password = SecurePasswordHasher.Hash(request.Password), 
                 Phone = request.Phone
             };
             _context.Customers.Add(customer);

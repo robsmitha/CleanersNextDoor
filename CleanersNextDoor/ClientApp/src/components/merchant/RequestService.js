@@ -1,7 +1,6 @@
 ﻿import React, { Component } from 'react';
 import { Link, Redirect } from 'react-router-dom';
 import { AuthConsumer } from './../../context/AuthContext';
-import { authenticationService } from './../../services/authentication.service';
 
 export class RequestService extends Component {
 
@@ -95,13 +94,24 @@ export class RequestService extends Component {
             body: JSON.stringify(cartItemTransaction)
         }
         fetch(`customers/addtocart`, request)
-            .then(response => response.json())
-            .catch(ex => console.log(ex))
+            .then(this.handleValidation)
             .then(data => {
-                this.populateCustomerCart()
+                if (data.orderID > 0)
+                    this.populateCustomerCart()
+                else
+                    console.log(data)
             })
     }
-
+    handleValidation(response) {
+        if (!response.ok) {
+            if (response.status === 400) {
+                //validation
+                console.log(response)
+                throw new Error(response);
+            }
+        }
+        return response.json();
+    }
     render() {
         return (
             <div>

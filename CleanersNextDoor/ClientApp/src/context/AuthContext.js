@@ -17,7 +17,13 @@ class AuthProvider extends Component {
 
     componentDidMount() {
         authenticationService.appUser.subscribe(x => {
-            this.setState({ authenticated: x !== null && x.authenticated })
+            if (x !== null && x.authenticated) {
+                fetch('identity/authorize', { method: 'post' })
+                    .then(response => response.json())
+                    .then(data => {
+                        this.setState({ authenticated: data !== null && data.authenticated })
+                    })  
+            }
         })
     }
 

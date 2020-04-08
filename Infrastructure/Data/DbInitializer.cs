@@ -377,8 +377,157 @@ namespace Infrastructure.Data
                     Name = "Customer Recieved",
                     Description = "The driver has dropped off the items and the service request has been completed."
                 },
+                new ServiceRequestStatusType
+                {
+                    Name = "Cancelled",
+                    Description = "The service request was cancelled."
+                },
             };
             context.ServiceRequestStatusTypes.AddRange(serviceRequestStatusTypes);
+
+            var correspondenceStatusTypes = new List<CorrespondenceStatusType>
+            {
+                new CorrespondenceStatusType
+                {
+                    Name = "Needs Confrimation",
+                    Description = "The correspondence needs confrimation."
+                },
+                new CorrespondenceStatusType
+                {
+                    Name = "Confirmed",
+                    Description = "The correspondence has been confirmed."
+                },
+                new CorrespondenceStatusType
+                {
+                    Name = "User Completing",
+                    Description = "A user is completing the correspondence."
+                },
+                new CorrespondenceStatusType
+                {
+                    Name = "Completed",
+                    Description = "A user has completed the correspondence."
+                }
+            };
+            context.CorrespondenceStatusTypes.AddRange(correspondenceStatusTypes);
+
+
+            var customerPickUp = new CorrespondenceType
+            {
+                Name = "Customer Pick up",
+                Description = "Pick up from customer."
+            };
+            context.CorrespondenceTypes.Add(customerPickUp);
+            var customerDropOff = new CorrespondenceType
+            {
+                Name = "Customer Drop Off",
+                Description = "Drop off to customer."
+            };
+            context.CorrespondenceTypes.Add(customerDropOff);
+            var merchantPickUp = new CorrespondenceType
+            {
+                Name = "Merchant Pick up",
+                Description = "Pick up from merchant."
+            };
+            context.CorrespondenceTypes.Add(merchantPickUp);
+            var merchantDropOff = new CorrespondenceType
+            {
+                Name = "Merchant Drop Off",
+                Description = "Drop off to merchant."
+            };
+            context.CorrespondenceTypes.Add(merchantDropOff);
+            context.SaveChanges();
+
+            foreach (var m in merchants)
+            {
+                var laundryWorkflow = new Workflow
+                {
+                    Name = "Laundry Service",
+                    MerchantID = m.ID
+                };
+                var foodDeliveryWorkflow = new Workflow
+                {
+                    Name = "Food Delivery",
+                    MerchantID = m.ID
+                };
+                context.Workflows.Add(laundryWorkflow);
+                context.Workflows.Add(foodDeliveryWorkflow);
+                context.SaveChanges();
+
+                //laundry workflow
+                context.WorkflowItems.Add(new WorkflowItem
+                {
+                    WorkflowID = laundryWorkflow.ID,
+                    WorkflowOrder = 1,
+                    CorrespondenceTypeID = customerPickUp.ID
+                });
+                context.WorkflowItems.Add(new WorkflowItem
+                {
+                    WorkflowID = laundryWorkflow.ID,
+                    WorkflowOrder = 2,
+                    CorrespondenceTypeID = merchantDropOff.ID
+                });
+                context.WorkflowItems.Add(new WorkflowItem
+                {
+                    WorkflowID = laundryWorkflow.ID,
+                    WorkflowOrder = 3,
+                    CorrespondenceTypeID = merchantPickUp.ID
+                });
+                context.WorkflowItems.Add(new WorkflowItem
+                {
+                    WorkflowID = laundryWorkflow.ID,
+                    WorkflowOrder = 4,
+                    CorrespondenceTypeID = customerDropOff.ID
+                });
+
+                //food delivery workflow
+                context.WorkflowItems.Add(new WorkflowItem
+                {
+                    WorkflowID = foodDeliveryWorkflow.ID,
+                    WorkflowOrder = 1,
+                    CorrespondenceTypeID = merchantPickUp.ID
+                });
+                context.WorkflowItems.Add(new WorkflowItem
+                {
+                    WorkflowID = foodDeliveryWorkflow.ID,
+                    WorkflowOrder = 2,
+                    CorrespondenceTypeID = customerDropOff.ID
+                });
+            }
+
+            var userStatusTypes = new List<UserStatusType>
+            {
+                new UserStatusType
+                {
+                    Name = "Submitted / Unconfirmed",
+                    Description = "The user has signed up and needs to confirm their email."
+                },
+                new UserStatusType
+                {
+                    Name = "Confirmed",
+                    Description = "The user has confirmed their email and is ready for consideration."
+                },
+                new UserStatusType
+                {
+                    Name = "Under Consideration",
+                    Description = "The user information is being reviewed."
+                },
+                new UserStatusType
+                {
+                    Name = "Approved",
+                    Description = "The user is approved to carry out service request correspondences."
+                },
+                new UserStatusType
+                {
+                    Name = "Denied",
+                    Description = "The user is not approved to carry out services."
+                },
+                new UserStatusType
+                {
+                    Name = "Terminated",
+                    Description = "The user has been terminated."
+                }
+            };
+            context.UserStatusTypes.AddRange(userStatusTypes);
             context.SaveChanges();
         }
     }

@@ -8,5 +8,6 @@ namespace Infrastructure.Identity
     public class AppSettings
     {
         public string Secret { get; set; }
+        public string JwtIssuer { get; set; }
     }
 }

@@ -1,6 +1,5 @@
 ﻿
 import { BehaviorSubject } from 'rxjs';
-
 import { handleResponse } from './../helpers/handle-response';
 
 const _appUserKey = 'appUser';
@@ -93,7 +92,7 @@ function customerLogout() {
         method: 'post'
     };
     fetch(`customers/signout`, requestOptions)
-        .then(customer => {
+        .then(response => {
             // remove user from local storage to log user out
             localStorage.removeItem(_appUserKey);
             appUserSubject.next(null);

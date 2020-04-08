@@ -17,10 +17,12 @@ namespace Infrastructure.Data
         public DbSet<CardType> CardTypes { get; set; }
         public DbSet<CashEvent> CashEvents { get; set; }
         public DbSet<CashEventType> CashEventTypes { get; set; }
+        public DbSet<Correspondence> Correspondences { get; set; }
+        public DbSet<CorrespondenceStatusType> CorrespondenceStatusTypes { get; set; }
+        public DbSet<CorrespondenceType> CorrespondenceTypes { get; set; }
         public DbSet<Credit> Credits { get; set; }
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Discount> Discounts { get; set; }
-        public DbSet<DrivingSession> DrivingSessions { get; set; }
         public DbSet<Item> Items { get; set; }
         public DbSet<ItemType> ItemTypes { get; set; }
         public DbSet<LineItem> LineItems { get; set; }
@@ -44,7 +46,10 @@ namespace Infrastructure.Data
         public DbSet<TaxType> TaxTypes { get; set; }
         public DbSet<UnitType> UnitTypes { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<UserStatusType> UserStatusTypes { get; set; }
         public DbSet<VoidReasonType> VoidReasonTypes { get; set; }
+        public DbSet<WorkflowItem> WorkflowItems { get; set; }
+        public DbSet<Workflow> Workflows { get; set; }
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);
         int SaveChanges();

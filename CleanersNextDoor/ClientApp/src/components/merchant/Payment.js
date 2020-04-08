@@ -48,6 +48,18 @@ export class Payment extends Component {
                         minLength: 9
                     },
                     errors: []
+                },
+                pickUpStreet1: {
+                    value: '',
+                    placeholder: 'Enter the street address',
+                    label: 'Street Address',
+                    valid: false,
+                    touched: false,
+                    validationRules: {
+                        isRequired: true,
+                        minLength: 2
+                    },
+                    errors: []
                 }
             }
         };

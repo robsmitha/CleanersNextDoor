@@ -10,12 +10,12 @@ namespace Application.Common.Behaviors
        : IRequestPreProcessor<TRequest>
     {
         private readonly ILogger _logger;
-        private readonly IAuthService _authService;
+        private readonly IAuthenticationService _authService;
         private readonly IIdentityService _identityService;
 
         public RequestLoggerBehaviour(
             ILogger<TRequest> logger,
-            IAuthService authService,
+            IAuthenticationService authService,
             IIdentityService identityService)
         {
             _logger = logger;
@@ -29,9 +29,10 @@ namespace Application.Common.Behaviors
         {
             var requestName = typeof(TRequest).Name;
             var claimId = _authService.ClaimID;
-            var identifier = await _identityService.GetIdentifier(claimId);
+            var identifier = _authService.UniqueIdentifier;
 
             _logger.LogInformation($"Application Request: {requestName} {claimId} {identifier} {request}");
+            await Task.FromResult(0);
         }
     }
 }

@@ -10,5 +10,10 @@ namespace Infrastructure.Identity
         /// Indicate client's jwt token httpOnlyCookie is valid if exists
         /// </summary>
         public bool authenticated { get; set; }
+        public ApplicationUser() { }
+        public ApplicationUser(bool auth)
+        {
+            authenticated = auth;
+        }
     }
 }

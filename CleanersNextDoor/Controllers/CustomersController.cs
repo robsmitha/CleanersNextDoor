@@ -1,8 +1,4 @@
-﻿using System;
-using System.Security.Claims;
-using System.Text.Json;
-using System.Threading.Tasks;
-using Application.Common.Exceptions;
+﻿using System.Threading.Tasks;
 using Application.Customers;
 using Application.Customers.Commands.CreateCartItem;
 using Application.Customers.Commands.CreateCustomer;
@@ -14,9 +10,7 @@ using Application.Customers.Queries.GetCustomerCart;
 using Infrastructure.Identity;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-
 namespace CleanersNextDoor.Controllers
 {
     [Authorize]
@@ -25,8 +19,8 @@ namespace CleanersNextDoor.Controllers
     public class CustomersController : ControllerBase
     {
         private readonly IMediator _mediator;
-        private readonly IAuthService _auth;
-        public CustomersController(IMediator mediator, IAuthService auth)
+        private readonly IAuthenticationService _auth;
+        public CustomersController(IMediator mediator, IAuthenticationService auth)
         {
             _mediator = mediator;
             _auth = auth;
@@ -72,41 +66,18 @@ namespace CleanersNextDoor.Controllers
         [HttpPost("AddToCart")]
         public async Task<ActionResult<CreateCartItemModel>> AddToCart(CreateCartItemModel data)
         {
-            try
-            {
-                return Ok(await _mediator.Send(new CreateCartItemCommand(data, _auth.ClaimID)));
-            }
-            catch (ValidationException e)
-            {
-                var errors = JsonSerializer.Serialize(e.Errors);
-                return StatusCode(500, errors);
-            }
+            return Ok(await _mediator.Send(new CreateCartItemCommand(data, _auth.ClaimID)));
         }
         [HttpPost("RemoveCartItem")]
         public async Task<ActionResult<bool>> RemoveCartItem(RemoveCartItemModel data)
         {
-            try
-            {
-                return await _mediator.Send(new RemoveCartItemCommand(data, _auth.ClaimID));
-            }
-            catch (ValidationException e)
-            {
-                var errors = JsonSerializer.Serialize(e.Errors);
-                return StatusCode(500, errors);
-            }
+            return await _mediator.Send(new RemoveCartItemCommand(data, _auth.ClaimID));
         }
         [HttpPost("SignOut")]
         public ActionResult<bool> SignOut()
         {
-            try
-            {
-                _auth.SetHttpOnlyJWTCookie(null);
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
+            _auth.SetAuthentication(null);
+            return true;
         }
     }
 }
