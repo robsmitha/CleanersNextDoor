@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Application.Customers.Queries.CustomerSignIn
 {
-    public class CustomerSignInQuery : IRequest<ApplicationUser>
+    public class CustomerSignInQuery : IRequest<IApplicationUser>
     {
         public string Email { get; set; }
         public string Password { get; set; }
@@ -18,7 +18,7 @@ namespace Application.Customers.Queries.CustomerSignIn
             Password = password;
         }
     }
-    public class CustomerSignInQueryHandler : IRequestHandler<CustomerSignInQuery, ApplicationUser>
+    public class CustomerSignInQueryHandler : IRequestHandler<CustomerSignInQuery, IApplicationUser>
     {
         private readonly ICleanersNextDoorContext _context;
         private readonly IIdentityService _identity;
@@ -31,7 +31,7 @@ namespace Application.Customers.Queries.CustomerSignIn
             _context = context;
             _identity = identity;
         }
-        public async Task<ApplicationUser> Handle(CustomerSignInQuery request, CancellationToken cancellationToken)
+        public async Task<IApplicationUser> Handle(CustomerSignInQuery request, CancellationToken cancellationToken)
         {
             var customer = await _context.Customers
                 .SingleOrDefaultAsync(c => c.Email.ToLower() == request.Email.ToLower());

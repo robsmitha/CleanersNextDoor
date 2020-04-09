@@ -7,7 +7,7 @@ namespace Infrastructure.Identity
 {
     public interface IIdentityService
     {
-        Task<ApplicationUser> RefreshToken(AccessToken token);
-        ApplicationUser AuthenticateCustomer(Customer customer, string password);
+        Task<IApplicationUser> RefreshToken(IAccessToken token);
+        IApplicationUser AuthenticateCustomer(Customer customer, string password);
     }
 }

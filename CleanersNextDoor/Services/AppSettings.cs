@@ -1,11 +1,12 @@
-﻿using System;
+﻿using Infrastructure.Identity;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Infrastructure.Identity
+namespace CleanersNextDoor.Services
 {
-    public class AppSettings
+    public class AppSettings : IAppSettings
     {
         public string Secret { get; set; }
         public string JwtIssuer { get; set; }

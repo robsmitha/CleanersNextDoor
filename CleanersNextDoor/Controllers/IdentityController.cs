@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.Json;
+﻿using System.Text.Json;
 using System.Threading.Tasks;
+using CleanersNextDoor.Services;
+using Domain.Utilities;
 using Infrastructure.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -23,7 +22,7 @@ namespace CleanersNextDoor.Controllers
 
         [HttpPost("Authorize")]
         [AllowAnonymous]
-        public async Task<ApplicationUser> Authorize()
+        public async Task<IApplicationUser> Authorize()
         {
             var token = HttpContext.Request.Cookies["access_token"];
             var authenticated = HttpContext.Session.Get<bool>("authenticated");

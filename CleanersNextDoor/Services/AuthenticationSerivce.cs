@@ -1,14 +1,13 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System.Linq;
 using System.Security.Claims;
-using System.Collections.Generic;
 using System;
 using System.Text.Json;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using System.Security.Principal;
 using System.Threading;
+using Infrastructure.Identity;
+using Domain.Utilities;
 
-namespace Infrastructure.Identity
+namespace CleanersNextDoor.Services
 {
     public class AuthenticationSerivce : IAuthenticationService
     {
@@ -49,7 +48,7 @@ namespace Infrastructure.Identity
             .Claims
             .FirstOrDefault(x => x.Type == ClaimTypes.MobilePhone)?.Value;
 
-        public void SetAuthentication(AccessToken accessToken = null, Claim[] claims = null)
+        public void SetAuthentication(IAccessToken accessToken = null, Claim[] claims = null)
         {
             if (_httpContextAccessor?.HttpContext == null) return;
 
@@ -80,9 +79,9 @@ namespace Infrastructure.Identity
 
                 //reset authenticated flag
                 _httpContextAccessor
-                .HttpContext
-                .Session
-                .Set("authenticated", true);
+                    .HttpContext
+                    .Session
+                    .Set("authenticated", true);
 
                 if (claims != null)
                 {

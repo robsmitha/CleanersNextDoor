@@ -3,6 +3,7 @@ using Application.Users.Commands.CreateUser;
 using Application.Users.Queries.GetUser;
 using Application.Users.Queries.GetUserByUsername;
 using Domain.Models;
+using Domain.Utilities;
 using Infrastructure.Identity;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;

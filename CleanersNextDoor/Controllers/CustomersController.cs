@@ -28,14 +28,14 @@ namespace CleanersNextDoor.Controllers
 
         [AllowAnonymous]
         [HttpPost("SignIn")]
-        public async Task<ApplicationUser> SignIn(CustomerModel data)
+        public async Task<IApplicationUser> SignIn(CustomerModel data)
         {
             return await _mediator.Send(new CustomerSignInQuery(data.Email, data.Password)); ;
         }
 
         [AllowAnonymous]
         [HttpPost("SignUp")]
-        public async Task<ApplicationUser> SignUp(CustomerModel data)
+        public async Task<IApplicationUser> SignUp(CustomerModel data)
         {
             return await _mediator.Send(new CreateCustomerCommand(data)); ;
         }

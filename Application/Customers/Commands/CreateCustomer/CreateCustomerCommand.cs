@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Domain.Entities;
+using Domain.Utilities;
 using Infrastructure.Data;
 using Infrastructure.Identity;
 using MediatR;
@@ -11,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Application.Customers.Commands.CreateCustomer
 {
-    public class CreateCustomerCommand : IRequest<ApplicationUser>
+    public class CreateCustomerCommand : IRequest<IApplicationUser>
     {
         public string FirstName { get; set; }
         public string MiddleName { get; set; }
@@ -29,7 +30,7 @@ namespace Application.Customers.Commands.CreateCustomer
             Phone = model.Phone;
         }
     }
-    public class CreateCustomerCommandHandler : IRequestHandler<CreateCustomerCommand, ApplicationUser>
+    public class CreateCustomerCommandHandler : IRequestHandler<CreateCustomerCommand, IApplicationUser>
     {
         private readonly ICleanersNextDoorContext _context;
         private IIdentityService _identity;
@@ -43,7 +44,7 @@ namespace Application.Customers.Commands.CreateCustomer
             _identity = identity;
         }
 
-        public async Task<ApplicationUser> Handle(CreateCustomerCommand request, CancellationToken cancellationToken)
+        public async Task<IApplicationUser> Handle(CreateCustomerCommand request, CancellationToken cancellationToken)
         {
             var customer = new Customer
             {

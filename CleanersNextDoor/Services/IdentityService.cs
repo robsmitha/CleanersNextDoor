@@ -1,24 +1,24 @@
 ﻿using Domain.Entities;
+using Domain.Utilities;
 using Infrastructure.Data;
-using Microsoft.AspNetCore.Http;
+using Infrastructure.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
 using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Infrastructure.Identity
+namespace CleanersNextDoor.Services
 {
     public class IdentityService : IIdentityService
     {
         private readonly IAuthenticationService _auth;
         private readonly ICleanersNextDoorContext _context;
-        private AppSettings _appSettings;
+        private IAppSettings _appSettings;
         public IdentityService(IOptions<AppSettings> appSettings, 
             IAuthenticationService auth, 
             ICleanersNextDoorContext context)
@@ -28,7 +28,7 @@ namespace Infrastructure.Identity
             _context = context;
         }
 
-        public ApplicationUser AuthenticateCustomer(Customer customer, string password)
+        public IApplicationUser AuthenticateCustomer(Customer customer, string password)
         {
             //todo: verify w customer.secret
             var authenticated = !string.IsNullOrEmpty(customer?.Password) 
@@ -38,7 +38,7 @@ namespace Infrastructure.Identity
             return new ApplicationUser(authenticated);
         }
 
-        public async Task<ApplicationUser> RefreshToken(AccessToken accessToken)
+        public async Task<IApplicationUser> RefreshToken(IAccessToken accessToken)
         {
             try
             {
@@ -93,7 +93,7 @@ namespace Infrastructure.Identity
 
                 return true;
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 return false;
             }
@@ -102,9 +102,10 @@ namespace Infrastructure.Identity
 
         private T GetClaimFromPrincipal<T>(ClaimsPrincipal claimsPrincipal, string claimType)
         {
-            var claim = claimsPrincipal?.Claims.FirstOrDefault(x => x.Type == claimType)?.Value;
-            return !string.IsNullOrEmpty(claim) && claim.GetType() != typeof(T)
-                ? (T)Convert.ChangeType(claim, typeof(T))
+            var claim = claimsPrincipal?.Claims
+                .FirstOrDefault(x => x.Type == claimType);
+            return !string.IsNullOrEmpty(claim?.Value) && claim.Value.GetType() != typeof(T)
+                ? (T)Convert.ChangeType(claim.Value, typeof(T))
                 : default;
         }
 

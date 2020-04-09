@@ -4,16 +4,11 @@ using System.Text;
 
 namespace Infrastructure.Identity
 {
-    public class ApplicationUser
+    public interface IApplicationUser
     {
         /// <summary>
         /// Indicate client's jwt token httpOnlyCookie is valid if exists
         /// </summary>
         public bool authenticated { get; set; }
-        public ApplicationUser() { }
-        public ApplicationUser(bool auth)
-        {
-            authenticated = auth;
-        }
     }
 }

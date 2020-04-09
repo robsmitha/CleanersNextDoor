@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Infrastructure.Identity;
 
-namespace Infrastructure.Identity
+namespace CleanersNextDoor.Services
 {
-    public class AccessToken
+    public class AccessToken : IAccessToken
     {
         public string token_type { get; set; }
         public string access_token { get; set; }
