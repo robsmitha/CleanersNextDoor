@@ -1,8 +1,11 @@
 ﻿using AutoMapper;
+using Domain.Entities;
 using Infrastructure.Data;
 using Infrastructure.Identity;
 using MediatR;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -20,25 +23,29 @@ namespace Application.Customers.Queries.GetCustomer
     public class GetCustomerQueryHandler : IRequestHandler<GetCustomerQuery, CustomerModel>
     {
         private readonly ICleanersNextDoorContext _context;
-        private readonly IAuthenticationService _auth;
         private IMapper _mapper;
 
         public GetCustomerQueryHandler(
             ICleanersNextDoorContext context,
-            IAuthenticationService auth,
             IMapper mapper
             )
         {
             _context = context;
             _mapper = mapper;
-            _auth = auth;
         }
         public async Task<CustomerModel> Handle(GetCustomerQuery request, CancellationToken cancellationToken)
         {
             var entity = await _context.Customers.FindAsync(request.CustomerID);
-            return entity != null
-                ? _mapper.Map<CustomerModel>(entity)
-                : new CustomerModel();
+            if (entity == null) return new CustomerModel();
+
+            var customer = _mapper.Map<CustomerModel>(entity);
+            customer.Addresses = _context.CustomerAddresses
+                .Where(a => a.CustomerID == request.CustomerID)
+                .ToList();
+            customer.PaymentMethods = _context.PaymentMethods
+                .Where(p => p.CustomerID == request.CustomerID)
+                .ToList();
+            return customer;
         }
     }
 }

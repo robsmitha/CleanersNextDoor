@@ -1,6 +1,6 @@
 ﻿import React, { Component } from 'react';
 import { Link, Redirect } from 'react-router-dom';
-import { AuthConsumer } from './../../context/AuthContext';
+import { AuthConsumer } from './../context/AuthContext';
 
 export class RequestService extends Component {
 
@@ -96,22 +96,26 @@ export class RequestService extends Component {
         fetch(`customers/addtocart`, request)
             .then(this.handleValidation)
             .then(data => {
-                if (data.orderID > 0)
+                if (data.orderID > 0) {
                     this.populateCustomerCart()
-                else
-                    console.log(data)
+                }
+                else if (data != null) {
+                    let errors = ''
+                    data.forEach(r => errors += r + '\n')
+                    if (errors.length > 0) alert(errors)
+                }
+                else {
+                    //error
+                }
             })
     }
+
     handleValidation(response) {
-        if (!response.ok) {
-            if (response.status === 400) {
-                //validation
-                console.log(response)
-                throw new Error(response);
-            }
-        }
-        return response.json();
+        return response.ok || response.status === 400
+            ? response.json()
+            : null;
     }
+
     render() {
         return (
             <div>
@@ -119,7 +123,7 @@ export class RequestService extends Component {
                     {({ authenticated }) => (
                         <div>
                             {!authenticated
-                                ? <Redirect to='/customer/sign-in' />
+                                ? <Redirect to='/sign-in' />
                                 : this.renderContent()}
                         </div>
                     )}

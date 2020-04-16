@@ -1,8 +1,8 @@
 ﻿import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { AuthConsumer } from './../../context/AuthContext'
+import { AuthConsumer } from './../context/AuthContext'
 
-export class MerchantDetails extends Component {
+export class Merchant extends Component {
     constructor(props) {
         super(props)
         this.state = {
@@ -68,7 +68,7 @@ export class MerchantDetails extends Component {
                                                 ? <Link to={'/request-service/:id'.replace(':id', merchant.id)} className="btn btn-success btn-lg mb-3" hidden={!authenticated}>
                                                         Start pickup request
                                                     </Link>
-                                                : <Link to="/customer/sign-in" className="btn btn-success btn-lg mb-3" hidden={authenticated}>
+                                                : <Link to="/sign-in" className="btn btn-success btn-lg mb-3" hidden={authenticated}>
                                                         Sign in to use service
                                                     </Link>}
                                         </div>
@@ -132,7 +132,7 @@ export class MerchantDetails extends Component {
                             <div className="row">
                                 {items.map(i =>
                                     <div key={i.id} className="col-md-4 mb-4">
-                                        <Link className="text-decoration-none" to={authenticated ? '/request-service/:id'.replace(':id', this.state.merchantId) : '/customer/sign-in'}>
+                                        <Link className="text-decoration-none" to={authenticated ? '/request-service/:id'.replace(':id', this.state.merchantId) : '/sign-in'}>
                                             <div className="card h-100 shadow">
                                                 <div className="card-body">
                                                     <div className="d-flex w-100 justify-content-between text-dark">

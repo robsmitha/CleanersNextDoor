@@ -7,16 +7,9 @@ namespace Domain.Entities
 {
     public class ServiceRequest : BaseEntity
     {
-        public string ContactName { get; set; }
-        public string ContactPhone { get; set; }
-        public string ContactEmail { get; set; }
-
-        /// <summary>
-        /// Customer who placed the service request
-        /// </summary>
-        public int CustomerID { get; set; }
-        [ForeignKey("CustomerID")]
-        public Customer Customer { get; set; }
+        public string Name { get; set; }
+        public string Phone { get; set; }
+        public string Email { get; set; }
 
         /// <summary>
         /// The order that paid for the service request
@@ -24,6 +17,13 @@ namespace Domain.Entities
         public int OrderID { get; set; }
         [ForeignKey("OrderID")]
         public Order Order { get; set; }
+
+        /// <summary>
+        /// Customer who placed the service request if logged in
+        /// </summary>
+        public int? CustomerID { get; set; }
+        [ForeignKey("CustomerID")]
+        public Customer Customer { get; set; }
 
         /// <summary>
         /// The overall status of the service request

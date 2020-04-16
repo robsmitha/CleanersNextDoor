@@ -7,53 +7,16 @@ const _appUserKey = 'appUser';
 const appUserSubject = new BehaviorSubject(JSON.parse(localStorage.getItem(_appUserKey)));
 
 export const authenticationService = {
-    authenticateUser,
-    authenticateCustomer,
-    createUser,
-    createCustomer,
-    customerLogout,
+    signIn,
+    signUp,
+    signOut,
+    clearAppUser,
     appUser: appUserSubject.asObservable(),
     get appUserValue() { return appUserSubject.value }
 };
 
 
-function createUser(user) {
-    const requestOptions = {
-        method: 'post',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(user)
-    };
-
-    return fetch('users/signup', requestOptions)
-        .then(handleResponse)
-        .then(user => {
-            localStorage.setItem(_appUserKey, JSON.stringify(user));
-            appUserSubject.next(user);
-            return user;
-        });
-}
-
-
-function authenticateUser(username, password) {
-    const requestOptions = {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
-    };
-
-    return fetch(`users/signin`, requestOptions)
-        .then(handleResponse)
-        .then(user => {
-            localStorage.setItem(_appUserKey, JSON.stringify(user));
-            appUserSubject.next(user);
-
-            return user;
-        });
-}
-
-function authenticateCustomer(email, password) {
+function signIn(email, password) {
     const requestOptions = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -69,7 +32,7 @@ function authenticateCustomer(email, password) {
         });
 }
 
-function createCustomer(customer) {
+function signUp(customer) {
     const requestOptions = {
         method: 'post',
         headers: {
@@ -87,14 +50,20 @@ function createCustomer(customer) {
         });
 }
 
-function customerLogout() {
+function signOut() {
     const requestOptions = {
         method: 'post'
     };
     fetch(`customers/signout`, requestOptions)
         .then(response => {
-            // remove user from local storage to log user out
-            localStorage.removeItem(_appUserKey);
-            appUserSubject.next(null);
+            if (response.ok) {
+                clearAppUser();
+            }
         });
+}
+
+function clearAppUser() {
+    // remove user from local storage to log user out
+    localStorage.removeItem(_appUserKey);
+    appUserSubject.next(null);
 }

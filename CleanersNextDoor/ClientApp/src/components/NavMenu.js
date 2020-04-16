@@ -29,18 +29,16 @@ export class NavMenu extends Component {
     }
 
     configureUI() {
-        document.addEventListener('DOMContentLoaded', function () {
-            var navbar = document.querySelector('#main_nav').clientHeight;
-            document.querySelector('body').style = 'padding-top: ' + navbar + 'px';
-        }, false);
+        var navbar = document.querySelector('.main-nav').clientHeight;
+        document.querySelector('.header').style = 'padding-top: ' + navbar + 'px';
     }
     render() {
         return (
-            <header>
+            <header className="header">
                 <AuthConsumer>
-                    {({ authenticated, customerLogin, customerLogout }) => (
+                    {({ authenticated }) => (
                         <header>
-                            <Navbar id="main_nav" className="navbar-expand-sm navbar-toggleable-sm box-shadow fixed-top bg-white border-bottom shadow-sm navbar-light">
+                            <Navbar className="main-nav navbar-expand-sm navbar-toggleable-sm box-shadow fixed-top bg-white border-bottom shadow-sm navbar-light">
                                 <Container>
                                     <NavbarBrand tag={Link} to="/">
                                         <GiHouse />
@@ -59,22 +57,22 @@ export class NavMenu extends Component {
                                         </ul>
                                         <ul className="navbar-nav ml-auto">
                                             <NavItem id="nav_customer_sign_up" hidden={authenticated}>
-                                                <NavLink tag={Link} to="/customer/sign-up">
+                                                <NavLink tag={Link} to="/sign-up">
                                                     <FaUserPlus />&nbsp;Sign up
                                             </NavLink>
                                             </NavItem>
                                             <NavItem id="nav_customer_sign_in" hidden={authenticated}>
-                                                <NavLink tag={Link} to="/customer/sign-in">
+                                                <NavLink tag={Link} to="/sign-in">
                                                     <FaSignInAlt />&nbsp;Sign in
                                                 </NavLink>
                                             </NavItem>
                                             <NavItem id="nav_customer_profile" hidden={!authenticated}>
-                                                <NavLink tag={Link} to="/customer/profile">
+                                                <NavLink tag={Link} to="/profile">
                                                     <FaUser />&nbsp;Account
                                                 </NavLink>
                                             </NavItem>
                                             <NavItem id="nav_customer_sign_out" hidden={!authenticated}>
-                                                <NavLink tag={Link} to="/customer/sign-out">
+                                                <NavLink tag={Link} to="/sign-out">
                                                     <FaSignOutAlt />&nbsp;Sign out
                                                 </NavLink>
                                             </NavItem>

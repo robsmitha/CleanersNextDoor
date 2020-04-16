@@ -9,11 +9,16 @@ namespace Application.Customers
     public class CustomerModel : IMapFrom<Customer>
     {
         public int ID { get; set; }
-        public string FirstName { get; set; }
-        public string MiddleName { get; set; }
-        public string LastName { get; set; }
+        public string Name { get; set; }
+        public string Nickname { get; set; }
         public string Email { get; set; }
         public string Password { get; set; }
         public string Phone { get; set; }
+        public string Secret { get; set; }
+        public string StripeCustomerID { get; set; }
+        public bool EmailVerified { get; set; }
+        public bool PhoneVerified { get; set; }
+        public List<CustomerAddress> Addresses { get; set; }
+        public List<PaymentMethod> PaymentMethods { get; set; }
     }
 }

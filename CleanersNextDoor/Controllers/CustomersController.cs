@@ -1,7 +1,10 @@
 ﻿using System.Threading.Tasks;
 using Application.Customers;
+using Application.Customers.Commands.CreateAddress;
 using Application.Customers.Commands.CreateCartItem;
 using Application.Customers.Commands.CreateCustomer;
+using Application.Customers.Commands.CreatePaymentMethod;
+using Application.Customers.Commands.DeleteAddress;
 using Application.Customers.Commands.RemoveCartItem;
 using Application.Customers.Queries.CustomerSignIn;
 using Application.Customers.Queries.GetCustomer;
@@ -26,6 +29,7 @@ namespace CleanersNextDoor.Controllers
             _auth = auth;
         }
 
+        #region AllowAnonymous Methods
         [AllowAnonymous]
         [HttpPost("SignIn")]
         public async Task<IApplicationUser> SignIn(CustomerModel data)
@@ -50,19 +54,43 @@ namespace CleanersNextDoor.Controllers
                 isAvailable = customer == null || customer?.ID == 0
             };
         }
+        #endregion
 
-        [HttpGet("profile")]
+        #region Account Methods
+        [HttpGet("Profile")]
         public async Task<CustomerModel> GetCustomerProfile()
         {
             return await _mediator.Send(new GetCustomerQuery(_auth.ClaimID)) ?? new CustomerModel();
         }
+        [HttpPost("SignOut")]
+        public ActionResult<bool> SignOut()
+        {
+            _auth.SetAuthentication(null);
+            return true;
+        }
+        [HttpPost("AddAddress")]
+        public async Task<ActionResult<CreateAddressModel>> AddAddress(CreateAddressModel data)
+        {
+            return Ok(await _mediator.Send(new CreateAddressCommand(_auth.ClaimID, data)));
+        }
+        [HttpPost("RemoveAddress")]
+        public async Task<ActionResult<bool>> RemoveAddress(DeleteAddressModel data)
+        {
+            return Ok(await _mediator.Send(new DeleteAddressCommand(data.ID, _auth.ClaimID)));
+        }
+        [HttpPost("AddPaymentMethod")]
+        public async Task<ActionResult<CreatePaymentMethodModel>> AddPaymentMethod(CreatePaymentMethodModel data)
+        {
+            return Ok(await _mediator.Send(new CreatePaymentMethodCommand(_auth.ClaimID, data)));
+        }
+        #endregion
 
+        #region Cart Methods
         [HttpGet("cart/{merchantId}")]
         public async Task<ActionResult<CustomerCartModel>> GetCustomerCart(int merchantId)
         {
             return await _mediator.Send(new GetCustomerCartQuery(_auth.ClaimID, merchantId));
         }
-
         [HttpPost("AddToCart")]
         public async Task<ActionResult<CreateCartItemModel>> AddToCart(CreateCartItemModel data)
         {
@@ -73,11 +101,7 @@ namespace CleanersNextDoor.Controllers
         {
             return await _mediator.Send(new RemoveCartItemCommand(data, _auth.ClaimID));
         }
-        [HttpPost("SignOut")]
-        public ActionResult<bool> SignOut()
-        {
-            _auth.SetAuthentication(null);
-            return true;
-        }
+        #endregion
+
     }
 }

@@ -8,10 +8,11 @@ const TextInput = props => {
     }
 
     let errors = props.errors !== undefined ? props.errors : []
+    let hidden = props.hidden !== undefined ? props.hidden : false;
    
     return (
-        <div className="form-group">
-            <label htmlFor={props.name}>{props.label === undefined ? props.name : props.label}</label>
+        <div className="form-group" hidden={hidden}>
+            <label htmlFor={props.name} className="font-weight-bold">{props.label === undefined ? props.name : props.label}</label>
             <input type="text" className={formControl} {...props} />
             {errors.map(m =>
                 <div key={m} className="text-danger">

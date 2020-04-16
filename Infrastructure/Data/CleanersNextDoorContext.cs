@@ -1,18 +1,11 @@
 ﻿using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Infrastructure.Data
 {
     public class CleanersNextDoorContext : DbContext, ICleanersNextDoorContext
     {
-        public bool EnsureCreated()
-        {
-            return Database.EnsureCreated();
-        }
         public CleanersNextDoorContext(DbContextOptions<CleanersNextDoorContext> options) : base(options) { }
        
         public DbSet<Authorization> Authorizations { get; set; }
@@ -22,6 +15,7 @@ namespace Infrastructure.Data
         public DbSet<CashEventType> CashEventTypes { get; set; }
         public DbSet<Credit> Credits { get; set; }
         public DbSet<Customer> Customers { get; set; }
+        public DbSet<CustomerAddress> CustomerAddresses { get; set; }
         public DbSet<Discount> Discounts { get; set; }
         public DbSet<Correspondence> Correspondences { get; set; }
         public DbSet<CorrespondenceType> CorrespondenceTypes { get; set; }
@@ -35,6 +29,7 @@ namespace Infrastructure.Data
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderStatusType> OrderStatusTypes { get; set; }
         public DbSet<Payment> Payments { get; set; }
+        public DbSet<PaymentMethod> PaymentMethods { get; set; }
         public DbSet<PaymentStatusType> PaymentStatusTypes { get; set; }
         public DbSet<PaymentType> PaymentTypes { get; set; }
         public DbSet<Permission> Permissions { get; set; }
@@ -65,6 +60,7 @@ namespace Infrastructure.Data
             modelBuilder.Entity<CorrespondenceStatusType>();
             modelBuilder.Entity<Credit>();
             modelBuilder.Entity<Customer>();
+            modelBuilder.Entity<CustomerAddress>();
             modelBuilder.Entity<Discount>();
             modelBuilder.Entity<Item>();
             modelBuilder.Entity<ItemType>();
@@ -75,6 +71,7 @@ namespace Infrastructure.Data
             modelBuilder.Entity<Order>();
             modelBuilder.Entity<OrderStatusType>();
             modelBuilder.Entity<Payment>();
+            modelBuilder.Entity<PaymentMethod>();
             modelBuilder.Entity<PaymentStatusType>();
             modelBuilder.Entity<PaymentType>();
             modelBuilder.Entity<Permission>();
@@ -98,6 +95,10 @@ namespace Infrastructure.Data
                 .SelectMany(e => e.GetForeignKeys())
                 .ToList()
                 .ForEach(r => r.DeleteBehavior = DeleteBehavior.Restrict);
+        }
+        public bool EnsureCreated()
+        {
+            return Database.EnsureCreated();
         }
     }
 }

@@ -23,10 +23,20 @@ namespace CleanersNextDoor.Common
         {
             var authenticationCookieName = "access_token";
             var cookie = context.Request.Cookies[authenticationCookieName];
-            if (cookie != null)
+            if (cookie != null && !string.IsNullOrEmpty(cookie))
             {
                 var token = JsonSerializer.Deserialize<AccessToken>(cookie);
-                context.Request.Headers.Append("Authorization", "Bearer " + token.access_token);
+                if (!string.IsNullOrWhiteSpace(token?.access_token) 
+                    && DateTime.TryParse(token.expires_in, out var expiry) 
+                    && expiry > DateTime.Now)
+                {
+                    context.Request.Headers.Append("Authorization", "Bearer " + token.access_token);
+                }
+                else
+                {  
+                    //remove cookie if expired or invalid
+                    context.Response.Cookies.Delete(authenticationCookieName);
+                }
             }
 
             await _next.Invoke(context);

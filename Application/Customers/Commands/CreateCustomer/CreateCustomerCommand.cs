@@ -14,17 +14,13 @@ namespace Application.Customers.Commands.CreateCustomer
 {
     public class CreateCustomerCommand : IRequest<IApplicationUser>
     {
-        public string FirstName { get; set; }
-        public string MiddleName { get; set; }
-        public string LastName { get; set; }
+        public string Name { get; set; }
         public string Email { get; set; }
         public string Password { get; set; }
         public string Phone { get; set; }
         public CreateCustomerCommand(CustomerModel model)
         {
-            FirstName = model.FirstName;
-            MiddleName = model.MiddleName;
-            LastName = model.LastName;
+            Name = model.Name;
             Email = model.Email;
             Password = model.Password;
             Phone = model.Phone;
@@ -46,13 +42,12 @@ namespace Application.Customers.Commands.CreateCustomer
 
         public async Task<IApplicationUser> Handle(CreateCustomerCommand request, CancellationToken cancellationToken)
         {
+            //TODO: generate customer secret
             var customer = new Customer
             {
-                FirstName = request.FirstName,
-                MiddleName = request.MiddleName,
-                LastName = request.LastName,
+                Name = request.Name,
                 Email = request.Email,
-                //todo: hash w customer.secret
+                //TODO: hash w customer.secret
                 Password = SecurePasswordHasher.Hash(request.Password), 
                 Phone = request.Phone
             };

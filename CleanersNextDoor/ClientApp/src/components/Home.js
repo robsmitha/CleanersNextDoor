@@ -19,7 +19,6 @@ export class Home extends Component {
         fetch('merchants/GetMerchants')
             .then(response => response.json())
             .then(data => this.setState({ merchants: data, loading: false }))
-            .catch(() => { console.log('oops') })
     }
 
     render() {
@@ -33,31 +32,31 @@ export class Home extends Component {
                         <div className="row h-100 align-items-center">
                             <div className="col-lg-12">
                                 <h1 className="display-4 text-white mt-5 mb-2">
-                                    A Warm Welcome!
+                                    Local Services
                                 </h1>
                                 <p className="lead text-white-50">
-                                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ipsa, ipsam, eligendi, in quo sunt possimus non incidunt odit vero aliquid similique quaerat nam nobis illo aspernatur vitae fugiat numquam repellat.
+                                    Select from many local services such as laundry, alterations and more.
+                                    Our couriers <strong>bring the service to you!</strong>
                                 </p>
                                 <AuthConsumer>
                                     {({ authenticated }) => (
                                         <div>
                                             <div hidden={authenticated}>
-                                                <Link to="/customer/sign-in" className="btn btn-success btn-lg mr-2">Sign in</Link>
-                                                <Link to="/customer/sign-up" className="btn btn-secondary btn-lg">Sign up</Link>
+                                                <Link to="/sign-in" className="btn btn-success btn-lg mr-2">Sign in</Link>
+                                                <Link to="/sign-up" className="btn btn-secondary btn-lg">Sign up</Link>
                                             </div>
                                             <div hidden={!authenticated}>
-                                                <Link to="/customer/profile" className="btn btn-success btn-lg">My Account</Link>
+                                                <Link to="/profile" className="btn btn-success btn-lg">My Account</Link>
                                             </div>
                                         </div>
                                     )}
                                 </AuthConsumer>
-                                
                             </div>
                         </div>
                     </div>
                 </header>
                 <div className="container">
-                    <h2 className="border-bottom mb-2">How This Works</h2>
+                    <h2 className="border-bottom mb-2">How this Works</h2>
                     <div className="row mb-3">
                         <div className="col-md-8">
                             <p>

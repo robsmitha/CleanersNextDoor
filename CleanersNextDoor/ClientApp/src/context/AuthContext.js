@@ -6,13 +6,15 @@ const AuthContext = React.createContext();
 class AuthProvider extends Component {
 
     state = {
-        authenticated: false
+        authenticated: window.document.referrer == null
+            && authenticationService.appUserValue !== null
+            && authenticationService.appUserValue.authenticated
     }
 
     constructor(props) {
         super(props)
-        this.customerLogin = this.customerLogin.bind(this)
-        this.customerLogout = this.customerLogout.bind(this)
+        this.signIn = this.signIn.bind(this)
+        this.signOut = this.signOut.bind(this)
     }
 
     componentDidMount() {
@@ -21,17 +23,25 @@ class AuthProvider extends Component {
                 fetch('identity/authorize', { method: 'post' })
                     .then(response => response.json())
                     .then(data => {
-                        this.setState({ authenticated: data !== null && data.authenticated })
+                        let authenticated = data !== null && data.authenticated;
+                        if (!authenticated) {
+                            //client appUser was conflicting with server appUser, force remove
+                            authenticationService.clearAppUser(); 
+                        }
+                        this.setState({ authenticated: authenticated })
                     })  
             }
         })
     }
 
-    customerLogin = (event) => {
+    signIn = (event) => {
         event.preventDefault();
+        //TODO: check sign in with phone is enabled
+
         let email = event.target.elements["email"].value;
         let password = event.target.elements["password"].value;
-        authenticationService.authenticateCustomer(email, password)
+
+        authenticationService.signIn(email, password)
             .then(x => {
                 this.setState({
                     authenticated: x.authenticated
@@ -41,16 +51,15 @@ class AuthProvider extends Component {
             })
     }
 
-    customerSignUp = (event) => {
+    signUp = (event) => {
         event.preventDefault();
         var data = {
             password: event.target.elements["password"].value,
-            firstName: event.target.elements["firstName"].value,
-            lastName: event.target.elements["lastName"].value,
+            name: event.target.elements["name"].value,
             email: event.target.elements["email"].value,
             phone: event.target.elements["phone"].value
         };
-        authenticationService.createCustomer(data)
+        authenticationService.signUp(data)
             .then(x => {
                 this.setState({
                     authenticated: x.authenticated
@@ -61,8 +70,8 @@ class AuthProvider extends Component {
     }
 
 
-    customerLogout() {
-        authenticationService.customerLogout();
+    signOut() {
+        authenticationService.signOut();
         this.setState({ authenticated: false })
     }
 
@@ -70,9 +79,9 @@ class AuthProvider extends Component {
         return (
             <AuthContext.Provider value={{
                 authenticated: this.state.authenticated,
-                customerLogin: this.customerLogin,
-                customerLogout: this.customerLogout,
-                customerSignUp: this.customerSignUp
+                signIn: this.signIn,
+                signOut: this.signOut,
+                signUp: this.signUp
             }}>
                 {this.props.children}
             </AuthContext.Provider>

@@ -11,7 +11,6 @@ namespace Infrastructure.Data
 {
     public interface ICleanersNextDoorContext
     {
-        public bool EnsureCreated();
         public DbSet<Authorization> Authorizations { get; set; }
         public DbSet<AuthorizationType> AuthorizationTypes { get; set; }
         public DbSet<CardType> CardTypes { get; set; }
@@ -22,6 +21,7 @@ namespace Infrastructure.Data
         public DbSet<CorrespondenceType> CorrespondenceTypes { get; set; }
         public DbSet<Credit> Credits { get; set; }
         public DbSet<Customer> Customers { get; set; }
+        public DbSet<CustomerAddress> CustomerAddresses { get; set; }
         public DbSet<Discount> Discounts { get; set; }
         public DbSet<Item> Items { get; set; }
         public DbSet<ItemType> ItemTypes { get; set; }
@@ -32,6 +32,7 @@ namespace Infrastructure.Data
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderStatusType> OrderStatusTypes { get; set; }
         public DbSet<Payment> Payments { get; set; }
+        public DbSet<PaymentMethod> PaymentMethods { get; set; }
         public DbSet<PaymentStatusType> PaymentStatusTypes { get; set; }
         public DbSet<PaymentType> PaymentTypes { get; set; }
         public DbSet<Permission> Permissions { get; set; }
@@ -53,5 +54,6 @@ namespace Infrastructure.Data
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);
         int SaveChanges();
+        public bool EnsureCreated();
     }
 }
