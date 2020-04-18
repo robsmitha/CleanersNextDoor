@@ -2,6 +2,7 @@
 import { Link, Redirect } from 'react-router-dom'
 import { AuthConsumer } from './../../context/AuthContext'
 import { Row, Col, Container, Badge, Card, CardBody, CardFooter } from 'reactstrap'
+import { customerService } from '../../services/customer.service'
 
 
 export class PaymentMethods extends Component {
@@ -19,8 +20,7 @@ export class PaymentMethods extends Component {
     }
 
     populatePaymentMethods() {
-        fetch(`customers/getPaymentMethods`)
-            .then(response => response.json())
+        customerService.getPaymentMethods()
             .then(data => {
                 this.setState({
                     paymentMethods: data,
@@ -31,33 +31,13 @@ export class PaymentMethods extends Component {
 
     removePaymentMethod = event => {
         if (window.confirm(`Are you sure you want to delete this payment method ${event.target.value}?`)) {
-
-            const request = {
-                method: 'post',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ id: Number(event.target.value) })
-            }
-
-            fetch(`customers/removePaymentMethod`, request)
-                .then(reponse => reponse.json())
+            customerService.removePaymentMethod({ id: Number(event.target.value) })
                 .then(data => data ? this.populatePaymentMethods() : console.log(data))
         }
     }
 
     checkHandler = event => {
-
-        const request = {
-            method: 'post',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ id: Number(event.target.value) })
-        }
-
-        fetch(`customers/setDefaultPaymentMethod`, request)
-            .then(reponse => reponse.json())
+        customerService.setDefaultPaymentMethod({ id: Number(event.target.value) })
             .then(data => data ? this.populatePaymentMethods() : console.log(data))
     }
 

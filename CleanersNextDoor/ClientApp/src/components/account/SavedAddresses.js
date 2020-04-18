@@ -2,6 +2,7 @@
 import { Link, Redirect } from 'react-router-dom'
 import { AuthConsumer } from './../../context/AuthContext'
 import { Row, Col, Container, Badge, Card, CardBody, CardFooter } from 'reactstrap'
+import { customerService } from '../../services/customer.service'
 
 
 export class SavedAddresses extends Component {
@@ -19,8 +20,7 @@ export class SavedAddresses extends Component {
     }
 
     populateAddressInformation() {
-        fetch(`customers/getAddresses`)
-            .then(response => response.json())
+        customerService.getAddresses()
             .then(data => {
                 this.setState({
                     addresses: data,
@@ -31,32 +31,13 @@ export class SavedAddresses extends Component {
 
     removeAddress = event => {
         if (window.confirm(`Are you sure you want to delete address ${event.target.value}?`)) {
-
-            const request = {
-                method: 'post',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ id: Number(event.target.value) })
-            }
-
-            fetch(`customers/removeAddress`, request)
-                .then(reponse => reponse.json())
+            customerService.removeAddress({ id: Number(event.target.value) })
                 .then(data => data ? this.populateAddressInformation() : console.log(data))
         }
     }
 
     checkHandler = event => {
-        const request = {
-            method: 'post',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ id: Number(event.target.value) })
-        }
-
-        fetch(`customers/setDefaultAddress`, request)
-            .then(reponse => reponse.json())
+        customerService.setDefaultAddress({ id: Number(event.target.value) })
             .then(data => data ? this.populateAddressInformation() : console.log(data))
     }
 

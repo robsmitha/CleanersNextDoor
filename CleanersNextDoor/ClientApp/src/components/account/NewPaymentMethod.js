@@ -5,6 +5,7 @@ import { FaLock } from 'react-icons/fa';
 import { AuthConsumer } from './../../context/AuthContext'
 import TextInput from './../../helpers/TextInput';
 import handleChange from './../../helpers/HandleChange';
+import { customerService } from '../../services/customer.service'
 
 export class NewPaymentMethod extends Component {
 
@@ -53,24 +54,17 @@ export class NewPaymentMethod extends Component {
             isDefault: this.state.isDefault
         }
 
-        const request = {
-            method: 'post',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        }
-
-        fetch('customers/AddPaymentMethod', request)
-            .then(this.handleValidation)
+        customerService.addPaymentMethod(data)
             .then(data => {
-                if (data.id > 0) {
-                    this.props.history.push(`/payment-methods`)
+                if (data !== null) {
+                    if (data.id > 0) {
+                        this.props.history.push(`/payment-methods`)
+                    } else {
+                        alert(data)
+                    }
                 }
-                else if (data !== null) {
-                    let errors = ''
-                    for (var k in data) errors += `${data[k]}\n`
-                    alert(errors)
+                else {
+                    //request failed
                 }
 
                 this.setState({
@@ -79,12 +73,6 @@ export class NewPaymentMethod extends Component {
             })
     }
 
-
-    handleValidation(response) {
-        return response.ok || response.status === 400
-            ? response.json()
-            : null;
-    }
     render() {
         return (
             <div>

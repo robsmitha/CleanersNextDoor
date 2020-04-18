@@ -2,6 +2,7 @@
 import { Link, Redirect } from 'react-router-dom'
 import { Col, Card, CardBody } from 'reactstrap'
 import { AuthConsumer } from './../../context/AuthContext'
+import { customerService } from '../../services/customer.service'
 
 export class MyAccount extends Component {
     constructor(props) {
@@ -13,12 +14,11 @@ export class MyAccount extends Component {
     }
 
     componentDidMount() {
-        this.populateProfileInformation()
+        this.populateCustomer()
     }
 
-    populateProfileInformation() {
-        fetch(`customers/account`)
-            .then(response => response.json())
+    populateCustomer() {
+        customerService.getCustomer()
             .then(data => {
                 if (data.id > 0) {
                     this.setState({
@@ -37,7 +37,7 @@ export class MyAccount extends Component {
                         <div>
                             {!authenticated
                                 ? <Redirect to='/sign-up' />
-                                : this.renderProfileLayout()}
+                                : this.renderLayout()}
                         </div>
                     )}
                 </AuthConsumer>
@@ -46,7 +46,7 @@ export class MyAccount extends Component {
     }
 
 
-    static renderProfile(customer) {
+    static renderCustomer(customer) {
         return (
             <div>
                 <div className="row">
@@ -79,10 +79,10 @@ export class MyAccount extends Component {
         )
     }
 
-    renderProfileLayout() {
+    renderLayout() {
         let contents = this.state.loading
             ? <p><em>Loading...</em></p>
-            : MyAccount.renderProfile(this.state.customer);
+            : MyAccount.renderCustomer(this.state.customer);
         return (
             <div>
                 <header className="bg-primary py-3 mb-5">
@@ -116,7 +116,7 @@ export class MyAccount extends Component {
                         <small className="text-muted">
                             Is this information correct? 
                             If not, you can&nbsp;
-                            <Link className="text-decoration-none" to="/edit-profile">
+                            <Link className="text-decoration-none" to="/edit-account">
                                 edit your account.
                             </Link>
                         </small>
@@ -128,7 +128,7 @@ export class MyAccount extends Component {
                         </h3>
                         <div className="row">
                             <div className="col-md-4 mb-4">
-                                <Link className="text-decoration-none" to="/edit-profile">
+                                <Link className="text-decoration-none" to="/edit-account">
                                     <div className="card h-100">
                                         <div className="card-body p-4">
                                             <div className="d-flex w-100 justify-content-between text-dark">

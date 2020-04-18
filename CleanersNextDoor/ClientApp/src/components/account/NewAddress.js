@@ -5,6 +5,7 @@ import { FaLock } from 'react-icons/fa';
 import { AuthConsumer } from './../../context/AuthContext'
 import TextInput from './../../helpers/TextInput';
 import handleChange from './../../helpers/HandleChange';
+import { customerService } from '../../services/customer.service'
 
 
 export class NewAddress extends Component {
@@ -120,23 +121,18 @@ export class NewAddress extends Component {
             name: name.value,
             isDefault: this.state.isDefault
         }
-        const request = {
-            method: 'post',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(address)
-        }
-        fetch('customers/AddAddress', request)
-            .then(this.handleValidation)
+
+        customerService.addAddress(address)
             .then(data => {
-                if (data.id > 0) {
-                    this.props.history.push(`/saved-addresses`)
+                if (data !== null) {
+                    if (data.id > 0) {
+                        this.props.history.push(`/saved-addresses`)
+                    } else {
+                        alert(data)
+                    }
                 }
-                else if (data !== null) {
-                    let errors = ''
-                    for (var k in data) errors += `${data[k]}\n`
-                    alert(errors)
+                else {
+                    //request failed
                 }
 
                 this.setState({
@@ -145,12 +141,6 @@ export class NewAddress extends Component {
             })
     }
 
-
-    handleValidation(response) {
-        return response.ok || response.status === 400
-            ? response.json()
-            : null;
-    }
     render() {
         return (
             <div>

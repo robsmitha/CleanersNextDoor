@@ -5,6 +5,7 @@ import { IconContext } from 'react-icons'
 import { FaCheckCircle, FaHome } from 'react-icons/fa'
 import TextInput from './../helpers/TextInput';
 import handleChange from './../helpers/HandleChange';
+import { customerService } from '../services/customer.service';
 
 export class SignUp extends Component {
 
@@ -110,9 +111,7 @@ export class SignUp extends Component {
     }
 
     checkEmail() {
-
-        fetch(`customers/CheckEmailAvailability/${this.state.formControls.email.value}`)
-            .then(response => response.json())
+        customerService.checkEmailAvailability(this.state.formControls.email.value)
             .then(data => {
                 if (!data.isAvailable) {
                     const updatedControls = {

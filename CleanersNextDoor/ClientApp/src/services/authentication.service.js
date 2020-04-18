@@ -1,6 +1,6 @@
 ﻿
 import { BehaviorSubject } from 'rxjs';
-import { handleResponse } from './handle-response';
+import { post } from './api.service';
 
 const _appUserKey = 'appUser';
 
@@ -11,20 +11,14 @@ export const authenticationService = {
     signUp,
     signOut,
     clearAppUser,
+    authorize,
     appUser: appUserSubject.asObservable(),
     get appUserValue() { return appUserSubject.value }
 };
 
 
 function signIn(email, password) {
-    const requestOptions = {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
-    };
-
-    return fetch(`authentication/signin`, requestOptions)
-        .then(handleResponse)
+    return post(`authentication/signin`, { email, password })
         .then(customer => {
             localStorage.setItem(_appUserKey, JSON.stringify(customer));
             appUserSubject.next(customer);
@@ -33,16 +27,7 @@ function signIn(email, password) {
 }
 
 function signUp(customer) {
-    const requestOptions = {
-        method: 'post',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(customer)
-    };
-
-    return fetch('authentication/signup', requestOptions)
-        .then(handleResponse)
+    return post('authentication/signup', customer)
         .then(customer => {
             localStorage.setItem(_appUserKey, JSON.stringify(customer));
             appUserSubject.next(customer);
@@ -51,17 +36,14 @@ function signUp(customer) {
 }
 
 function signOut() {
-    const requestOptions = {
-        method: 'post'
-    };
-    fetch(`authentication/signout`, requestOptions)
-        .then(response => {
-            if (response.ok) {
-                clearAppUser();
-            }
+    post(`authentication/signout`)
+        .then(data => {
+            if (data) clearAppUser();
         });
 }
-
+function authorize() {
+    return post(`authentication/authorize`)
+}
 function clearAppUser() {
     // remove user from local storage to log user out
     localStorage.removeItem(_appUserKey);

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { AuthConsumer } from './../context/AuthContext';
+import { merchantService } from '../services/merchant.service';
 
 export class Home extends Component {
     constructor(props) {
@@ -16,8 +17,7 @@ export class Home extends Component {
     }
 
     fetchMerchants() {
-        fetch('merchants/GetMerchants')
-            .then(response => response.json())
+        merchantService.getMerchants()
             .then(data => this.setState({ merchants: data, loading: false }))
     }
 

@@ -1,6 +1,7 @@
 ﻿import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { AuthConsumer } from './../../context/AuthContext'
+import { merchantService } from '../../services/merchant.service'
 
 export class Merchant extends Component {
     constructor(props) {
@@ -20,14 +21,12 @@ export class Merchant extends Component {
     }
 
     populateMerchantInformation() {
-        fetch(`merchants/${this.state.merchantId}`)
-            .then(response => response.json())
+        merchantService.getMerchant(this.state.merchantId)
             .then(data => this.setState({ merchant: data, merchantLoading: false }))
     }
     
     populateMerchantItems() {
-        fetch(`merchants/${this.state.merchantId}/items`)
-            .then(response => response.json())
+        merchantService.getItems(this.state.merchantId)
             .then(data => this.setState({ items: data, itemsLoading: false }))
     }
 

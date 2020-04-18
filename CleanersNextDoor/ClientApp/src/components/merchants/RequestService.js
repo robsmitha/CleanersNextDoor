@@ -1,6 +1,8 @@
 ﻿import React, { Component } from 'react';
 import { Link, Redirect } from 'react-router-dom';
 import { AuthConsumer } from './../../context/AuthContext';
+import { merchantService } from '../../services/merchant.service'
+import { customerService } from '../../services/customer.service'
 
 export class RequestService extends Component {
 
@@ -25,14 +27,12 @@ export class RequestService extends Component {
     }
 
     populateMerchantItems() {
-        fetch(`merchants/${this.state.merchantId}/items`)
-            .then(response => response.json())
+        merchantService.getItems(this.state.merchantId)
             .then(data => this.setState({ items: data, itemsLoading: false }));
     }
 
     populateCustomerCart() {
-        fetch(`customers/cart/${this.state.merchantId}`)
-            .then(response => response.json())
+        customerService.getCart(this.state.merchantId)
             .then(data => {
                 this.setState({
                     cart: data,
@@ -45,75 +45,58 @@ export class RequestService extends Component {
     }
 
     addToCart = (id) => {
-        var cartItemTransaction = {
+        const data = {
             itemID: Number(id),
             orderId: this.state.orderId,
             newQty: null
         };
-        this.tryCartTransaction(cartItemTransaction)
-    }
-
-    removeCartItem = (id) => {
-        var removeCartItem = {
-            itemID: Number(id),
-            orderId: this.state.orderId,
-        };
-
-        const request = {
-            method: 'post',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(removeCartItem)
-        }
-
-        fetch(`customers/removeCartItem`, request)
-            .then(reponse => reponse.json())
-            .then(data => data ? this.populateCustomerCart() : console.log(data))
+        customerService.cartTransaction(data)
+            .then(data => {
+                if (data !== null) {
+                    if (data.orderID > 0) {
+                        this.populateCustomerCart()
+                    } else {
+                        alert(data)
+                    }
+                }
+                else {
+                    //request failed
+                }
+            })
     }
 
     handleQtyChange = (event) => {
         var newQty = event.target.value;
         var itemId = event.target.name;
 
-        const cartItemTransaction = {
+        const data = {
             itemID: Number(itemId),
             orderId: this.state.orderId,
             newQty: Number(newQty)
         };
 
-        this.tryCartTransaction(cartItemTransaction);
-    }
-
-    tryCartTransaction(cartItemTransaction) {
-        const request = {
-            method: 'post',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(cartItemTransaction)
-        }
-        fetch(`customers/addtocart`, request)
-            .then(this.handleValidation)
+        customerService.cartTransaction(data)
             .then(data => {
-                if (data.orderID > 0) {
-                    this.populateCustomerCart()
-                }
-                else if (data != null) {
-                    let errors = ''
-                    data.forEach(r => errors += r + '\n')
-                    if (errors.length > 0) alert(errors)
+                if (data !== null) {
+                    if (data.orderID > 0) {
+                        this.populateCustomerCart()
+                    } else {
+                        alert(data)
+                    }
                 }
                 else {
-                    //error
+                    //request failed
                 }
             })
     }
 
-    handleValidation(response) {
-        return response.ok || response.status === 400
-            ? response.json()
-            : null;
+    removeCartItem = (id) => {
+        const data = {
+            itemID: Number(id),
+            orderId: this.state.orderId,
+        };
+        customerService.removeCartItem(data)
+            .then(data => data ? this.populateCustomerCart() : console.log(data))
     }
 
     render() {
