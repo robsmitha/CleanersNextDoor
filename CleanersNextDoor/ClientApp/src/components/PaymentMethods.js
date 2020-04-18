@@ -4,33 +4,33 @@ import { AuthConsumer } from '../context/AuthContext'
 import { Row, Col, Container, Badge, Card, CardBody, CardFooter, CardHeader } from 'reactstrap'
 
 
-export class SavedAddresses extends Component {
+export class PaymentMethods extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
             loading: true,
-            customer: null
+            paymentMethods: null
         }
     }
 
     componentDidMount() {
-        this.populateAddressInformation()
+        this.populatePaymentMethods()
     }
 
-    populateAddressInformation() {
-        fetch(`customers/getAddresses`)
+    populatePaymentMethods() {
+        fetch(`customers/getPaymentMethods`)
             .then(response => response.json())
             .then(data => {
                 this.setState({
-                    addresses: data,
+                    paymentMethods: data,
                     loading: false
                 })
             })
     }
 
-    removeAddress = event => {
-        if (window.confirm(`Are you sure you want to delete address ${event.target.value}?`)) {
+    removePaymentMethod = event => {
+        if (window.confirm(`Are you sure you want to delete this payment method ${event.target.value}?`)) {
 
             const request = {
                 method: 'post',
@@ -40,13 +40,14 @@ export class SavedAddresses extends Component {
                 body: JSON.stringify({ id: Number(event.target.value) })
             }
 
-            fetch(`customers/removeAddress`, request)
+            fetch(`customers/removePaymentMethod`, request)
                 .then(reponse => reponse.json())
-                .then(data => data ? this.populateAddressInformation() : console.log(data))
+                .then(data => data ? this.populatePaymentMethods() : console.log(data))
         }
     }
 
     checkHandler = event => {
+
         const request = {
             method: 'post',
             headers: {
@@ -55,9 +56,9 @@ export class SavedAddresses extends Component {
             body: JSON.stringify({ id: Number(event.target.value) })
         }
 
-        fetch(`customers/setDefaultAddress`, request)
+        fetch(`customers/setDefaultPaymentMethod`, request)
             .then(reponse => reponse.json())
-            .then(data => data ? this.populateAddressInformation() : console.log(data))
+            .then(data => data ? this.populatePaymentMethods() : console.log(data))
     }
 
     render() {
@@ -79,7 +80,7 @@ export class SavedAddresses extends Component {
     renderLayout() {
         let contents = this.state.loading
             ? <p><em>Loading...</em></p>
-            : this.renderAddresses(this.state.addresses);
+            : this.renderPaymentMethods(this.state.paymentMethods);
         return (
             <div>
                 <header className="bg-primary py-3 mb-5">
@@ -87,13 +88,13 @@ export class SavedAddresses extends Component {
                         <Row className="h-100 align-items-center">
                             <Col>
                                 <h1 className="display-4 text-white mt-5 mb-2">
-                                    Saved Addresses
+                                    Payment Method
                                 </h1>
                                 <p className="lead text-white-50">
-                                    Set up your default saved addresses for speedy pick up and delivery.
+                                    Set up your default payment methods for a speedy checkout process.
                                 </p>
-                                <Link to="/new-address" className="btn btn-success btn-lg mr-2">
-                                    New Address
+                                <Link to="/new-payment-method" className="btn btn-success btn-lg mr-2">
+                                    New Payment
                                 </Link>
                                 <Link to="/profile" className="btn btn-secondary btn-lg">
                                     My Account
@@ -107,40 +108,41 @@ export class SavedAddresses extends Component {
         )
     }
 
-    renderAddresses(addresses) {
+    renderPaymentMethods(paymentMethods) {
         return (
             <div>
                 <Container>
+
                     <h3>
-                        My Addresses
+                        My Payment Methods
                     </h3>
                     <p>
-                        Address information is used for scheduling pick up and delivery services.
+                        Payment methods are stored using secure payment services to tokenize and protect card information.
                     </p>
 
-                    <Row hidden={addresses.length === 0}>
-                        {addresses.map(a =>
-                            <Col md="4" key={a.id} className="mb-4">
-                                <Card className={'h-100 ' + (a.isDefault ? 'border-primary' : '')}>
+                    <Row hidden={paymentMethods.length === 0}>
+                        {paymentMethods.map(pm =>
+                            <Col md="4" key={pm.id} className="mb-4">
+                                <Card className={pm.isDefault ? 'h-100 border-primary' : 'h-100'}>
                                     <CardBody className="pb-0 border-bottom-0">
                                         <Row>
                                             <Col>
                                                 <p className="mb-1 font-weight-bold">
-                                                    {a.street1} {a.street2}
+                                                    {pm.cardTypeName} - {pm.last4}
                                                 </p>
-                                                <small className="d-block text-muted">{a.city}, {a.stateAbbreviation}. {a.zip}</small>
-                                                <Badge hidden={a.name.length === 0} color="light" className="border" pill>{a.name.toUpperCase()}</Badge>
+                                                <small className="d-block text-muted">{new Date(pm.expirationDate).toLocaleDateString()}</small>
+                                                <Badge hidden={pm.nameOnCard === null  || pm.nameOnCard.length === 0} color="light" className="border" pill>{pm.nameOnCard !== null ? pm.nameOnCard.toUpperCase() : ''}</Badge>
                                             </Col>
                                             <Col xs="auto">
                                                 <div className="custom-control custom-radio">
-                                                    <input type="radio" id={'isDefault' + a.id} name="isDefault" className="custom-control-input" value={a.id} id={'isDefault' + a.id} checked={a.isDefault} onChange={this.checkHandler} />
-                                                    <label className={'custom-control-label ' + (a.isDefault ? 'font-weight-bold' : '')} htmlFor={'isDefault' + a.id}>DEFAULT</label>
+                                                    <input type="radio" id={'isDefault' + pm.id} name="isDefault" className="custom-control-input" value={pm.id} id={'isDefault' + pm.id} checked={pm.isDefault} onChange={this.checkHandler} />
+                                                    <label className={'custom-control-label ' + (pm.isDefault ? 'font-weight-bold' : '')} htmlFor={'isDefault' + pm.id}>DEFAULT</label>
                                                 </div>
                                             </Col>
                                         </Row>
                                     </CardBody>
                                     <CardFooter className="bg-white pt-0 border-top-0">
-                                        <button type="button" className="btn btn-link btn-sm text-danger pl-0" value={a.id} onClick={this.removeAddress}>
+                                        <button type="button" className="btn btn-link btn-sm text-danger pl-0" value={pm.id} onClick={this.removePaymentMethod}>
                                             REMOVE
                                         </button>
                                     </CardFooter>
@@ -148,19 +150,19 @@ export class SavedAddresses extends Component {
                             </Col>
                         )}
                     </Row>
-                    <div hidden={addresses.length > 0} className="mb-4">
+                    <div hidden={paymentMethods.length > 0} className="mb-4">
                         <p className="lead mb-1">
-                            You have no saved addresses.
+                            You have no saved payment methods.
                         </p>
                         <small className="text-muted">
-                            <Link to='/new-address' className="text-decoration-none">
-                                Add a new address&nbsp;
+                            <Link to='/new-payment-method' className="text-decoration-none">
+                                Add a new payment method&nbsp;
                             </Link>
                             to speed up the checkout process.
                         </small>
                     </div>
                 </Container>
             </div>
-            )
+        )
     }
 }

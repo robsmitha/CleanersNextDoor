@@ -39,12 +39,8 @@ namespace Application.Customers.Queries.GetCustomer
             if (entity == null) return new CustomerModel();
 
             var customer = _mapper.Map<CustomerModel>(entity);
-            customer.Addresses = _context.CustomerAddresses
-                .Where(a => a.CustomerID == request.CustomerID)
-                .ToList();
-            customer.PaymentMethods = _context.PaymentMethods
-                .Where(p => p.CustomerID == request.CustomerID)
-                .ToList();
+            customer.HasAddresses = _context.CustomerAddresses.Any(a => a.CustomerID == request.CustomerID);
+            customer.HasPaymentMethods = _context.PaymentMethods.Any(p => p.CustomerID == request.CustomerID);
             return customer;
         }
     }

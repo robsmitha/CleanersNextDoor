@@ -15,9 +15,11 @@ namespace CleanersNextDoor.Controllers
     public class IdentityController : ControllerBase
     {
         private readonly IIdentityService _identity;
-        public IdentityController(IIdentityService identity)
+        private readonly IAuthenticationService _auth;
+        public IdentityController(IIdentityService identity, IAuthenticationService auth)
         {
             _identity = identity;
+            _auth = auth;
         }
 
         [HttpPost("Authorize")]
@@ -32,6 +34,13 @@ namespace CleanersNextDoor.Controllers
                 return await _identity.RefreshToken(accessToken);
             }
             return new ApplicationUser(authenticated);
+        }
+
+        [HttpPost("SignOut")]
+        public ActionResult<bool> SignOut()
+        {
+            _auth.SetAuthentication(null);
+            return true;
         }
     }
 }

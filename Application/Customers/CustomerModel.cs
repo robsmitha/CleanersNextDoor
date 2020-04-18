@@ -18,7 +18,7 @@ namespace Application.Customers
         public string StripeCustomerID { get; set; }
         public bool EmailVerified { get; set; }
         public bool PhoneVerified { get; set; }
-        public List<CustomerAddress> Addresses { get; set; }
-        public List<PaymentMethod> PaymentMethods { get; set; }
+        public bool HasAddresses { get; set; }
+        public bool HasPaymentMethods { get; set; }
     }
 }

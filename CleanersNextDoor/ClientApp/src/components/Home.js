@@ -56,7 +56,7 @@ export class Home extends Component {
                     </div>
                 </header>
                 <div className="container">
-                    <h2 className="border-bottom mb-2">How this Works</h2>
+                    <h2 className="mb-2">How this Works</h2>
                     <div className="row mb-3">
                         <div className="col-md-8">
                             <p>
@@ -70,7 +70,7 @@ export class Home extends Component {
                     </div>
                 </div>
                 <div className="container">
-                    <h2 className="border-bottom mb-2">Available Merchants</h2>
+                    <h2 className="mb-2">Available Merchants</h2>
                 </div>
                 <section>
                     <div className="container">
@@ -91,7 +91,7 @@ export class Home extends Component {
                     {merchants.map(m =>
                         <div key={m.id} className="col-lg-4 col-md-6 mb-4">
                             <Link className="text-decoration-none" to={'merchant/:id'.replace(':id', m.id)}>
-                                <div className="card h-100 shadow rounded-0">
+                                <div className="card h-100">
                                     <div className="card-body text-dark">
                                         <h4 className="card-title">{m.name}</h4>
                                         <small className="text-muted">

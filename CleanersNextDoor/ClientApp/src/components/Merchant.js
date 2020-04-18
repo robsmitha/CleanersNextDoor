@@ -82,13 +82,13 @@ export class Merchant extends Component {
                 <div className="container">
                     <div className="row">
                         <div className="col-md-8 mb-3">
-                            <h2 className="border-bottom mb-2">About</h2>
+                            <h2 className="mb-2">About</h2>
                             <p className="lead">
                                 {merchant.description}
                             </p>
                         </div>
                         <div className="col-md-4 mb-3">
-                            <h2 className="border-bottom mb-2">Contact Us</h2>
+                            <h2 className="mb-2">Contact Us</h2>
                             <address>
                                 <strong>{merchant.name}</strong>
                                 <br />
@@ -122,7 +122,7 @@ export class Merchant extends Component {
     renderMerchantItems(items) {
         return (
             <div className="container">
-                <h2 className="border-bottom mb-2">Available Services</h2>
+                <h2 className="mb-2">Available Services</h2>
                 <AuthConsumer>
                     {({ authenticated }) => (
                         <div>
@@ -133,7 +133,7 @@ export class Merchant extends Component {
                                 {items.map(i =>
                                     <div key={i.id} className="col-md-4 mb-4">
                                         <Link className="text-decoration-none" to={authenticated ? '/request-service/:id'.replace(':id', this.state.merchantId) : '/sign-in'}>
-                                            <div className="card h-100 shadow">
+                                            <div className="card h-100">
                                                 <div className="card-body">
                                                     <div className="d-flex w-100 justify-content-between text-dark">
                                                         <h5 className="mb-1"> {i.name}</h5>

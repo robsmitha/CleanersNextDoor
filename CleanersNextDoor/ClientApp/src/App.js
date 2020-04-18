@@ -20,6 +20,8 @@ import { SignOut } from './components/SignOut'
 import { SignUp } from './components/SignUp'
 import { SavedAddresses } from './components/SavedAddresses'
 import { NewAddress } from './components/NewAddress'
+import { PaymentMethods } from './components/PaymentMethods'
+import { NewPaymentMethod } from './components/NewPaymentMethod'
 
 import { AuthProvider } from './context/AuthContext'
 
@@ -34,6 +36,8 @@ export default class App extends Component {
                     <LayoutRoute path='/profile' component={Profile} />
                     <LayoutRoute path='/saved-addresses' component={SavedAddresses} />
                     <LayoutRoute path='/new-address' component={NewAddress} />
+                    <LayoutRoute path='/payment-methods' component={PaymentMethods} />
+                    <LayoutRoute path='/new-payment-method' component={NewPaymentMethod} />
                     <LayoutRoute path='/merchant/:id' component={Merchant} />
                     <LayoutRoute path='/request-service/:id' component={RequestService} />
                     <LayoutRoute path='/how-it-works' component={HowItWorks} />

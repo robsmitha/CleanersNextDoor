@@ -9,8 +9,7 @@ export class Profile extends Component {
         super(props)
         this.state = {
             loading: true,
-            customer: null,
-            missingAddress: true,
+            customer: null
         }
     }
 
@@ -25,8 +24,7 @@ export class Profile extends Component {
                 if (data.id > 0) {
                     this.setState({
                         customer: data,
-                        loading: false,
-                        missingAddress: data.addresses && data.addresses.length === 0
+                        loading: false
                     })
                 }
             })
@@ -110,7 +108,7 @@ export class Profile extends Component {
                 </header>
                 <div className="container">
                     <div className="mb-3">
-                        <h3 className="border-bottom mb-3">
+                        <h3 className="mb-3">
                             Account Information
                         </h3>
                         <div className="mb-1">
@@ -118,15 +116,15 @@ export class Profile extends Component {
                         </div>
                         <small className="text-muted">
                             Is this information correct? 
-                            If not,&nbsp;
+                            If not, you can&nbsp;
                             <Link className="text-decoration-none" to="/edit-profile">
-                                please edit your account.
+                                edit your account.
                             </Link>
                         </small>
                     </div>
 
                     <div>
-                        <h3 className="border-bottom mb-3">
+                        <h3 className="mb-3">
                             More Settings
                         </h3>
                         <div className="row">
@@ -144,15 +142,15 @@ export class Profile extends Component {
                             </div>
                             <div className="col-md-4 mb-4">
                                 <Link className="text-decoration-none" to="/saved-addresses">
-                                    <div className={this.state.missingAddress ? 'card h-100 border-danger' : 'card h-100'}>
+                                    <div className={this.state.customer !== null && !this.state.customer.hasAddresses ? 'card h-100 border-danger' : 'card h-100'}>
                                         <div className="card-body p-4">
                                             <div className="d-flex w-100 justify-content-between text-dark">
                                                 <h5 className="mb-1">Saved Addresses</h5>
                                             </div>
                                             <p className="mb-1 text-muted">
-                                                {this.state.missingAddress
-                                                    ? <span className="text-danger">Set up your default saved addresses for Speedy pick up and delivery.</span>
-                                                    : 'Manage your default saved addresses for Speedy pick up and delivery.'}
+                                                {this.state.customer !== null && !this.state.customer.hasAddresses
+                                                    ? <span className="text-danger">Set up your default saved addresses to skip at checkout.</span>
+                                                    : 'Keep your default saved addresses up to date to ensure flawless services.'}
                                             </p>
                                         </div>
                                     </div>
@@ -160,12 +158,16 @@ export class Profile extends Component {
                             </div>
                             <div className="col-md-4 mb-4">
                                 <Link className="text-decoration-none" to="/payment-methods">
-                                    <div className="card h-100">
+                                    <div className={this.state.customer !== null && !this.state.customer.hasAddresses ? 'card h-100 border-danger' : 'card h-100'}>
                                         <div className="card-body p-4">
                                             <div className="d-flex w-100 justify-content-between text-dark">
                                                 <h5 className="mb-1">Payment Methods</h5>
                                             </div>
-                                            <p className="mb-1 text-muted">Add a secure stored payment method to skip card information at checkout.</p>
+                                            <p className="mb-1 text-muted">
+                                                {this.state.customer !== null && !this.state.customer.hasPaymentMethods
+                                                    ? <span className="text-danger">Add a secure stored payment method to skip card information at checkout.</span>
+                                                    : 'Keep your default stored payment methods up to date to ensure flawless services.'}
+                                            </p>
                                         </div>
                                     </div>
                                 </Link>

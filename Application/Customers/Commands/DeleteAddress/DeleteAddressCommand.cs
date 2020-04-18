@@ -25,16 +25,12 @@ namespace Application.Customers.Commands.DeleteAddress
     public class DeleteAddressCommandHandler : IRequestHandler<DeleteAddressCommand, bool>
     {
         private readonly ICleanersNextDoorContext _context;
-        private readonly IMapper _mapper;
 
-        public DeleteAddressCommandHandler(
-            ICleanersNextDoorContext context,
-            IMapper mapper
-            )
+        public DeleteAddressCommandHandler(ICleanersNextDoorContext context)
         {
             _context = context;
-            _mapper = mapper;
         }
+
         public async Task<bool> Handle(DeleteAddressCommand request, CancellationToken cancellationToken)
         {
             try

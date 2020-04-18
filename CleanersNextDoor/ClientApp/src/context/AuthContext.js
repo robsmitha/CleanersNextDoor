@@ -6,8 +6,7 @@ const AuthContext = React.createContext();
 class AuthProvider extends Component {
 
     state = {
-        authenticated: window.document.referrer == null
-            && authenticationService.appUserValue !== null
+        authenticated: authenticationService.appUserValue !== null
             && authenticationService.appUserValue.authenticated
     }
 

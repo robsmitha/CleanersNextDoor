@@ -31,7 +31,7 @@ export class HowItWorks extends Component {
                 </header>
                 <div className="container">
                     <div className="my-3">
-                        <h3 className="border-bottom">You Need a Laundry Service</h3>
+                        <h3>You Need a Laundry Service</h3>
                         <p>
                             Laundry errands can be a hassle.
                             Our pick up and delivery services make it easy.
@@ -39,7 +39,7 @@ export class HowItWorks extends Component {
                     </div>
                     <div className="my-3">
 
-                        <h3 className="border-bottom">Merchants Provide Services</h3>
+                        <h3>Merchants Provide Services</h3>
                         <p>
                             Dry cleaning, alterations, suit cleanings and more.
                         </p>
@@ -50,7 +50,7 @@ export class HowItWorks extends Component {
                     </div>
                     <div className="my-3">
 
-                        <h3 className="border-bottom">We Bring the Service to You</h3>
+                        <h3>We Bring the Service to You</h3>
                         <p>
                             Schedule a pick up and delivery that works for your schedule. We will make it happen.
                         </p>

@@ -66,7 +66,6 @@ namespace Application.Customers.Commands.CreateAddress
                 {
                     entities.ForEach(e => e.IsDefault = false);
                     _context.CustomerAddresses.UpdateRange(entities);
-                    await _context.SaveChangesAsync(cancellationToken);
                 }
             }
 

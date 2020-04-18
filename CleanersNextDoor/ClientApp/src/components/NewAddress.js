@@ -184,7 +184,7 @@ export class NewAddress extends Component {
                 </header>
                 <Container>
 
-                    <h3 className="border-bottom">
+                    <h3>
                         Address Details
                             </h3>
                     <p className="mb-1">

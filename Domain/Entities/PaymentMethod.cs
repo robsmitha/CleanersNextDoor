@@ -19,6 +19,7 @@ namespace Domain.Entities
         [ForeignKey("CardTypeID")]
         public CardType CardType { get; set; }
         public DateTime ExpirationDate { get; set; }
-        public string PaymentMethodID { get; set; }
+        public string StripePaymentMethodID { get; set; }
+        public bool IsDefault { get; set; }
     }
 }

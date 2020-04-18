@@ -54,7 +54,7 @@ function signOut() {
     const requestOptions = {
         method: 'post'
     };
-    fetch(`customers/signout`, requestOptions)
+    fetch(`identity/signout`, requestOptions)
         .then(response => {
             if (response.ok) {
                 clearAppUser();
