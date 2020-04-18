@@ -13,7 +13,7 @@ const TextInput = props => {
     return (
         <div className="form-group" hidden={hidden}>
             <label htmlFor={props.name} className="font-weight-bold">{props.label === undefined ? props.name : props.label}</label>
-            <input type="text" className={formControl} {...props} />
+            <input className={formControl} {...props} />
             {errors.map(m =>
                 <div key={m} className="text-danger">
                     {m}

@@ -1,10 +1,10 @@
 ﻿import React, { Component } from 'react';
 import { Link, Redirect } from 'react-router-dom'
-import TextInput from './TextInput';
-import handleChange from './HandleChange';
-import { AuthConsumer } from './../context/AuthContext'
-import { Container, Row, Col, FormGroup } from 'reactstrap';
+import { Container, Row, Col } from 'reactstrap';
 import { FaLock } from 'react-icons/fa';
+import { AuthConsumer } from './../../context/AuthContext'
+import TextInput from './../../helpers/TextInput';
+import handleChange from './../../helpers/HandleChange';
 
 export class NewPaymentMethod extends Component {
 
@@ -113,7 +113,7 @@ export class NewPaymentMethod extends Component {
                                 <p className="lead text-white-50">
                                     Create a new payment method by securely entering your card information below.
                                 </p>
-                                <Link to="/profile" className="btn btn-success btn-lg mr-2">My Account</Link>
+                                <Link to="/account" className="btn btn-success btn-lg mr-2">My Account</Link>
                                 <Link to="/payment-methods" className="btn btn-secondary btn-lg">Payment Methods</Link>
                             </div>
                         </div>

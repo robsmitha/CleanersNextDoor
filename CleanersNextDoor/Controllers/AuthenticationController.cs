@@ -6,19 +6,19 @@ using Infrastructure.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Domain.Entities;
+using System.Threading;
 
 namespace CleanersNextDoor.Controllers
 {
     [Route("[controller]")]
     [ApiController]
     [Authorize]
-    public class IdentityController : ControllerBase
+    public class AuthenticationController : ControllerBase
     {
-        private readonly IIdentityService _identity;
         private readonly IAuthenticationService _auth;
-        public IdentityController(IIdentityService identity, IAuthenticationService auth)
+        public AuthenticationController(IAuthenticationService auth)
         {
-            _identity = identity;
             _auth = auth;
         }
 
@@ -31,7 +31,7 @@ namespace CleanersNextDoor.Controllers
             if (!authenticated && token != null)
             {
                 var accessToken = JsonSerializer.Deserialize<AccessToken>(token);
-                return await _identity.RefreshToken(accessToken);
+                return await _auth.RefreshToken(accessToken);
             }
             return new ApplicationUser(authenticated);
         }
@@ -39,8 +39,22 @@ namespace CleanersNextDoor.Controllers
         [HttpPost("SignOut")]
         public ActionResult<bool> SignOut()
         {
-            _auth.SetAuthentication(null);
+            _auth.ClearAuthentication();
             return true;
+        }
+        [AllowAnonymous]
+        [HttpPost("SignIn")]
+        public async Task<IApplicationUser> SignIn(Customer data)
+        {
+            return await _auth.AuthenticateCustomer(data.Email, data.Password);
+        }
+
+        [AllowAnonymous]
+        [HttpPost("SignUp")]
+        public async Task<IApplicationUser> SignUp(Customer data)
+        {
+            var cancellationToken = new CancellationToken();
+            return await _auth.CreateCustomer(data, cancellationToken);
         }
     }
 }

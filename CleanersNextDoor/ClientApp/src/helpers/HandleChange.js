@@ -13,12 +13,9 @@ const handleChange = (name, value, formControls) => {
 
     updatedFormElement.value = value;
     updatedFormElement.touched = true;
-    var validationResult = validate(value, updatedFormElement.validationRules, updatedFormElement.label);
-    updatedFormElement.valid = validationResult.isValid;
-    updatedFormElement.errors = validationResult.errorMessages;
-
+    updatedFormElement.errors = validate(value, updatedFormElement.validationRules, updatedFormElement.label);
+    updatedFormElement.valid = updatedFormElement.errors === undefined || updatedFormElement.errors === null || updatedFormElement.errors.length === 0;
     updatedControls[name] = updatedFormElement;
-
     let formIsValid = true;
     for (let inputIdentifier in updatedControls) {
         formIsValid = updatedControls[inputIdentifier].valid && formIsValid;

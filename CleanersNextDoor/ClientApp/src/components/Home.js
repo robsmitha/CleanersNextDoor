@@ -46,7 +46,7 @@ export class Home extends Component {
                                                 <Link to="/sign-up" className="btn btn-secondary btn-lg">Sign up</Link>
                                             </div>
                                             <div hidden={!authenticated}>
-                                                <Link to="/profile" className="btn btn-success btn-lg">My Account</Link>
+                                                <Link to="/account" className="btn btn-success btn-lg">My Account</Link>
                                             </div>
                                         </div>
                                     )}

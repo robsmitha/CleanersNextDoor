@@ -1,10 +1,9 @@
 ﻿import React, { Component } from 'react';
 import { Link, Redirect } from 'react-router-dom'
-import TextInput from './TextInput';
-import PasswordInput from './PasswordInput';
 import { AuthConsumer } from './../context/AuthContext'
-import handleChange from './HandleChange';
 import { FaHome } from 'react-icons/fa'
+import TextInput from './../helpers/TextInput';
+import handleChange from './../helpers/HandleChange';
 
 export class SignIn extends Component {
 
@@ -71,7 +70,7 @@ export class SignIn extends Component {
                     {({ authenticated, signIn }) => (
                         <div>
                             {authenticated
-                                ? <Redirect to='/profile' />
+                                ? <Redirect to='/account' />
                                 : this.renderSignInForm(signIn)}
                         </div>
                     )}
@@ -93,6 +92,7 @@ export class SignIn extends Component {
                             <h2 className="h4 mb-2">Sign in to your account</h2>
                             <form method="post" onSubmit={signIn}>
                                 <TextInput name="email"
+                                    type="email"
                                     placeholder={this.state.formControls.email.placeholder}
                                     label={this.state.formControls.email.label}
                                     value={this.state.formControls.email.value}
@@ -101,7 +101,8 @@ export class SignIn extends Component {
                                     valid={this.state.formControls.email.valid ? 1 : 0}
                                     errors={this.state.formControls.email.errors} />
 
-                                <PasswordInput name="password"
+                                <TextInput name="password"
+                                    type="password"
                                     placeholder={this.state.formControls.password.placeholder}
                                     label={this.state.formControls.password.label}
                                     value={this.state.formControls.password.value}

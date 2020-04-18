@@ -1,10 +1,11 @@
 ﻿import React, { Component } from 'react';
 import { Link, Redirect } from 'react-router-dom'
-import TextInput from './TextInput';
-import handleChange from './HandleChange';
-import { AuthConsumer } from './../context/AuthContext'
 import { Container, Row, Col, FormGroup } from 'reactstrap';
 import { FaLock } from 'react-icons/fa';
+import { AuthConsumer } from './../../context/AuthContext'
+import TextInput from './../../helpers/TextInput';
+import handleChange from './../../helpers/HandleChange';
+
 
 export class NewAddress extends Component {
 
@@ -86,7 +87,9 @@ export class NewAddress extends Component {
     }
 
     checkHandler = event => {
-        console.log(event.target instanceof HTMLInputElement && event.target.getAttribute('type') == 'checkbox')
+        if (event.target instanceof HTMLInputElement && event.target.getAttribute('type') == 'checkbox') {
+
+        }
         const name = event.target.name;
         const value = event.target.checked;
         this.setState({
@@ -176,7 +179,7 @@ export class NewAddress extends Component {
                                 <p className="lead text-white-50">
                                     Create a new address by entering your address information below.
                                 </p>
-                                <Link to="/profile" className="btn btn-success btn-lg mr-2">My Account</Link>
+                                <Link to="/account" className="btn btn-success btn-lg mr-2">My Account</Link>
                                 <Link to="/saved-addresses" className="btn btn-secondary btn-lg">Saved Addresses</Link>
                             </div>
                         </div>
@@ -186,7 +189,7 @@ export class NewAddress extends Component {
 
                     <h3>
                         Address Details
-                            </h3>
+                    </h3>
                     <p className="mb-1">
                         Please enter an address you would like saved on your profile.
                     </p>

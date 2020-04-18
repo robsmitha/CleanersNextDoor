@@ -10,17 +10,14 @@ namespace Application.Common.Behaviors
        : IRequestPreProcessor<TRequest>
     {
         private readonly ILogger _logger;
-        private readonly IAuthenticationService _authService;
-        private readonly IIdentityService _identityService;
+        private readonly IIdentityService _identity;
 
         public RequestLoggerBehaviour(
             ILogger<TRequest> logger,
-            IAuthenticationService authService,
-            IIdentityService identityService)
+            IIdentityService identity)
         {
             _logger = logger;
-            _authService = authService;
-            _identityService = identityService;
+            _identity = identity;
         }
 
         public async Task Process(
@@ -28,8 +25,8 @@ namespace Application.Common.Behaviors
             CancellationToken cancellationToken)
         {
             var requestName = typeof(TRequest).Name;
-            var claimId = _authService.ClaimID;
-            var identifier = _authService.UniqueIdentifier;
+            var claimId = _identity.ClaimID;
+            var identifier = _identity.UniqueIdentifier;
 
             _logger.LogInformation($"Application Request: {requestName} {claimId} {identifier} {request}");
             await Task.FromResult(0);

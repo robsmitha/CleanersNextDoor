@@ -1,11 +1,10 @@
 ﻿import React, { Component } from 'react';
 import { Link, Redirect } from 'react-router-dom'
-import TextInput from './TextInput';
-import PasswordInput from './PasswordInput';
-import handleChange from './HandleChange';
 import { AuthConsumer } from './../context/AuthContext'
 import { IconContext } from 'react-icons'
 import { FaCheckCircle, FaHome } from 'react-icons/fa'
+import TextInput from './../helpers/TextInput';
+import handleChange from './../helpers/HandleChange';
 
 export class SignUp extends Component {
 
@@ -141,7 +140,7 @@ export class SignUp extends Component {
                     {({ authenticated, signUp }) => (
                         <div>
                             {authenticated
-                                ? <Redirect to='/profile' />
+                                ? <Redirect to='/account' />
                                 : this.renderSignUp(signUp)}
                         </div>
                     )}
@@ -229,6 +228,7 @@ export class SignUp extends Component {
                                                     errors={this.state.formControls.name.errors} />
 
                                                 <TextInput name="phone"
+                                                    type="tel"
                                                     placeholder={this.state.formControls.phone.placeholder}
                                                     label={this.state.formControls.phone.label}
                                                     value={this.state.formControls.phone.value}
@@ -238,6 +238,7 @@ export class SignUp extends Component {
                                                     errors={this.state.formControls.phone.errors} />
 
                                                 <TextInput name="email"
+                                                    type="email"
                                                     placeholder={this.state.formControls.email.placeholder}
                                                     label={this.state.formControls.email.label}
                                                     value={this.state.formControls.email.value}
@@ -247,7 +248,8 @@ export class SignUp extends Component {
                                                     valid={this.state.formControls.email.valid ? 1 : 0}
                                                     errors={this.state.formControls.email.errors} />
 
-                                                <PasswordInput name="password"
+                                                <TextInput name="password"
+                                                    type="password"
                                                     placeholder={this.state.formControls.password.placeholder}
                                                     label={this.state.formControls.password.label}
                                                     value={this.state.formControls.password.value}
@@ -257,7 +259,8 @@ export class SignUp extends Component {
                                                     onBlur={this.checkPasswordMatch}
                                                     errors={this.state.formControls.password.errors} />
 
-                                                <PasswordInput name="confirmPassword"
+                                                <TextInput name="confirmPassword"
+                                                    type="password"
                                                     placeholder={this.state.formControls.confirmPassword.placeholder}
                                                     label={this.state.formControls.confirmPassword.label}
                                                     value={this.state.formControls.confirmPassword.value}

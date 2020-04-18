@@ -56,22 +56,22 @@ export class NavMenu extends Component {
                                             </NavItem>
                                         </ul>
                                         <ul className="navbar-nav ml-auto">
-                                            <NavItem id="nav_customer_sign_up" hidden={authenticated}>
+                                            <NavItem hidden={authenticated}>
                                                 <NavLink tag={Link} to="/sign-up">
                                                     <FaUserPlus />&nbsp;Sign up
                                             </NavLink>
                                             </NavItem>
-                                            <NavItem id="nav_customer_sign_in" hidden={authenticated}>
+                                            <NavItem hidden={authenticated}>
                                                 <NavLink tag={Link} to="/sign-in">
                                                     <FaSignInAlt />&nbsp;Sign in
                                                 </NavLink>
                                             </NavItem>
-                                            <NavItem id="nav_customer_profile" hidden={!authenticated}>
-                                                <NavLink tag={Link} to="/profile">
+                                            <NavItem hidden={!authenticated}>
+                                                <NavLink tag={Link} to="/account">
                                                     <FaUser />&nbsp;Account
                                                 </NavLink>
                                             </NavItem>
-                                            <NavItem id="nav_customer_sign_out" hidden={!authenticated}>
+                                            <NavItem hidden={!authenticated}>
                                                 <NavLink tag={Link} to="/sign-out">
                                                     <FaSignOutAlt />&nbsp;Sign out
                                                 </NavLink>

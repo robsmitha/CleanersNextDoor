@@ -32,7 +32,7 @@ export class SignOut extends Component {
                             <button type="button" onClick={signOut} className="btn btn-primary btn-block my-3">
                                 Yes, sign me out
                             </button>
-                            <Link to='/profile' className="btn btn-link btn-block text-decoration-none">
+                            <Link to='/account' className="btn btn-link btn-block text-decoration-none">
                                 No, keep me signed in
                             </Link>
                         </div>

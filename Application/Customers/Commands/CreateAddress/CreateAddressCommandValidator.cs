@@ -17,16 +17,16 @@ namespace Application.Customers.Commands.CreateAddress
     {
         //Inject SS address service
         private readonly ICleanersNextDoorContext _context;
-        private readonly IAuthenticationService _auth;
+        private readonly IIdentityService _identity;
         private readonly List<CustomerAddress> customerAddresses;
-        public CreateAddressCommandValidator(ICleanersNextDoorContext context, 
-            IAuthenticationService auth)
+        public CreateAddressCommandValidator(ICleanersNextDoorContext context,
+            IIdentityService identity)
         {
             _context = context;
-            _auth = auth;
+            _identity = identity;
 
             customerAddresses = _context.CustomerAddresses
-                   .Where(a => a.CustomerID == _auth.ClaimID)
+                   .Where(a => a.CustomerID == _identity.ClaimID)
                    .ToList();
 
 

@@ -1,7 +1,7 @@
 ﻿import React, { Component } from 'react';
 import { Link, Redirect } from 'react-router-dom'
-import { AuthConsumer } from '../context/AuthContext'
-import { Row, Col, Container, Badge, Card, CardBody, CardFooter, CardHeader } from 'reactstrap'
+import { AuthConsumer } from './../../context/AuthContext'
+import { Row, Col, Container, Badge, Card, CardBody, CardFooter } from 'reactstrap'
 
 
 export class SavedAddresses extends Component {
@@ -95,7 +95,7 @@ export class SavedAddresses extends Component {
                                 <Link to="/new-address" className="btn btn-success btn-lg mr-2">
                                     New Address
                                 </Link>
-                                <Link to="/profile" className="btn btn-secondary btn-lg">
+                                <Link to="/account" className="btn btn-secondary btn-lg">
                                     My Account
                                 </Link>
                             </Col>

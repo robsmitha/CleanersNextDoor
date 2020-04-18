@@ -12,19 +12,16 @@ namespace Application.Common.Behaviors
     {
         private readonly Stopwatch _timer;
         private readonly ILogger<TRequest> _logger;
-        private readonly IAuthenticationService _authService;
-        private readonly IIdentityService _identityService;
+        private readonly IIdentityService _identity;
 
         public RequestPerformanceBehaviour(
             ILogger<TRequest> logger,
-            IAuthenticationService authService,
-            IIdentityService identityService)
+            IIdentityService identity)
         {
             _timer = new Stopwatch();
 
             _logger = logger;
-            _authService = authService;
-            _identityService = identityService;
+            _identity = identity;
         }
 
         public async Task<TResponse> Handle(
@@ -43,8 +40,8 @@ namespace Application.Common.Behaviors
             if (elapsedMilliseconds > 500)
             {
                 var requestName = typeof(TRequest).Name;
-                var identifier = _authService.UniqueIdentifier;
-                var claimId = _authService.ClaimID;
+                var identifier = _identity.UniqueIdentifier;
+                var claimId = _identity.ClaimID;
 
                 _logger.LogWarning(
                     $"Application Long Running Request: {requestName} " +

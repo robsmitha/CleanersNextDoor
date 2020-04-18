@@ -1,139 +1,96 @@
-﻿using Domain.Entities;
-using Domain.Utilities;
-using Infrastructure.Data;
+﻿using Domain.Utilities;
 using Infrastructure.Identity;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Logging;
-using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Http;
 using System;
-using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
+using System.Text.Json;
+using System.Threading;
 
 namespace CleanersNextDoor.Services
 {
     public class IdentityService : IIdentityService
     {
-        private readonly IAuthenticationService _auth;
-        private readonly ICleanersNextDoorContext _context;
-        private IAppSettings _appSettings;
-        public IdentityService(IOptions<AppSettings> appSettings, 
-            IAuthenticationService auth, 
-            ICleanersNextDoorContext context)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        public IdentityService(IHttpContextAccessor httpContextAccessor)
         {
-            _appSettings = appSettings.Value;
-            _auth = auth;
-            _context = context;
+            _httpContextAccessor = httpContextAccessor;
         }
 
-        public IApplicationUser AuthenticateCustomer(Customer customer, string password)
-        {
-            //todo: verify w customer.secret
-            var authenticated = !string.IsNullOrEmpty(customer?.Password) 
-                && SecurePasswordHasher.Verify(password, customer.Password) 
-                ? IssueToken(customer)
-                : false;
-            return new ApplicationUser(authenticated);
-        }
+        /// <summary>
+        /// Unique int PK of current user
+        /// </summary>
+        public int ClaimID => int.TryParse(
+            _httpContextAccessor?
+            .HttpContext
+            .User
+            .Claims
+            .FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value,
+            out var @int)
+            ? @int
+            : 0;
 
-        public async Task<IApplicationUser> RefreshToken(IAccessToken accessToken)
+        /// <summary>
+        /// Unique string identifier of current user
+        /// </summary>
+        public string UniqueIdentifier => _httpContextAccessor?
+            .HttpContext
+            .User
+            .Claims
+            .FirstOrDefault(x => x.Type == ClaimTypes.Email)?.Value;
+
+        /// <summary>
+        /// Mobile phone of current user
+        /// </summary>
+        public string MobilePhone => _httpContextAccessor?
+            .HttpContext
+            .User
+            .Claims
+            .FirstOrDefault(x => x.Type == ClaimTypes.MobilePhone)?.Value;
+
+        public void SetIdentity(IAccessToken accessToken = null, Claim[] claims = null)
         {
-            try
+            if (_httpContextAccessor?.HttpContext == null) return;
+
+            //remove previous if exists
+            _httpContextAccessor
+               .HttpContext
+               .Response
+               .Cookies.Delete("access_token");
+
+            //set clear authenticated flag
+            _httpContextAccessor
+                .HttpContext
+                .Session
+                .Set("authenticated", false);
+
+            if (accessToken != null)
             {
-                var claimsPrincipal = ValidateTokenClaimsPrincipal(accessToken.access_token);
-                var id = GetClaimFromPrincipal<int>(claimsPrincipal, ClaimTypes.NameIdentifier);
-                if (id != default)
-                {
-                    var customer = await _context.Customers
-                        .FindAsync(id);
+                //add or replace token
+                _httpContextAccessor
+                   .HttpContext
+                   .Response
+                   .Cookies.Append("access_token", JsonSerializer.Serialize(accessToken),
+                    new CookieOptions
+                    {
+                        HttpOnly = true,
+                        Expires = Convert.ToDateTime(accessToken.expires_in)
+                    });
 
-                    if (customer?.ID > 0)
-                        return new ApplicationUser(IssueToken(customer));
+                //reset authenticated flag
+                _httpContextAccessor
+                    .HttpContext
+                    .Session
+                    .Set("authenticated", true);
+
+                if (claims != null)
+                {
+                    //add to new identity claims
+                    var identity = new ClaimsIdentity(claims);
+                    var principal = new ClaimsPrincipal(identity);
+                    _httpContextAccessor.HttpContext.User = principal;
+                    Thread.CurrentPrincipal = principal;
                 }
-            }
-            catch (Exception) { }
-            _auth.SetAuthentication();
-            return new ApplicationUser();
-        }
-
-        private bool IssueToken(Customer customer)
-        {
-            try
-            {
-                var expires = DateTime.UtcNow.AddDays(7);
-
-                //todo: GetBytes on customer.Secret 
-                var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_appSettings.Secret));
-                var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-                var claims = new[] {
-                    new Claim(ClaimTypes.NameIdentifier, customer.ID.ToString()),
-                    new Claim(ClaimTypes.Email, customer.Email.ToString()),
-                    new Claim(ClaimTypes.MobilePhone, customer.Phone.ToString()),
-                };
-
-                var token = new JwtSecurityToken(_appSettings.JwtIssuer,
-                  _appSettings.JwtIssuer,
-                  claims: claims,
-                  expires: expires,
-                  signingCredentials: credentials);
-
-                var jwtToken = new JwtSecurityTokenHandler()
-                    .WriteToken(token);
-
-                var accessToken = new AccessToken
-                {
-                    access_token = jwtToken,
-                    token_type = "",
-                    expires_in = expires.ToString()
-                };
-
-                _auth.SetAuthentication(accessToken, claims);
-
-                return true;
-            }
-            catch (Exception e)
-            {
-                return false;
-            }
-        }
-
-
-        private T GetClaimFromPrincipal<T>(ClaimsPrincipal claimsPrincipal, string claimType)
-        {
-            var claim = claimsPrincipal?.Claims
-                .FirstOrDefault(x => x.Type == claimType);
-            return !string.IsNullOrEmpty(claim?.Value) && claim.Value.GetType() != typeof(T)
-                ? (T)Convert.ChangeType(claim.Value, typeof(T))
-                : default;
-        }
-
-        private ClaimsPrincipal ValidateTokenClaimsPrincipal(string jwtToken)
-        {
-            try
-            {
-                IdentityModelEventSource.ShowPII = true;
-
-                var validationParameters = new TokenValidationParameters
-                {
-                    ValidateLifetime = true,
-                    ValidateAudience = true,
-                    ValidateIssuer = true,
-                    ValidateIssuerSigningKey = true,
-                    ValidAudience = _appSettings.JwtIssuer,
-                    ValidIssuer = _appSettings.JwtIssuer,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_appSettings.Secret))
-                };
-
-                var principal = new JwtSecurityTokenHandler()
-                    .ValidateToken(jwtToken, validationParameters, out SecurityToken validatedToken);
-
-                return principal;
-            }
-            catch (Exception)
-            {
-                return null;
             }
         }
     }

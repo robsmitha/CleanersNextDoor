@@ -1,8 +1,8 @@
 ﻿import React, { Component } from 'react';
 import { Link, Redirect } from 'react-router-dom'
-import TextInput from './TextInput';
-import handleChange from './HandleChange';
-import { AuthConsumer } from './../context/AuthContext'
+import TextInput from './../../helpers/TextInput';
+import handleChange from './../../helpers/HandleChange';
+import { AuthConsumer } from './../../context/AuthContext'
 
 export class Payment extends Component {
 

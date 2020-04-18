@@ -1,6 +1,6 @@
 ﻿import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { AuthConsumer } from './../context/AuthContext'
+import { AuthConsumer } from './../../context/AuthContext'
 
 export class Merchant extends Component {
     constructor(props) {

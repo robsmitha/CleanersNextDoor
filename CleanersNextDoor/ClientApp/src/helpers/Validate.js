@@ -1,40 +1,40 @@
-﻿const validate = (value, rules, label) => {
-    let isValid = true;
+﻿const RULES = {
+    MIN_LENGTH: 'minLength',
+    IS_REQUIRED: 'isRequired',
+    IS_EMAIL: 'isEmail'
+}
+
+const validate = (value, rules, label) => {
     let errorMessages = []
     for (let rule in rules) {
 
         switch (rule) {
-            case 'minLength':
+            case RULES.IS_REQUIRED:
+                if (!requiredValidator(value)) {
+                    errorMessages.push(`${label} is required.`);
+                }
+                break;
+
+            case RULES.MIN_LENGTH:
                 if (!minLengthValidator(value, rules[rule])) {
-                    isValid = false;
                     if (value.length > 0) {
                         errorMessages.push(`The minimum length for ${label} is ${rules[rule]} characters.`);
                     }
                 }
                 break;
 
-            case 'isRequired':
-                if (!requiredValidator(value)) {
-                    isValid = false;
-                    errorMessages.push(`${label} is required.`);
-                }
-                break;
-
-            case 'isEmail':
+            case RULES.IS_EMAIL:
                 if (!emailValidator(value)) {
-                    isValid = false;
                     if (value.length > 0) {
                         errorMessages.push(`"${value}" is not a valid email address.`);
                     }
                 }
                 break;
-
-            default: isValid = true;
         }
 
     }
 
-    return { isValid: isValid, errorMessages: errorMessages };
+    return errorMessages;
 }
 
 

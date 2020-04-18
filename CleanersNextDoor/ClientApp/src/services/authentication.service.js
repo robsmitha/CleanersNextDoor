@@ -1,6 +1,6 @@
 ﻿
 import { BehaviorSubject } from 'rxjs';
-import { handleResponse } from './../helpers/handle-response';
+import { handleResponse } from './handle-response';
 
 const _appUserKey = 'appUser';
 
@@ -23,7 +23,7 @@ function signIn(email, password) {
         body: JSON.stringify({ email, password })
     };
 
-    return fetch(`customers/signin`, requestOptions)
+    return fetch(`authentication/signin`, requestOptions)
         .then(handleResponse)
         .then(customer => {
             localStorage.setItem(_appUserKey, JSON.stringify(customer));
@@ -41,7 +41,7 @@ function signUp(customer) {
         body: JSON.stringify(customer)
     };
 
-    return fetch('customers/signup', requestOptions)
+    return fetch('authentication/signup', requestOptions)
         .then(handleResponse)
         .then(customer => {
             localStorage.setItem(_appUserKey, JSON.stringify(customer));
@@ -54,7 +54,7 @@ function signOut() {
     const requestOptions = {
         method: 'post'
     };
-    fetch(`identity/signout`, requestOptions)
+    fetch(`authentication/signout`, requestOptions)
         .then(response => {
             if (response.ok) {
                 clearAppUser();

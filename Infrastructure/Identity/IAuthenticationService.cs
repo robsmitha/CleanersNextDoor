@@ -1,32 +1,41 @@
-﻿using System;
+﻿using Domain.Entities;
+using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Infrastructure.Identity
 {
     public interface IAuthenticationService
     {
         /// <summary>
-        /// CustomerID or UserID of current authenticated app user
+        /// Authenticates customer by email and password
         /// </summary>
-        int ClaimID { get; }
+        /// <param name="email"></param>
+        /// <param name="password"></param>
+        /// <returns></returns>
+        Task<IApplicationUser> AuthenticateCustomer(string email, string password);
 
         /// <summary>
-        /// Email (Customer) or Username (User) of current authenticated app user
+        /// Creates and authenticates a new customer
         /// </summary>
-        string UniqueIdentifier { get; }
+        /// <param name="customer"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        Task<IApplicationUser> CreateCustomer(Customer customer, CancellationToken cancellationToken);
 
         /// <summary>
-        /// Mobile phone of current authenticated app user
+        /// Refreshes JWT token cookie when user visits site
         /// </summary>
-        string MobilePhone { get; }
+        /// <param name="token"></param>
+        /// <returns></returns>
+        Task<IApplicationUser> RefreshToken(IAccessToken token);
 
         /// <summary>
-        /// Sets/Replaces Authentications values in Cookies, Session and Claims
+        /// Clears token/session authentication values
         /// </summary>
-        /// <param name="accessToken">jwt access token</param>
-        /// <param name="claims">claims to refresh the current principle</param>
-        void SetAuthentication(IAccessToken accessToken = null, Claim[] claims = null);
+        void ClearAuthentication();
     }
 }

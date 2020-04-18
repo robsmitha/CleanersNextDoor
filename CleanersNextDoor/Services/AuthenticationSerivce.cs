@@ -6,91 +6,169 @@ using System.Text.Json;
 using System.Threading;
 using Infrastructure.Identity;
 using Domain.Utilities;
+using Microsoft.Extensions.Options;
+using Infrastructure.Data;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using Domain.Entities;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.IdentityModel.Logging;
 
 namespace CleanersNextDoor.Services
 {
     public class AuthenticationSerivce : IAuthenticationService
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        public AuthenticationSerivce(IHttpContextAccessor httpContextAccessor)
+        private readonly ICleanersNextDoorContext _context;
+        private readonly IIdentityService _identity;
+        private IAppSettings _appSettings;
+
+        public AuthenticationSerivce(IOptions<AppSettings> appSettings,
+            IIdentityService identity,
+            ICleanersNextDoorContext context)
         {
-            _httpContextAccessor = httpContextAccessor;
+            _appSettings = appSettings.Value;
+            _context = context;
+            _identity = identity;
         }
 
-        /// <summary>
-        /// Unique int PK of current user
-        /// </summary>
-        public int ClaimID => int.TryParse(
-            _httpContextAccessor?
-            .HttpContext
-            .User
-            .Claims
-            .FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value,
-            out var @int)
-            ? @int
-            : 0;
-
-        /// <summary>
-        /// Unique string identifier of current user
-        /// </summary>
-        public string UniqueIdentifier => _httpContextAccessor?
-            .HttpContext
-            .User
-            .Claims
-            .FirstOrDefault(x => x.Type == ClaimTypes.Email)?.Value;
-        
-        /// <summary>
-        /// Mobile phone of current user
-        /// </summary>
-        public string MobilePhone => _httpContextAccessor?
-            .HttpContext
-            .User
-            .Claims
-            .FirstOrDefault(x => x.Type == ClaimTypes.MobilePhone)?.Value;
-
-        public void SetAuthentication(IAccessToken accessToken = null, Claim[] claims = null)
+        public async Task<IApplicationUser> AuthenticateCustomer(string email, string password)
         {
-            if (_httpContextAccessor?.HttpContext == null) return;
+            var customer = await _context.Customers
+                .SingleOrDefaultAsync(c => c.Email.ToLower() == email.ToLower());
+            return VerifyCustomer(customer, password);
+        }
 
-            //remove previous if exists
-            _httpContextAccessor
-               .HttpContext
-               .Response
-               .Cookies.Delete("access_token");
-
-            //set clear authenticated flag
-            _httpContextAccessor
-                .HttpContext
-                .Session
-                .Set("authenticated", false);
-
-            if (accessToken != null)
+        public async Task<IApplicationUser> CreateCustomer(Customer model, CancellationToken cancellationToken)
+        {
+            //TODO: generate customer secret
+            var customer = new Customer
             {
-                //add or replace token
-                _httpContextAccessor
-                   .HttpContext
-                   .Response
-                   .Cookies.Append("access_token", JsonSerializer.Serialize(accessToken),
-                    new CookieOptions
-                    {
-                        HttpOnly = true,
-                        Expires = Convert.ToDateTime(accessToken.expires_in)
-                    });
+                Name = model.Name,
+                Email = model.Email,
+                //TODO: hash w customer.secret
+                Password = SecurePasswordHasher.Hash(model.Password),
+                Phone = model.Phone
+            };
+            _context.Customers.Add(customer);
+            await _context.SaveChangesAsync(cancellationToken);
+            return VerifyCustomer(customer, model.Password);
+        }
 
-                //reset authenticated flag
-                _httpContextAccessor
-                    .HttpContext
-                    .Session
-                    .Set("authenticated", true);
+        private IApplicationUser VerifyCustomer(Customer customer, string password)
+        {
+            //TODO: verify w customer.secret
+            var authenticated = !string.IsNullOrEmpty(customer?.Password)
+                && SecurePasswordHasher.Verify(password, customer.Password)
+                ? IssueToken(customer)
+                : false;
+            return new ApplicationUser(authenticated);
+        }
 
-                if (claims != null)
+        public void ClearAuthentication()
+        {
+            _identity.SetIdentity();
+        }
+
+        public async Task<IApplicationUser> RefreshToken(IAccessToken accessToken)
+        {
+            try
+            {
+                var claimsPrincipal = ValidateTokenClaimsPrincipal(accessToken.access_token);
+                var id = GetClaimFromPrincipal<int>(claimsPrincipal, ClaimTypes.NameIdentifier);
+                if (id != default)
                 {
-                    //add to new identity claims
-                    var identity = new ClaimsIdentity(claims);
-                    var principal = new ClaimsPrincipal(identity);
-                    _httpContextAccessor.HttpContext.User = principal;
-                    Thread.CurrentPrincipal = principal;
+                    var customer = await _context.Customers
+                        .FindAsync(id);
+
+                    if (customer?.ID > 0)
+                        return new ApplicationUser(IssueToken(customer));
                 }
+            }
+            catch (Exception) { }
+
+            _identity.SetIdentity();
+
+            return new ApplicationUser();
+        }
+
+        private bool IssueToken(Customer customer)
+        {
+            try
+            {
+                var expires = DateTime.UtcNow.AddDays(7);
+
+                //TODO: GetBytes on customer.Secret 
+                var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_appSettings.Secret));
+                var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+                var claims = new[] {
+                    new Claim(ClaimTypes.NameIdentifier, customer.ID.ToString()),
+                    new Claim(ClaimTypes.Email, customer.Email.ToString()),
+                    new Claim(ClaimTypes.MobilePhone, customer.Phone.ToString()),
+                };
+
+                var token = new JwtSecurityToken(_appSettings.JwtIssuer,
+                  _appSettings.JwtIssuer,
+                  claims: claims,
+                  expires: expires,
+                  signingCredentials: credentials);
+
+                var jwtToken = new JwtSecurityTokenHandler()
+                    .WriteToken(token);
+
+                var accessToken = new AccessToken
+                {
+                    access_token = jwtToken,
+                    token_type = "",
+                    expires_in = expires.ToString()
+                };
+
+                _identity.SetIdentity(accessToken, claims);
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+        }
+
+
+        private T GetClaimFromPrincipal<T>(ClaimsPrincipal claimsPrincipal, string claimType)
+        {
+            var claim = claimsPrincipal?.Claims
+                .FirstOrDefault(x => x.Type == claimType);
+            return !string.IsNullOrEmpty(claim?.Value) && claim.Value.GetType() != typeof(T)
+                ? (T)Convert.ChangeType(claim.Value, typeof(T))
+                : default;
+        }
+
+        private ClaimsPrincipal ValidateTokenClaimsPrincipal(string jwtToken)
+        {
+            try
+            {
+                IdentityModelEventSource.ShowPII = true;
+
+                var validationParameters = new TokenValidationParameters
+                {
+                    ValidateLifetime = true,
+                    ValidateAudience = true,
+                    ValidateIssuer = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidAudience = _appSettings.JwtIssuer,
+                    ValidIssuer = _appSettings.JwtIssuer,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_appSettings.Secret))
+                };
+
+                var principal = new JwtSecurityTokenHandler()
+                    .ValidateToken(jwtToken, validationParameters, out SecurityToken validatedToken);
+
+                return principal;
+            }
+            catch (Exception)
+            {
+                return null;
             }
         }
     }

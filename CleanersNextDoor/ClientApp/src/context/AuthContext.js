@@ -19,7 +19,7 @@ class AuthProvider extends Component {
     componentDidMount() {
         authenticationService.appUser.subscribe(x => {
             if (x !== null && x.authenticated) {
-                fetch('identity/authorize', { method: 'post' })
+                fetch('authentication/authorize', { method: 'post' })
                     .then(response => response.json())
                     .then(data => {
                         let authenticated = data !== null && data.authenticated;

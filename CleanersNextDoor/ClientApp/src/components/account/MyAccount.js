@@ -1,10 +1,9 @@
 ﻿import React, { Component } from 'react';
 import { Link, Redirect } from 'react-router-dom'
-import { Row, Col, Container, Card, CardBody } from 'reactstrap'
-import { AuthConsumer } from './../context/AuthContext'
-import { FaLocationArrow } from 'react-icons/fa'
+import { Col, Card, CardBody } from 'reactstrap'
+import { AuthConsumer } from './../../context/AuthContext'
 
-export class Profile extends Component {
+export class MyAccount extends Component {
     constructor(props) {
         super(props)
         this.state = {
@@ -18,7 +17,7 @@ export class Profile extends Component {
     }
 
     populateProfileInformation() {
-        fetch(`customers/profile`)
+        fetch(`customers/account`)
             .then(response => response.json())
             .then(data => {
                 if (data.id > 0) {
@@ -83,7 +82,7 @@ export class Profile extends Component {
     renderProfileLayout() {
         let contents = this.state.loading
             ? <p><em>Loading...</em></p>
-            : Profile.renderProfile(this.state.customer);
+            : MyAccount.renderProfile(this.state.customer);
         return (
             <div>
                 <header className="bg-primary py-3 mb-5">
