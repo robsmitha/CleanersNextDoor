@@ -36,7 +36,6 @@ namespace Application.Customers.Queries.GetPaymentMethods
         public async Task<List<PaymentMethodModel>> Handle(GetPaymentMethodsQuery request, CancellationToken cancellationToken)
         {
             var paymentMethods = await _context.PaymentMethods
-                .Include(c => c.CardType)
                 .Where(p => p.CustomerID == request.CustomerID)
                 .ToListAsync();
             return _mapper.Map<List<PaymentMethodModel>>(paymentMethods);

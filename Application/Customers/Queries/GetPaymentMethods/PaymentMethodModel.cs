@@ -10,10 +10,11 @@ namespace Application.Customers.Queries.GetPaymentMethods
     {
         public int ID { get; set; }
         public string NameOnCard { get; set; }
-        public string Last4 { get; set; }
-        public string CardTypeName { get; set; }
-        public DateTime ExpirationDate { get; set; }
-        public bool IsDefault { get; set; }
         public string StripePaymentMethodID { get; set; }
+        public bool IsDefault { get; set; }
+        public long ExpMonth { get; set; }
+        public long ExpYear { get; set; }
+        public string CardBrand { get; set; }
+        public string Last4 { get; set; }
     }
 }

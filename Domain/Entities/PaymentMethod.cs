@@ -11,15 +11,12 @@ namespace Domain.Entities
 
         [ForeignKey("CustomerID")]
         public Customer Customer { get; set; }
-
         public string NameOnCard { get; set; }
-        public string Last4 { get; set; }
-        public string Token { get; set; }
-        public int CardTypeID { get; set; }
-        [ForeignKey("CardTypeID")]
-        public CardType CardType { get; set; }
-        public DateTime ExpirationDate { get; set; }
         public string StripePaymentMethodID { get; set; }
         public bool IsDefault { get; set; }
+        public long ExpMonth { get; set; }
+        public long ExpYear { get; set; }
+        public string CardBrand { get; set; }
+        public string Last4 { get; set; }
     }
 }

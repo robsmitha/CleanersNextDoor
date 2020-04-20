@@ -10,5 +10,7 @@ namespace CleanersNextDoor.Services
     {
         public string Secret { get; set; }
         public string JwtIssuer { get; set; }
+        public string StripeSecretKey { get; set; }
+        public string StripePublicKey { get; set; }
     }
 }

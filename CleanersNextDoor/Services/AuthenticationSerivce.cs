@@ -15,6 +15,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Logging;
+using Application.Common.Interfaces;
 
 namespace CleanersNextDoor.Services
 {
@@ -22,26 +23,31 @@ namespace CleanersNextDoor.Services
     {
         private readonly ICleanersNextDoorContext _context;
         private readonly IIdentityService _identity;
+        private readonly IStripeService _stripe;
         private IAppSettings _appSettings;
 
         public AuthenticationSerivce(IOptions<AppSettings> appSettings,
             IIdentityService identity,
-            ICleanersNextDoorContext context)
+            ICleanersNextDoorContext context,
+            IStripeService stripe)
         {
             _appSettings = appSettings.Value;
             _context = context;
             _identity = identity;
+            _stripe = stripe;
         }
-
         public async Task<IApplicationUser> AuthenticateCustomer(string email, string password)
         {
             var customer = await _context.Customers
                 .SingleOrDefaultAsync(c => c.Email.ToLower() == email.ToLower());
+
             return VerifyCustomer(customer, password);
         }
 
         public async Task<IApplicationUser> CreateCustomer(Customer model, CancellationToken cancellationToken)
         {
+            var sCustomer = _stripe.CreateCustomer();
+
             //TODO: generate customer secret
             var customer = new Customer
             {
@@ -49,11 +55,18 @@ namespace CleanersNextDoor.Services
                 Email = model.Email,
                 //TODO: hash w customer.secret
                 Password = SecurePasswordHasher.Hash(model.Password),
-                Phone = model.Phone
+                Phone = model.Phone,
+                StripeCustomerID = sCustomer.Id
             };
             _context.Customers.Add(customer);
             await _context.SaveChangesAsync(cancellationToken);
             return VerifyCustomer(customer, model.Password);
+        }
+
+        public IStripeClientSecret GetStripeSecretKey(int customerId)
+        {
+            var customer = _context.Customers.Find(customerId);
+            return _stripe.StripeClientSecret(customer.StripeCustomerID);
         }
 
         private IApplicationUser VerifyCustomer(Customer customer, string password)
@@ -134,7 +147,6 @@ namespace CleanersNextDoor.Services
             }
         }
 
-
         private T GetClaimFromPrincipal<T>(ClaimsPrincipal claimsPrincipal, string claimType)
         {
             var claim = claimsPrincipal?.Claims
@@ -170,6 +182,19 @@ namespace CleanersNextDoor.Services
             {
                 return null;
             }
+        }
+
+
+        public string StripeClientSecret(int customerId)
+        {
+            var customer = _context.Customers.Find(customerId);
+            var options = new Stripe.SetupIntentCreateOptions
+            {
+                Customer = customer.StripeCustomerID,
+            };
+            var service = new Stripe.SetupIntentService();
+            var intent = service.Create(options);
+            return intent.ClientSecret;
         }
     }
 }

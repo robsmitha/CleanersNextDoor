@@ -7,6 +7,11 @@ import TextInput from './../../helpers/TextInput';
 import handleChange from './../../helpers/HandleChange';
 import { customerService } from '../../services/customer.service'
 
+import { loadStripe } from '@stripe/stripe-js';
+import { Elements } from '@stripe/react-stripe-js';
+import PaymentMethodForm from './../../helpers/PaymentMethodForm';
+
+
 export class NewPaymentMethod extends Component {
 
     constructor(props) {
@@ -23,7 +28,12 @@ export class NewPaymentMethod extends Component {
                 }
             }
         };
+
+        this.stripePromise = customerService.stripePublicKey()
+            .then(data => loadStripe(data.key)) 
     }
+
+
     changeHandler = event => {
         const name = event.target.name;
         const value = event.target.value;
@@ -40,20 +50,20 @@ export class NewPaymentMethod extends Component {
         }
     }
 
-    submitHandler = (event) => {
-        event.preventDefault();
+    stripePaymentMethodHandler = (payment_method) => {
         this.setState({
             formIsValid: false
         });
+
         const {
             nameOnCard
         } = this.state.formControls;
 
         let data = {
             nameOnCard: nameOnCard.value,
-            isDefault: this.state.isDefault
+            isDefault: this.state.isDefault,
+            stripePaymentMethodID: payment_method
         }
-
         customerService.addPaymentMethod(data)
             .then(data => {
                 if (data !== null) {
@@ -113,34 +123,36 @@ export class NewPaymentMethod extends Component {
                         Payment method details
                      </h3>
                     <p className="mb-1">
-                        Please enter a payment method you would like saved on your account.
+                        By completing this form, you authorize CleanersNextDoor to send instructions to the financial institution that issued your card
+                        to take payments from your card account in accordance with the terms of my agreement with CleanersNextDoor.
                     </p>
 
                     <Row>
                         <Col sm="9" md="7" lg="5">
-                            <form method="post" onSubmit={this.submitHandler}>
 
-                                <TextInput name="nameOnCard"
-                                    placeholder={this.state.formControls.nameOnCard.placeholder}
-                                    label={this.state.formControls.nameOnCard.label}
-                                    value={this.state.formControls.nameOnCard.value}
-                                    valid={this.state.formControls.nameOnCard.valid ? 1 : 0}
-                                    onChange={this.changeHandler} />
+                            <TextInput name="nameOnCard"
+                                placeholder={this.state.formControls.nameOnCard.placeholder}
+                                label={this.state.formControls.nameOnCard.label}
+                                value={this.state.formControls.nameOnCard.value}
+                                valid={this.state.formControls.nameOnCard.valid ? 1 : 0}
+                                onChange={this.changeHandler} />
 
-                                <div className="form-group">
-                                    <div className="custom-control custom-checkbox">
-                                        <input type="checkbox" className="custom-control-input" id="isDefault" name="isDefault" onChange={this.checkHandler} checked={this.state.isDefault} />
-                                        <label className="custom-control-label" htmlFor="isDefault">
-                                            Make this my default payment method
-                                        </label>
-                                    </div>
+
+                            <div className="form-group">
+                                <div className="custom-control custom-checkbox">
+                                    <input type="checkbox" className="custom-control-input" id="isDefault" name="isDefault" onChange={this.checkHandler} checked={this.state.isDefault} />
+                                    <label className="custom-control-label" htmlFor="isDefault">
+                                        Make this my default payment method
+                                    </label>
                                 </div>
+                            </div>
 
-                                <button className="btn btn-primary btn-block mb-3" type="submit" disabled={!this.state.formIsValid}>
-                                    Save payment method
-                                </button>
-
-                            </form>
+                            <Elements stripe={this.stripePromise}>
+                                <PaymentMethodForm
+                                    nameOnCard={this.state.formControls.nameOnCard.value}
+                                    stripePaymentMethodHandler={this.stripePaymentMethodHandler}
+                                    disabled={!this.state.formIsValid} />
+                            </Elements>
                         </Col>
                     </Row>
                     <small className="text-muted d-block mb-4">

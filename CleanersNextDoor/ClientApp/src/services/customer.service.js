@@ -15,14 +15,16 @@ export const customerService = {
     setDefaultAddress,
     getCart,
     removeCartItem,
-    cartTransaction
+    cartTransaction,
+    stripeClientSecret,
+    stripePublicKey
 };
 //Customer
 function getCustomer() {
     return get(`${_CONTROLLER}/account`)
 }
-function checkEmailAvailability() {
-    return get(`customers/CheckEmailAvailability/${this.state.formControls.email.value}`)
+function checkEmailAvailability(email) {
+    return get(`customers/CheckEmailAvailability/${email}`)
 }
 
 //Payment Methods
@@ -60,4 +62,12 @@ function removeCartItem(data) {
 }
 function cartTransaction(data) {
     return post(`${_CONTROLLER}/addtocart`, data)
+}
+
+function stripeClientSecret() {
+    return post(`${_CONTROLLER}/stripeClientSecret`)
+}
+
+function stripePublicKey() {
+    return post(`${_CONTROLLER}/stripePublicKey`)
 }

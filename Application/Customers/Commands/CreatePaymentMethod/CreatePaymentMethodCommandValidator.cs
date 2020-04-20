@@ -15,15 +15,14 @@ namespace Application.Customers.Commands.CreatePaymentMethod
         {
             _context = context;
 
-            RuleFor(l => l.Token).MustAsync(BeValidPaymentMethod)
+            RuleFor(l => l.StripePaymentMethodID).MustAsync(BeValidPaymentMethod)
                     .WithMessage("Must be a valid payment method.");
         }
-        public async Task<bool> BeValidPaymentMethod(CreatePaymentMethodCommand args, string token,
+        public async Task<bool> BeValidPaymentMethod(CreatePaymentMethodCommand args, string stripePaymentMethodID,
             CancellationToken cancellationToken)
         {
-
-
-            return true;
+            //todo: charge to validate?
+            return !string.IsNullOrEmpty(stripePaymentMethodID);
         }
     }
 }

@@ -1,10 +1,12 @@
 ﻿using Application.Models;
 using AutoMapper;
+using Domain.Entities;
 using Infrastructure.Data;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -34,10 +36,18 @@ namespace Application.Merchants.Queries.GetMerchants
         }
         public async Task<IEnumerable<MerchantModel>> Handle(GetMerchantsQuery request, CancellationToken cancellationToken)
         {
-            var collection = await _context.Merchants.ToListAsync();
-            return collection != null
-                ? _mapper.Map<IEnumerable<MerchantModel>>(collection)
-                : new List<MerchantModel>();
+            //TODO: revisit linq query
+            var data = await _context.Merchants.ToListAsync();
+            var merchants = _mapper.Map<IEnumerable<MerchantModel>>(data);
+            foreach (var merchant in merchants)
+            {
+                merchant.ItemTypes = new List<ItemType>();
+                var items = _context.Items.Include(i => i.ItemType).Where(i => i.MerchantID == merchant.ID);
+                foreach(var item in items)
+                    if (!merchant.ItemTypes.Contains(item.ItemType))
+                        merchant.ItemTypes.Add(item.ItemType);
+            }
+            return merchants;
         }
     }
 }

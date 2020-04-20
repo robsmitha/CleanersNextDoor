@@ -1,8 +1,4 @@
 ﻿using Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Security.Claims;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -37,5 +33,7 @@ namespace Infrastructure.Identity
         /// Clears token/session authentication values
         /// </summary>
         void ClearAuthentication();
+
+        IStripeClientSecret GetStripeSecretKey(int customerId);
     }
 }

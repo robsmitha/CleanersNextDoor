@@ -41,9 +41,11 @@ function signOut() {
             if (data) clearAppUser();
         });
 }
+
 function authorize() {
     return post(`authentication/authorize`)
 }
+
 function clearAppUser() {
     // remove user from local storage to log user out
     localStorage.removeItem(_appUserKey);

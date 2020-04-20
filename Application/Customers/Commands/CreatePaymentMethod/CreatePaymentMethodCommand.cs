@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using Application.Common.Interfaces;
+using AutoMapper;
 using Domain.Entities;
 using Infrastructure.Data;
 using MediatR;
@@ -16,17 +17,13 @@ namespace Application.Customers.Commands.CreatePaymentMethod
     {
         public int CustomerID { get; set; }
         public string NameOnCard { get; set; }
-        public string Last4 { get; set; }
-        public string Token { get; set; }
+        public string StripePaymentMethodID { get; set; }
         public bool IsDefault { get; set; }
-        public string Expires { get; set; }
-        public string CardType { get; set; }
         public CreatePaymentMethodCommand(int customerId, CreatePaymentMethodModel model)
         {
             CustomerID = customerId;
             NameOnCard = model.NameOnCard;
-            Last4 = model.Last4;
-            Token = model.Token;
+            StripePaymentMethodID = model.StripePaymentMethodID;
             IsDefault = model.IsDefault;
         }
     }
@@ -35,14 +32,16 @@ namespace Application.Customers.Commands.CreatePaymentMethod
 
         private readonly ICleanersNextDoorContext _context;
         private readonly IMapper _mapper;
-
+        private readonly IStripeService _stripe;
         public CreatePaymentMethodCommandHandler(
             ICleanersNextDoorContext context,
-            IMapper mapper
+            IMapper mapper,
+            IStripeService stripe
             )
         {
             _context = context;
             _mapper = mapper;
+            _stripe = stripe;
         }
         public async Task<CreatePaymentMethodModel> Handle(CreatePaymentMethodCommand request, CancellationToken cancellationToken)
         {
@@ -50,7 +49,7 @@ namespace Application.Customers.Commands.CreatePaymentMethod
             {
                 if (request.IsDefault)
                 {
-                    //set other customer addresses to not default
+                    //set other customer payment methods to not default
                     var entities = _context.PaymentMethods
                         .Where(a => a.CustomerID == request.CustomerID && a.IsDefault)
                         .ToList();
@@ -62,18 +61,19 @@ namespace Application.Customers.Commands.CreatePaymentMethod
                     }
                 }
 
-                //TODO: call stripe paymentService api
+                var sPaymentMethod = _stripe
+                    .GetPaymentMethod(request.StripePaymentMethodID);
 
                 var paymentMethod = new PaymentMethod
                 {
                     CustomerID = request.CustomerID,
                     IsDefault = request.IsDefault,
                     NameOnCard = request.NameOnCard,
-                    ExpirationDate = DateTime.Now,
-                    CardTypeID = _context.CardTypes.First().ID,
-                    StripePaymentMethodID = string.Empty,
-                    Last4 = "1234",
-                    //TODO: add info
+                    StripePaymentMethodID = request.StripePaymentMethodID,
+                    CardBrand = sPaymentMethod.Card.Brand,
+                    Last4 = sPaymentMethod.Card.Last4,
+                    ExpMonth = sPaymentMethod.Card.ExpMonth,
+                    ExpYear = sPaymentMethod.Card.ExpYear,
                 };
                 _context.PaymentMethods.Add(paymentMethod);
                 await _context.SaveChangesAsync(cancellationToken);

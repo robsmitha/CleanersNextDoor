@@ -1,4 +1,5 @@
-﻿using Infrastructure.Data;
+﻿using Application.Common.Interfaces;
+using Infrastructure.Data;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -23,10 +24,12 @@ namespace Application.Customers.Commands.DeletePaymentMethod
     public class DeletePaymentMethodCommandHandler : IRequestHandler<DeletePaymentMethodCommand, bool>
     {
         private readonly ICleanersNextDoorContext _context;
+        private readonly IStripeService _stripe;
 
-        public DeletePaymentMethodCommandHandler(ICleanersNextDoorContext context)
+        public DeletePaymentMethodCommandHandler(ICleanersNextDoorContext context, IStripeService stripe)
         {
             _context = context;
+            _stripe = stripe;
         }
 
         public async Task<bool> Handle(DeletePaymentMethodCommand request, CancellationToken cancellationToken)
@@ -37,6 +40,7 @@ namespace Application.Customers.Commands.DeletePaymentMethod
                     .SingleOrDefaultAsync(a => a.ID == request.PaymentMethodID && a.CustomerID == request.CustomerID);
                 if (record != null)
                 {
+                    _stripe.DetachPaymentMethod(record.StripePaymentMethodID);
                     _context.PaymentMethods.Remove(record);
                     await _context.SaveChangesAsync(cancellationToken);
                     return true;

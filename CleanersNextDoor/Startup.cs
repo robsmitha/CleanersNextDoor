@@ -14,6 +14,7 @@ using Microsoft.IdentityModel.Tokens;
 using CleanersNextDoor.Common;
 using System;
 using CleanersNextDoor.Services;
+using Application.Common.Interfaces;
 
 namespace CleanersNextDoor
 {
@@ -76,6 +77,7 @@ namespace CleanersNextDoor
 
             services.AddScoped<IAuthenticationService, AuthenticationSerivce>();
             services.AddScoped<IIdentityService, IdentityService>();
+            services.AddScoped<IStripeService, StripeService>();
 
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>

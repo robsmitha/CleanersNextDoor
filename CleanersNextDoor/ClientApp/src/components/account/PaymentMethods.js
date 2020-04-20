@@ -108,9 +108,9 @@ export class PaymentMethods extends Component {
                                         <Row>
                                             <Col>
                                                 <p className="mb-1 font-weight-bold">
-                                                    {pm.cardTypeName} - {pm.last4}
+                                                    {pm.cardBrand} - {pm.last4}
                                                 </p>
-                                                <small className="d-block text-muted">{new Date(pm.expirationDate).toLocaleDateString()}</small>
+                                                <small className="d-block text-muted">{pm.expMonth}/{pm.expYear}</small>
                                                 <Badge hidden={pm.nameOnCard === null  || pm.nameOnCard.length === 0} color="light" className="border" pill>{pm.nameOnCard !== null ? pm.nameOnCard.toUpperCase() : ''}</Badge>
                                             </Col>
                                             <Col xs="auto">

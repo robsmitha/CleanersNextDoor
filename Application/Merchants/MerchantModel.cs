@@ -1,5 +1,6 @@
 ﻿using Application.Common.Mappings;
 using Domain.Entities;
+using System.Collections.Generic;
 
 namespace Application.Models
 {
@@ -22,5 +23,6 @@ namespace Application.Models
         public int MerchantTypeID { get; set; }
         public bool Active { get; set; }
         public string MerchantTypeName { get; set; }
+        public List<ItemType> ItemTypes { get; set; }
     }
 }

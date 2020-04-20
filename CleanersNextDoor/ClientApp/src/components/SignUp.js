@@ -88,7 +88,25 @@ export class SignUp extends Component {
 
     checkEmailBlur = event => {
         if (this.state.formControls.email.valid) {
-            this.checkEmail()
+            customerService.checkEmailAvailability(this.state.formControls.email.value)
+                .then(data => {
+                    if (!data.isAvailable) {
+                        const updatedControls = {
+                            ...this.state.formControls
+                        };
+
+                        updatedControls.email.valid = false;
+                        updatedControls.email.errors = []
+                        updatedControls.email.errors.push(`'${this.state.formControls.email.value}' is already taken.`)
+
+                        this.setState({
+                            formControls: updatedControls,
+                            formIsValid: false
+                        });
+                    }
+
+                })
+                .catch((ex) => { console.log(ex) })
         }
     }
 
@@ -108,28 +126,6 @@ export class SignUp extends Component {
                 });
             }
         }
-    }
-
-    checkEmail() {
-        customerService.checkEmailAvailability(this.state.formControls.email.value)
-            .then(data => {
-                if (!data.isAvailable) {
-                    const updatedControls = {
-                        ...this.state.formControls
-                    };
-
-                    updatedControls.email.valid = false;
-                    updatedControls.email.errors = []
-                    updatedControls.email.errors.push(`'${this.state.formControls.email.value}' is already taken.`)
-
-                    this.setState({
-                        formControls: updatedControls,
-                        formIsValid: false
-                    });
-                }
-
-            })
-            .catch((ex) => { console.log(ex) })
     }
 
     render() {

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Application.Common.Interfaces;
 using Application.Customers;
 using Application.Customers.Commands.CreateAddress;
 using Application.Customers.Commands.CreateCartItem;
@@ -14,6 +15,7 @@ using Application.Customers.Queries.GetCustomerAddresses;
 using Application.Customers.Queries.GetCustomerByEmail;
 using Application.Customers.Queries.GetCustomerCart;
 using Application.Customers.Queries.GetPaymentMethods;
+using CleanersNextDoor.Services;
 using Domain.Entities;
 using Infrastructure.Identity;
 using MediatR;
@@ -28,10 +30,14 @@ namespace CleanersNextDoor.Controllers
     {
         private readonly IMediator _mediator;
         private readonly IIdentityService _identity;
-        public CustomersController(IMediator mediator, IIdentityService identity)
+        private readonly IAuthenticationService _auth;
+        private readonly IStripeService _stripe;
+        public CustomersController(IMediator mediator, IIdentityService identity, IAuthenticationService auth, IStripeService stripe)
         {
             _mediator = mediator;
             _identity = identity;
+            _auth = auth;
+            _stripe = stripe;
         }
 
         #region AllowAnonymous Methods
@@ -119,5 +125,15 @@ namespace CleanersNextDoor.Controllers
         }
         #endregion
 
+        [HttpPost("StripeClientSecret")]
+        public IStripeClientSecret StripeClientSecret()
+        {
+            return _auth.GetStripeSecretKey(_identity.ClaimID);
+        }
+        [HttpPost("StripePublicKey")]
+        public IStripePublicKey StripePublicKey()
+        {
+            return _stripe.StripePublicKey();
+        }
     }
 }

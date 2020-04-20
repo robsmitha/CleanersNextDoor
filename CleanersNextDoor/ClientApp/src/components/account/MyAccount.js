@@ -157,7 +157,7 @@ export class MyAccount extends Component {
                             </div>
                             <div className="col-md-4 mb-4">
                                 <Link className="text-decoration-none" to="/payment-methods">
-                                    <div className={this.state.customer !== null && !this.state.customer.hasAddresses ? 'card h-100 border-danger' : 'card h-100'}>
+                                    <div className={this.state.customer !== null && !this.state.customer.hasPaymentMethods ? 'card h-100 border-danger' : 'card h-100'}>
                                         <div className="card-body p-4">
                                             <div className="d-flex w-100 justify-content-between text-dark">
                                                 <h5 className="mb-1">Payment Methods</h5>
