@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System.Text.Json;
 
-namespace Domain.Utilities
+namespace CleanersNextDoor.Common
 {
     public static class SessionExtensions
     {
