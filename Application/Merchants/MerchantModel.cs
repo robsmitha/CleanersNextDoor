@@ -6,6 +6,10 @@ namespace Application.Models
 {
     public class MerchantModel : IMapFrom<Merchant>
     {
+        public MerchantModel()
+        {
+            ItemTypes = new HashSet<string>();
+        }
         public int ID { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
@@ -23,6 +27,6 @@ namespace Application.Models
         public int MerchantTypeID { get; set; }
         public bool Active { get; set; }
         public string MerchantTypeName { get; set; }
-        public List<ItemType> ItemTypes { get; set; }
+        public HashSet<string> ItemTypes { get; set; }
     }
 }

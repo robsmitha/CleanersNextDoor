@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Application.Merchants.Queries.GetMerchants
 {
-    public class GetMerchantsQuery : IRequest<IEnumerable<MerchantModel>>
+    public class GetMerchantsQuery : IRequest<List<MerchantModel>>
     {
         public GetMerchantsQuery()
         {
@@ -21,7 +21,7 @@ namespace Application.Merchants.Queries.GetMerchants
         }
     }
 
-    public class GetMerchantsQueryHandler : IRequestHandler<GetMerchantsQuery, IEnumerable<MerchantModel>>
+    public class GetMerchantsQueryHandler : IRequestHandler<GetMerchantsQuery, List<MerchantModel>>
     {
         private readonly ICleanersNextDoorContext _context;
         private IMapper _mapper;
@@ -34,20 +34,33 @@ namespace Application.Merchants.Queries.GetMerchants
             _context = context;
             _mapper = mapper;
         }
-        public async Task<IEnumerable<MerchantModel>> Handle(GetMerchantsQuery request, CancellationToken cancellationToken)
+        public async Task<List<MerchantModel>> Handle(GetMerchantsQuery request, CancellationToken cancellationToken)
         {
-            //TODO: revisit linq query
-            var data = await _context.Merchants.ToListAsync();
-            var merchants = _mapper.Map<IEnumerable<MerchantModel>>(data);
-            foreach (var merchant in merchants)
+            var data = from m in _context.Merchants.AsEnumerable()
+                       join i in _context.Items.AsEnumerable() on m.ID equals i.MerchantID into tmp_i
+                       from i in tmp_i.DefaultIfEmpty()
+                       join it in _context.ItemTypes.AsEnumerable() on i?.ItemTypeID equals it.ID into tmp_it
+                       from it in tmp_it.DefaultIfEmpty()
+                       where m.Active
+                       select new { m, i };
+
+            if (data == null || data.FirstOrDefault() == null) return new List<MerchantModel>();
+            var merchants = new Dictionary<int, MerchantModel>();
+            foreach (var row in data)
             {
-                merchant.ItemTypes = new List<ItemType>();
-                var items = _context.Items.Include(i => i.ItemType).Where(i => i.MerchantID == merchant.ID);
-                foreach(var item in items)
-                    if (!merchant.ItemTypes.Contains(item.ItemType))
-                        merchant.ItemTypes.Add(item.ItemType);
+                if (!merchants.TryGetValue(row.m.ID, out var merchant))
+                {
+                    merchant = _mapper.Map<MerchantModel>(row.m);
+                    merchants.Add(row.m.ID, merchant);
+                }
+                if(row.i != null)
+                {
+                    merchant.ItemTypes.Add(row.i.ItemType.Name);
+                    merchants[row.m.ID] = merchant;
+                }
             }
-            return merchants;
+            await Task.FromResult(0);
+            return merchants.Values.ToList();
         }
     }
 }

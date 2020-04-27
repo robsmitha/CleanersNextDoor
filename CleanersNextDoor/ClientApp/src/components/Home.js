@@ -94,8 +94,8 @@ export class Home extends Component {
                                         <h5 className="card-title">{m.name}</h5>
                                         <small className="text-muted">
                                             {m.itemTypes.map((i, index) =>
-                                                <span key={i.id}>
-                                                    {i.name}
+                                                <span key={i}>
+                                                    {i}
                                                     {index < m.itemTypes.length - 1 ? ', ' : ''}
                                                 </span>
                                             )}
