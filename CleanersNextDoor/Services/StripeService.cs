@@ -1,7 +1,9 @@
 ﻿using Application.Common.Interfaces;
+using Domain.Entities;
 using Infrastructure.Data;
 using Infrastructure.Identity;
 using Microsoft.Extensions.Options;
+using System.Collections.Generic;
 
 namespace CleanersNextDoor.Services
 {
@@ -43,6 +45,23 @@ namespace CleanersNextDoor.Services
         {
             var service = new Stripe.PaymentMethodService();
             return service.Detach(paymentMethodId);
+        }
+        public Stripe.PaymentIntent CreatePaymentIntent(int orderId, long centAmount)
+        {
+            var options = new Stripe.PaymentIntentCreateOptions
+            {
+                Amount = centAmount,
+                Currency = "usd",
+                // Verify your integration in this guide by including this parameter
+                Metadata = new Dictionary<string, string>
+                {
+                    { "orderId", orderId.ToString() },
+                },
+            };
+
+            var service = new Stripe.PaymentIntentService();
+            var paymentIntent = service.Create(options);
+            return paymentIntent;
         }
     }
 }

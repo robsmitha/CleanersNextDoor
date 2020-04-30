@@ -1,12 +1,8 @@
-﻿using Application.LineItems;
-using AutoMapper;
-using Domain.Entities;
+﻿using Domain.Entities;
 using Infrastructure.Data;
 using MediatR;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -30,15 +26,12 @@ namespace Application.Customers.Commands.CreateCartItem
     public class CreateCartItemCommandHandler : IRequestHandler<CreateCartItemCommand, CreateCartItemModel>
     {
         private readonly ICleanersNextDoorContext _context;
-        private IMapper _mapper;
 
         public CreateCartItemCommandHandler(
-            ICleanersNextDoorContext context,
-            IMapper mapper
+            ICleanersNextDoorContext context
             )
         {
             _context = context;
-            _mapper = mapper;
         }
         public async Task<CreateCartItemModel> Handle(CreateCartItemCommand request, CancellationToken cancellationToken)
         {
@@ -47,13 +40,14 @@ namespace Application.Customers.Commands.CreateCartItem
             #region Create new order if needed
             if (request.OrderID == null || request.OrderID == 0)
             {
+                var open = _context.OrderStatusTypes.First(t => t.Name.ToUpper() == "OPEN");
                 var order = new Order
                 {
                     CustomerID = request.CustomerID,
                     Active = true,
                     CreatedAt = DateTime.Now,
                     MerchantID = item.MerchantID,
-                    OrderStatusTypeID = _context.OrderStatusTypes.First().ID,
+                    OrderStatusTypeID = open.ID,
                 };
                 _context.Orders.Add(order);
                 await _context.SaveChangesAsync(cancellationToken);

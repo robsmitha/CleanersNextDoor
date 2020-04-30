@@ -10,16 +10,35 @@ namespace Domain.Entities
     {
         public string Note { get; set; }
         public int OrderStatusTypeID { get; set; }
-        public int MerchantID { get; set; }
-        public int? CustomerID { get; set; }
 
-        [ForeignKey("CustomerID")]
-        public Customer Customer { get; set; }
+        [ForeignKey("OrderStatusTypeID")]
+        public OrderStatusType OrderStatusType { get; set; }
+
+        public int MerchantID { get; set; }
 
         [ForeignKey("MerchantID")]
         public Merchant Merchant { get; set; }
 
-        [ForeignKey("OrderStatusTypeID")]
-        public OrderStatusType OrderStatusType { get; set; }
+        /// <summary>
+        /// Customer who placed the service request if logged in
+        /// </summary>
+        public int? CustomerID { get; set; }
+
+        [ForeignKey("CustomerID")]
+        public Customer Customer { get; set; }
+    }
+    public static class OrderExtensions
+    {
+        /// <summary>
+        /// indicates order is open and needs to be paid for
+        /// </summary>
+        /// <param name="this"></param>
+        /// <returns></returns>
+        public static bool IsOpenOrder(this Order @this)
+        {
+            if (@this?.OrderStatusType == null) return false;
+            return @this.OrderStatusType.CanAddPayment 
+                && @this.OrderStatusType.CanAddLineItem;
+        }
     }
 }

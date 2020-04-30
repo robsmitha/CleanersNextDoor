@@ -34,15 +34,20 @@ namespace Application.Customers.Commands.CreateCartItem
         public async Task<bool> BeLessThanOrEqualToMaxAllowed(CreateCartItemCommand args, int itemId, 
             CancellationToken cancellationToken)
         {
-            var item = await _context.Items.FindAsync(itemId);
-            var qty = _context.LineItems
-                .Where(l => l.ItemID == itemId)
-                .Count();
+            var data = from li in _context.LineItems.AsEnumerable()
+                       join i in _context.Items.AsEnumerable() on li.ItemID equals i.ID
+                       where li.OrderID == args.OrderID && li.ItemID == args.ItemID
+                       select new { li, i };
+
+            if (data == null || data.FirstOrDefault() == null) return true;
+            var item = data.First().i;
+            var qty = data.Count();
 
             //prevent adding single item when qty equals max allow
             if (args.AddSingleItem && qty == item.MaxAllowed )
                 return false;
 
+            await Task.FromResult(0);
             return qty <= item.MaxAllowed;
 
         }

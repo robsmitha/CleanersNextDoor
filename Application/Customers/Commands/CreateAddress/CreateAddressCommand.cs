@@ -1,19 +1,14 @@
-﻿using Application.Common.Mappings;
-using Application.LineItems;
-using AutoMapper;
+﻿using AutoMapper;
 using Domain.Entities;
 using Infrastructure.Data;
 using MediatR;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Application.Customers.Commands.CreateAddress
 {
-    public class CreateAddressCommand : IRequest<CreateAddressModel>
+    public class CreateAddressCommand : IRequest<bool>
     {
         public int CustomerID { get; set; }
         public string Street1 { get; set; }
@@ -41,7 +36,7 @@ namespace Application.Customers.Commands.CreateAddress
             IsDefault = model.IsDefault;
         }
     }
-    public class CreateAddressCommandHandler : IRequestHandler<CreateAddressCommand, CreateAddressModel>
+    public class CreateAddressCommandHandler : IRequestHandler<CreateAddressCommand, bool>
     {
         private readonly ICleanersNextDoorContext _context;
         private readonly IMapper _mapper;
@@ -54,7 +49,7 @@ namespace Application.Customers.Commands.CreateAddress
             _context = context;
             _mapper = mapper;
         }
-        public async Task<CreateAddressModel> Handle(CreateAddressCommand request, CancellationToken cancellationToken)
+        public async Task<bool> Handle(CreateAddressCommand request, CancellationToken cancellationToken)
         {
             if (request.IsDefault)
             {
@@ -69,7 +64,12 @@ namespace Application.Customers.Commands.CreateAddress
                 }
             }
 
-            var address = new CustomerAddress
+            //TODO: pass correspondence type id from ui 
+            //customer can configure pickup/delivery for each workflow
+            var correspondenceTypes = _context.CorrespondenceTypes
+                .Where(c => c.CustomerConfigures);
+
+            var addresses = correspondenceTypes.Select(c => new CustomerAddress
             {
                 CustomerID = request.CustomerID,
                 Street1 = request.Street1,
@@ -81,11 +81,12 @@ namespace Application.Customers.Commands.CreateAddress
                 Longitude = request.Longitude,
                 IsDefault = request.IsDefault,
                 Name = request.Name,
-                Note = request.Note
-            };
-            _context.CustomerAddresses.Add(address);
+                Note = request.Note,
+                CorrespondenceTypeID = c.ID
+            });
+            _context.CustomerAddresses.AddRange(addresses);
             await _context.SaveChangesAsync(cancellationToken);
-            return _mapper.Map<CreateAddressModel>(address);
+            return true;
         }
     }
 }

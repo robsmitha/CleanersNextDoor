@@ -7,5 +7,7 @@ namespace Domain.Entities
 {
     public class CorrespondenceType : BaseType
     {
+        public bool CustomerConfigures { get; set; }
+        public bool MerchantConfigures { get; set; }
     }
 }

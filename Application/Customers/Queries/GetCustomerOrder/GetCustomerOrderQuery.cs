@@ -8,18 +8,18 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Application.Orders.Queries.GetOrder
+namespace Application.Customers.Queries.GetCustomerOrder
 {
-    public class GetOrderQuery : IRequest<OrderModel>
+    public class GetCustomerOrderQuery : IRequest<GetCustomerOrderModel>
     {
         public int OrderID { get; set; }
-        public GetOrderQuery(int orderId)
+        public GetCustomerOrderQuery(int orderId)
         {
             OrderID = orderId;
         }
     }
 
-    public class GetOrderQueryHandler : IRequestHandler<GetOrderQuery, OrderModel>
+    public class GetOrderQueryHandler : IRequestHandler<GetCustomerOrderQuery, GetCustomerOrderModel>
     {
         private readonly ICleanersNextDoorContext _context;
         private IMapper _mapper;
@@ -32,12 +32,12 @@ namespace Application.Orders.Queries.GetOrder
             _context = context;
             _mapper = mapper;
         }
-        public async Task<OrderModel> Handle(GetOrderQuery request, CancellationToken cancellationToken)
+        public async Task<GetCustomerOrderModel> Handle(GetCustomerOrderQuery request, CancellationToken cancellationToken)
         {
             var entity = await _context.Orders.FindAsync(request.OrderID);
             return entity != null
-                ? _mapper.Map<OrderModel>(entity)
-                : new OrderModel();
+                ? _mapper.Map<GetCustomerOrderModel>(entity)
+                : new GetCustomerOrderModel();
         }
     }
 }

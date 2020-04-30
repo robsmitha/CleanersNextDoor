@@ -1,11 +1,8 @@
-﻿using Application.LineItems;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Application.Common.Mappings;
 
 namespace Application.Customers.Queries.GetCustomerCart
 {
-    public class CustomerCartItemModel
+    public class CustomerCartItemModel : IMapFrom<LineItemModel>
     {
         public int ID { get; set; }
         public decimal ItemAmount { get; set; }
@@ -14,16 +11,7 @@ namespace Application.Customers.Queries.GetCustomerCart
         public string ItemName { get; set; }
         public int? ItemMaxAllowed { get; set; }
         public int CurrentQuantity { get; set; }
-        public string DisplayPrice => (ItemAmount * CurrentQuantity).ToString("C");
-        public CustomerCartItemModel(LineItemModel lineItem, int qty)
-        {
-            ID = lineItem.ID;
-            ItemAmount = lineItem.ItemAmount;
-            ItemID = lineItem.ItemID;
-            OrderID = lineItem.OrderID;
-            ItemName = lineItem.ItemName;
-            ItemMaxAllowed = lineItem.ItemMaxAllowed;
-            CurrentQuantity = qty;
-        }
+        public decimal Price => ItemAmount * CurrentQuantity;
+        public string DisplayPrice => Price.ToString("C");
     }
 }

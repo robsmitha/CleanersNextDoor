@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Application.LineItems
+namespace Application.Customers.Queries.GetCustomerCart
 {
     public class LineItemModel : IMapFrom<LineItem>
     {

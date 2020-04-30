@@ -19,17 +19,17 @@ namespace Domain.Entities
         public Order Order { get; set; }
 
         /// <summary>
-        /// Customer who placed the service request if logged in
-        /// </summary>
-        public int? CustomerID { get; set; }
-        [ForeignKey("CustomerID")]
-        public Customer Customer { get; set; }
-
-        /// <summary>
         /// The overall status of the service request
         /// </summary>
         public int ServiceRequestStatusTypeID { get; set; }
         [ForeignKey("ServiceRequestStatusTypeID")]
         public ServiceRequestStatusType ServiceRequestStatusType { get; set; }
+
+        /// <summary>
+        /// the correspondence workflow to follow for this service request (i.e. food delivery, laundry)
+        /// </summary>
+        public int WorkflowID { get; set; }
+        [ForeignKey("WorkflowID")]
+        public Workflow Workflow { get; set; }
     }
 }

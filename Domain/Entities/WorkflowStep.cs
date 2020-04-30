@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Domain.Entities
 {
-    public class WorkflowItem : BaseEntity
+    public class WorkflowStep : BaseEntity
     {
         /// <summary>
         /// Associated workflow
@@ -22,9 +22,9 @@ namespace Domain.Entities
         public CorrespondenceType CorrespondenceType { get; set; }
 
         /// <summary>
-        /// Order of correspondence in workflow
+        /// Step of correspondence in workflow
         /// </summary>
-        public int WorkflowOrder { get; set; }
+        public int Step { get; set; }
 
     }
 }

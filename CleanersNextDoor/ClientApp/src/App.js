@@ -24,6 +24,8 @@ import { SavedAddresses } from './components/account/SavedAddresses'
 import { NewAddress } from './components/account/NewAddress'
 import { PaymentMethods } from './components/account/PaymentMethods'
 import { NewPaymentMethod } from './components/account/NewPaymentMethod'
+import { OrderDetails } from './components/account/OrderDetails'
+import { OrderHistory } from './components/account/OrderHistory'
 
 //Context
 import { AuthProvider } from './context/AuthContext'
@@ -44,6 +46,8 @@ export default class App extends Component {
                     <LayoutRoute path='/merchant/:id' component={Merchant} />
                     <LayoutRoute path='/request-service/:id' component={RequestService} />
                     <LayoutRoute path='/how-it-works' component={HowItWorks} />
+                    <LayoutRoute path='/order-details/:id' component={OrderDetails} />
+                    <LayoutRoute path='/order-history' component={OrderHistory} />
 
                     <NoNavLayoutRoute path='/payment/:id' component={Payment} />
                     <NoNavLayoutRoute path='/sign-in' component={SignIn} />

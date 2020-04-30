@@ -4,9 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Application.Orders
+namespace Application.Customers.Queries.GetCustomerOrder
 {
-    public class OrderModel : IMapFrom<Order>
+    public class GetCustomerOrderModel : IMapFrom<Order>
     {
         public string Note { get; set; }
         public decimal Total { get; set; }

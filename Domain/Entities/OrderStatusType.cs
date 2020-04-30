@@ -8,5 +8,14 @@ namespace Domain.Entities
 {
     public class OrderStatusType : BaseType
     {
+        /// <summary>
+        /// Indicates the system allows for payments to be added to orders in the given status
+        /// </summary>
+        public bool CanAddPayment { get; set; }
+
+        /// <summary>
+        /// Indicates the system allows for lineitems to be added to orders in the given status
+        /// </summary>
+        public bool CanAddLineItem { get; set; }
     }
 }

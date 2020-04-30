@@ -37,9 +37,19 @@ namespace Application.Customers.Commands.DeleteAddress
             {
                 var record = await _context.CustomerAddresses
                     .SingleOrDefaultAsync(a => a.ID == request.CustomerAddressID && a.CustomerID == request.CustomerID);
+
                 if (record != null)
                 {
                     _context.CustomerAddresses.Remove(record);
+
+                    //remove all duplicated addresses
+                    var data = from ca in _context.CustomerAddresses.AsEnumerable()
+                               where ca.Equals(record)
+                               select ca;
+
+                    if(data != null && data.Count() != 0)
+                        _context.CustomerAddresses.RemoveRange(data);
+
                     await _context.SaveChangesAsync(cancellationToken);
                     return true;
                 }

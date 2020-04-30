@@ -17,7 +17,8 @@ export const customerService = {
     removeCartItem,
     cartTransaction,
     stripeClientSecret,
-    stripePublicKey
+    stripePublicKey,
+    createServiceRequest
 };
 //Customer
 function getCustomer() {
@@ -54,14 +55,18 @@ function setDefaultAddress(data) {
     return post(`${_CONTROLLER}/setDefaultAddress`, data)
 }
 //Cart
-function getCart(merchantId) {
-    return get(`${_CONTROLLER}/cart/${merchantId}`)
+function getCart(merchantId, allowCheckout) {
+    let allow = allowCheckout !== undefined ? allowCheckout : false;
+    return get(`${_CONTROLLER}/cart/${merchantId}/${allow}`)
 }
 function removeCartItem(data) {
     return post(`${_CONTROLLER}/removeCartItem`, data)
 }
 function cartTransaction(data) {
     return post(`${_CONTROLLER}/addtocart`, data)
+}
+function createServiceRequest(data) {
+    return post(`${_CONTROLLER}/createServiceRequest`, data)
 }
 
 function stripeClientSecret() {

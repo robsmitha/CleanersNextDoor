@@ -5,6 +5,7 @@ using Application.Customers;
 using Application.Customers.Commands.CreateAddress;
 using Application.Customers.Commands.CreateCartItem;
 using Application.Customers.Commands.CreatePaymentMethod;
+using Application.Customers.Commands.CreateServiceRequest;
 using Application.Customers.Commands.DeleteAddress;
 using Application.Customers.Commands.DeletePaymentMethod;
 using Application.Customers.Commands.RemoveCartItem;
@@ -15,7 +16,6 @@ using Application.Customers.Queries.GetCustomerAddresses;
 using Application.Customers.Queries.GetCustomerByEmail;
 using Application.Customers.Queries.GetCustomerCart;
 using Application.Customers.Queries.GetPaymentMethods;
-using CleanersNextDoor.Services;
 using Domain.Entities;
 using Infrastructure.Identity;
 using MediatR;
@@ -91,7 +91,7 @@ namespace CleanersNextDoor.Controllers
             return await _mediator.Send(new GetCustomerAddressesQuery(_identity.ClaimID)) ?? new List<CustomerAddress>();
         }
         [HttpPost("AddAddress")]
-        public async Task<ActionResult<CreateAddressModel>> AddAddress(CreateAddressModel data)
+        public async Task<ActionResult<bool>> AddAddress(CreateAddressModel data)
         {
             return Ok(await _mediator.Send(new CreateAddressCommand(_identity.ClaimID, data)));
         }
@@ -108,10 +108,10 @@ namespace CleanersNextDoor.Controllers
         #endregion
 
         #region Cart
-        [HttpGet("cart/{merchantId}")]
-        public async Task<ActionResult<CustomerCartModel>> GetCustomerCart(int merchantId)
+        [HttpGet("cart/{merchantId}/{allowCheckout}")]
+        public async Task<ActionResult<CustomerCartModel>> GetCustomerCart(int merchantId, bool allowCheckout = false)
         {
-            return await _mediator.Send(new GetCustomerCartQuery(_identity.ClaimID, merchantId));
+            return await _mediator.Send(new GetCustomerCartQuery(_identity.ClaimID, merchantId, allowCheckout));
         }
         [HttpPost("AddToCart")]
         public async Task<ActionResult<CreateCartItemModel>> AddToCart(CreateCartItemModel data)
@@ -122,6 +122,11 @@ namespace CleanersNextDoor.Controllers
         public async Task<ActionResult<bool>> RemoveCartItem(RemoveCartItemModel data)
         {
             return await _mediator.Send(new RemoveCartItemCommand(data, _identity.ClaimID));
+        }
+        [HttpPost("CreateServiceRequest")]
+        public async Task<ActionResult<int>> CreateServiceRequest(CreateServiceRequestModel model)
+        {
+            return await _mediator.Send(new CreateServiceRequestCommand(model, _identity.ClaimID));
         }
         #endregion
 

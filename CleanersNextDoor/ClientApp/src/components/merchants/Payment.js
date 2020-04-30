@@ -1,16 +1,14 @@
-﻿import React, { Component, useState } from 'react';
-import { Link, Redirect } from 'react-router-dom'
+﻿import React, { Component } from 'react';
+import { Link, Redirect  } from 'react-router-dom'
 import TextInput from './../../helpers/TextInput';
 import handleChange from './../../helpers/HandleChange';
 import { AuthConsumer } from './../../context/AuthContext'
-import { FaTimes } from 'react-icons/fa'
 import { customerService } from '../../services/customer.service'
-
-
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 import CheckoutForm from '../../helpers/CheckoutForm';
-import './Payment.css'
+import { merchantService } from '../../services/merchant.service'
+import AddressForm from '../../helpers/AddressForm';
 
 export class Payment extends Component {
 
@@ -18,6 +16,10 @@ export class Payment extends Component {
         super(props);
         this.state = {
             merchantId: this.props.match.params.id,
+            orderId: 0,
+            workflowId: 0,
+            cart: null,
+            merchantName: null,
             formIsValid: false,
             formControls: {
                 name: {
@@ -57,65 +59,7 @@ export class Payment extends Component {
                     },
                     errors: []
                 },
-                street1: {
-                    value: '',
-                    placeholder: 'Street 1',
-                    label: 'Street Address',
-                    valid: false,
-                    touched: false,
-                    validationRules: {
-                        isRequired: true,
-                        minLength: 2
-                    },
-                    errors: []
-                },
-                street2: {
-                    value: '',
-                    placeholder: 'Street 2',
-                    label: 'Apt/Suite (Optional)',
-                    valid: false,
-                    touched: false,
-                    validationRules: {
-                        isRequired: false
-                    },
-                    errors: []
-                },
-                city: {
-                    value: '',
-                    placeholder: 'City',
-                    label: 'City',
-                    valid: false,
-                    touched: false,
-                    validationRules: {
-                        isRequired: true,
-                        minLength: 2
-                    },
-                    errors: []
-                },
-                stateAbbreviation: {
-                    value: '',
-                    placeholder: 'State',
-                    label: 'State',
-                    valid: false,
-                    touched: false,
-                    validationRules: {
-                        isRequired: true,
-                        minLength: 2
-                    },
-                    errors: []
-                },
-                zip: {
-                    value: '',
-                    placeholder: 'Zip',
-                    label: 'Zip',
-                    valid: false,
-                    touched: false,
-                    validationRules: {
-                        isRequired: true,
-                        minLength: 5
-                    },
-                    errors: []
-                }
+                addresses: []
             }
         };
 
@@ -124,15 +68,191 @@ export class Payment extends Component {
             .then(data => loadStripe(data.key)) 
     }
 
-    async stripeTokenHandler(token) {
-        let data = { token: token.id }
-        console.log(token)
-        return;
+    componentDidMount() {
+        this.populateCustomerCart()
+        this.populateWorkflow()
     }
-    changeHandler = event => {
+
+    populateCustomerCart() {
+        customerService.getCart(this.state.merchantId, true)
+            .then(data => {
+                this.setState({
+                    cart: data,
+                    orderId: data && data.cartItems.length > 0
+                        ? data.cartItems[0].orderID
+                        : 0,
+                    clientSecret: data.clientSecret
+                });
+            })
+    }
+
+    populateWorkflow() {
+        merchantService.getMerchantWorkflow(this.state.merchantId)
+            .then(data => {
+                let addresses = []
+                data.steps.forEach(s => {
+                    addresses.push(
+                        {
+                            step: s.step,
+                            correspondenceTypeID: s.correspondenceTypeID,
+                            customerConfigures: s.correspondenceTypeCustomerConfigures,
+                            correspondenceTypeName: s.correspondenceTypeName,
+                            correspondenceTypeDescription: s.correspondenceTypeDescription,
+                            location: s.address.location,
+                            street1: {
+                                value: s.address.street1 !== null ? s.address.street1 : '',
+                                placeholder: 'Street 1',
+                                label: 'Street Address',
+                                valid: !s.correspondenceTypeCustomerConfigures,
+                                touched: false,
+                                validationRules: {
+                                    isRequired: s.correspondenceTypeCustomerConfigures,
+                                    minLength: 2
+                                },
+                                errors: []
+                            },
+                            street2: {
+                                value: s.address.street2 !== null ? s.address.street2 : '',
+                                placeholder: 'Street 2',
+                                label: 'Apt/Suite (Optional)',
+                                valid: true,
+                                touched: false,
+                                validationRules: {
+                                    isRequired: false
+                                },
+                                errors: []
+                            },
+                            city: {
+                                value: s.address.city !== null ? s.address.city : '',
+                                placeholder: 'City',
+                                label: 'City',
+                                valid: !s.correspondenceTypeCustomerConfigures,
+                                touched: false,
+                                validationRules: {
+                                    isRequired: s.correspondenceTypeCustomerConfigures,
+                                    minLength: 2
+                                },
+                                errors: []
+                            },
+                            stateAbbreviation: {
+                                value: s.address.stateAbbreviation !== null ? s.address.stateAbbreviation : '',
+                                placeholder: 'State',
+                                label: 'State',
+                                valid: !s.correspondenceTypeCustomerConfigures,
+                                touched: false,
+                                validationRules: {
+                                    isRequired: s.correspondenceTypeCustomerConfigures,
+                                    minLength: 2
+                                },
+                                errors: []
+                            },
+                            zip: {
+                                value: s.address.zip !== null ? s.address.zip : '',
+                                placeholder: 'Zip',
+                                label: 'Zip',
+                                valid: !s.correspondenceTypeCustomerConfigures,
+                                touched: false,
+                                validationRules: {
+                                    isRequired: s.correspondenceTypeCustomerConfigures,
+                                    minLength: 5
+                                },
+                                errors: []
+                            },
+                            scheduledAt: {
+                                value: s.scheduledAt,
+                                placeholder: 'Scheduled At',
+                                label: 'Scheduled At',
+                                valid: !s.correspondenceTypeCustomerConfigures,
+                                touched: false,
+                                validationRules: {
+                                    isRequired: s.correspondenceTypeCustomerConfigures
+                                },
+                                errors: []
+                            },
+                            note: {
+                                value: s.address.note !== null ? s.address.note : '',
+                                placeholder: 'Note',
+                                label: 'Note (Optional)',
+                                valid: true,
+                                touched: false,
+                                validationRules: {
+                                    isRequired: false
+                                },
+                                errors: []
+                            }
+                        }
+                    )
+                })
+                const updateFormControls = {
+                    ...this.state.formControls
+                }
+                updateFormControls.name.value = data.customer.name
+                updateFormControls.phone.value = data.customer.phone
+                updateFormControls.email.value = data.customer.email
+                updateFormControls.addresses = addresses
+                this.setState({
+                    formControls: updateFormControls,
+                    workflowId: data.workflowID,
+                    merchantName: data.merchantName
+                });
+            })
+    }
+
+    stripeTokenHandler = async (paymentIntent) => {
+        let payment = {
+            stripePaymentMethodId: paymentIntent.payment_method,
+            centAmount: paymentIntent.amount,
+            currency: paymentIntent.currency,
+            chargedTimestamp: paymentIntent.created
+        }
+        let serviceRequest = {
+            name: this.state.formControls.name.value,
+            phone: this.state.formControls.phone.value,
+            email: this.state.formControls.email.value,
+            workflowID: this.state.workflowId
+        }
+        let correspondenceAddresses = []
+        this.state.formControls.addresses.map((a, index) =>
+            correspondenceAddresses.push({
+                street1: a.street1.value,
+                street2: a.street2.value,
+                city: a.city.value,
+                stateAbbreviation: a.stateAbbreviation.value,
+                zip: a.zip.value,
+                correspondenceTypeID: a.correspondenceTypeID,
+                scheduledAt: a.scheduledAt.value,
+                note: a.note.value
+            })
+        )
+        let data = {
+            orderID: this.state.orderId,
+            payment,
+            serviceRequest,
+            correspondenceAddresses
+        }
+        customerService.createServiceRequest(data)
+            .then(data => {
+                if (data !== null) {
+                    if (data > 0) {
+                        this.props.history.push(`/order-details/:id`.replace(':id', data))
+                    } else {
+                        alert(data)
+                    }
+                }
+                else {
+                    //request failed
+                }
+
+                this.setState({
+                    formIsValid: true
+                });
+            })
+    }
+
+    changeHandler = (event, index) => {
         const name = event.target.name;
         const value = event.target.value;
-        this.setState(handleChange(name, value, this.state.formControls));
+        this.setState(handleChange(name, value, this.state.formControls, index));
     }
 
     render() {
@@ -143,37 +263,27 @@ export class Payment extends Component {
                         <div>
                             {!authenticated
                                 ? <Redirect to='/sign-in' />
-                                : this.renderContent()}
+                                : this.renderLayout()}
                         </div>
                     )}
                 </AuthConsumer>
             </div>
         )
     }
-    renderContent() {
+
+    renderLayout() {
+        const { cart, merchantId } = this.state
         return (
-            <div className="d-flex" id="wrapper">
-
-                <div className="bg-light border-right" id="sidebar-wrapper">
-                    <div className="sidebar-heading">
-                        <Link to="/" className="text-muted text-decoration-none" hidden={true}>
-                            <FaTimes />
-                        </Link>
-                        Checkout
-                    </div>
-                    <nav className="nav flex-column checkout-steps">
-                        <Link className="nav-link border-left ml-4 border-primary" to={'contact-info'}>Contact Information</Link>
-                        <Link className="nav-link border-left ml-4 text-secondary" to={'address-info'}>Address Information</Link>
-                        <Link className="nav-link border-left ml-4 text-secondary" to={'payment-method'}>Payment method</Link>
-                        <Link className="nav-link border-left ml-4 text-secondary" to={'review-and-confirm'}>Review and confirm</Link>
-                    </nav>
-                </div>
-                <div id="page-content-wrapper">
-
-                    <div className="container-fluid">
+            <div>
+                <div className="container">
+                    <div className="py-3">
                         <div className="row">
-                            <div className="col-md-4">
-
+                            <div className="col-md-4 order-md-2 mb-4">
+                                {cart == null
+                                    ? <p><em>Loading cart...</em></p>
+                                    : Payment.renderCart(cart, merchantId)}
+                            </div>
+                            <div className="col-md-8 order-md-1">
                                 <h3>
                                     Contact Information
                                 </h3>
@@ -185,80 +295,63 @@ export class Payment extends Component {
                                     touched={this.state.formControls.name.touched ? 1 : 0}
                                     valid={this.state.formControls.name.valid ? 1 : 0}
                                     errors={this.state.formControls.name.errors} />
-                                <TextInput name="email"
-                                    placeholder={this.state.formControls.email.placeholder}
-                                    label={this.state.formControls.email.label}
-                                    value={this.state.formControls.email.value}
-                                    onChange={this.changeHandler}
-                                    touched={this.state.formControls.email.touched ? 1 : 0}
-                                    valid={this.state.formControls.email.valid ? 1 : 0}
-                                    errors={this.state.formControls.email.errors} />
-                                <TextInput name="phone"
-                                    placeholder={this.state.formControls.phone.placeholder}
-                                    label={this.state.formControls.phone.label}
-                                    value={this.state.formControls.phone.value}
-                                    onChange={this.changeHandler}
-                                    touched={this.state.formControls.phone.touched ? 1 : 0}
-                                    valid={this.state.formControls.phone.valid ? 1 : 0}
-                                    errors={this.state.formControls.phone.errors} />
-
-
+                                <div className="row">
+                                    <div className="col-md-6">
+                                        <TextInput name="email"
+                                            placeholder={this.state.formControls.email.placeholder}
+                                            label={this.state.formControls.email.label}
+                                            value={this.state.formControls.email.value}
+                                            onChange={this.changeHandler}
+                                            touched={this.state.formControls.email.touched ? 1 : 0}
+                                            valid={this.state.formControls.email.valid ? 1 : 0}
+                                            errors={this.state.formControls.email.errors} />
+                                    </div>
+                                    <div className="col-md-6">
+                                        <TextInput name="phone"
+                                            placeholder={this.state.formControls.phone.placeholder}
+                                            label={this.state.formControls.phone.label}
+                                            value={this.state.formControls.phone.value}
+                                            onChange={this.changeHandler}
+                                            touched={this.state.formControls.phone.touched ? 1 : 0}
+                                            valid={this.state.formControls.phone.valid ? 1 : 0}
+                                            errors={this.state.formControls.phone.errors} />
+                                    </div>
+                                </div>
                                 <h3>
                                     Address Details
                                 </h3>
-                                <TextInput name="street1"
-                                    placeholder={this.state.formControls.street1.placeholder}
-                                    label={this.state.formControls.street1.label}
-                                    value={this.state.formControls.street1.value}
-                                    onChange={this.changeHandler}
-                                    touched={this.state.formControls.street1.touched ? 1 : 0}
-                                    valid={this.state.formControls.street1.valid ? 1 : 0}
-                                    errors={this.state.formControls.street1.errors} />
-                                <TextInput name="street2"
-                                    placeholder={this.state.formControls.street2.placeholder}
-                                    label={this.state.formControls.street2.label}
-                                    value={this.state.formControls.street2.value}
-                                    onChange={this.changeHandler}
-                                    touched={this.state.formControls.street2.touched ? 1 : 0}
-                                    valid={this.state.formControls.street2.valid ? 1 : 0}
-                                    errors={this.state.formControls.street2.errors} />
-                                <TextInput name="city"
-                                    placeholder={this.state.formControls.city.placeholder}
-                                    label={this.state.formControls.city.label}
-                                    value={this.state.formControls.city.value}
-                                    onChange={this.changeHandler}
-                                    touched={this.state.formControls.city.touched ? 1 : 0}
-                                    valid={this.state.formControls.city.valid ? 1 : 0}
-                                    errors={this.state.formControls.city.errors} />
-                                <div className="form-row">
-                                    <div className="col-md-8">
-                                        <div className="form-group">
-                                            <label className="font-weight-bold">State</label>
-                                            <select className="form-control" name="stateAbbreviation" value={this.state.formControls.stateAbbreviation.value} onChange={this.changeHandler}>
-                                                <option value="">Select One</option>
-                                                <option value="FL">Florida</option>
-                                                <option value="NY">New York</option>
-                                                <option value="CA">California</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div className="col-md-4">
-                                        <TextInput name="zip"
-                                            placeholder={this.state.formControls.zip.placeholder}
-                                            label={this.state.formControls.zip.label}
-                                            value={this.state.formControls.zip.value}
-                                            onChange={this.changeHandler}
-                                            touched={this.state.formControls.zip.touched ? 1 : 0}
-                                            valid={this.state.formControls.zip.valid ? 1 : 0}
-                                            errors={this.state.formControls.zip.errors} />
-                                    </div>
+                                <div className="list-group list-group-flush">
+                                    {this.state.formControls.addresses.map((a, index) =>
+                                        <div className={'list-group-item px-0 '.concat(!a.customerConfigures ? 'list-group-item-light' : '')} key={index}>
+                                            <p className="mb-0">Step {a.step}: {a.correspondenceTypeName}</p>
+                                            <small className="text-muted">
+                                                {a.correspondenceTypeDescription}
+                                            </small>
+                                            <div hidden={a.customerConfigures}>
+                                                {a.location}
+                                            </div>
+                                            <AddressForm hidden={!a.customerConfigures}
+                                                street1={a.street1}
+                                                street2={a.street2}
+                                                city={a.city}
+                                                stateAbbreviation={a.stateAbbreviation}
+                                                zip={a.zip}
+                                                note={a.note}
+                                                scheduledAt={a.scheduledAt}
+                                                changeHandler={(event) => this.changeHandler(event, index)}
+                                            />
+                                        </div>)}
                                 </div>
-
                                 <h3>
                                     Payment Details
                                 </h3>
                                 <Elements stripe={this.stripePromise}>
-                                    <CheckoutForm stripeTokenHandler={this.stripeTokenHandler} disabled={!this.state.formIsValid} />
+                                    <CheckoutForm
+                                        stripeTokenHandler={this.stripeTokenHandler}
+                                        /*disabled={!this.state.formIsValid}*/
+                                        name={this.state.formControls.name.value}
+                                        clientSecret={this.state.clientSecret}
+                                    />
                                 </Elements>
                             </div>
                         </div>
@@ -266,5 +359,34 @@ export class Payment extends Component {
                 </div>
             </div>
             )
+    }
+
+
+    static renderCart(cart, merchantId) {
+        let cartItems = cart.cartItems;
+        return (
+            <div>
+                <div className="list-group list-group-flush">
+                    {cartItems.map(c =>
+                        <div className="list-group-item" key={c.id}>
+                            <div className="d-flex w-100 justify-content-between">
+                                <h5 className="mb-1"> {c.itemName}</h5>
+                                <small>{c.displayPrice}</small>
+                            </div>
+                            <small className="text-muted">QTY: {c.currentQuantity}</small>
+                        </div>
+                    )}
+                    <div className="list-group-item">
+                        <strong>Total (USD):</strong>
+                        <span className="float-right">
+                            {cart.displayPrice}
+                        </span>
+                    </div>
+                    <Link to={'/request-service/:id'.replace(':id', merchantId)} className="list-group-item list-group-item-action text-center">
+                        Go Back
+                    </Link>
+                </div>
+            </div>
+        )
     }
 }

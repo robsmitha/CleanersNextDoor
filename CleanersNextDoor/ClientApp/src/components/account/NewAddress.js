@@ -125,7 +125,7 @@ export class NewAddress extends Component {
         customerService.addAddress(address)
             .then(data => {
                 if (data !== null) {
-                    if (data.id > 0) {
+                    if (data === true) {
                         this.props.history.push(`/saved-addresses`)
                     } else {
                         alert(data)

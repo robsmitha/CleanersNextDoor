@@ -88,23 +88,27 @@ export class Merchant extends Component {
                         </div>
                         <div className="col-md-4 mb-3">
                             <h2 className="mb-2">Contact Us</h2>
-                            <address>
-                                <strong>{merchant.name}</strong>
-                                <br />
-                                {merchant.street1}
-                                <br />
-                                {merchant.city}, {merchant.stateAbbreviation}. {merchant.zip}
-                            </address>
-                            <address>
-                                <abbr title="Hours">H:</abbr>
-                                {merchant.operatingHours}
-                                <br />
-                                <abbr title="Phone">P:</abbr>
-                                {merchant.phone}
-                                <br />
-                                <abbr title="Email">E:</abbr>
-                                <a href={'mailto:{0}'.replace('{0}', merchant.contactEmail)}>{merchant.contactEmail}</a>
-                            </address>
+                            {merchant.locations.map(l =>
+                                <div key={l.id}>
+                                    <address>
+                                        <strong>{l.name}</strong>
+                                        <br />
+                                        {l.street1}
+                                        <br />
+                                        {l.city}, {l.stateAbbreviation}. {l.zip}
+                                    </address>
+                                    <address>
+                                        <abbr title="Hours">H:</abbr>
+                                        {l.operatingHours}
+                                        <br />
+                                        <abbr title="Phone">P:</abbr>
+                                        {l.phone}
+                                        <br />
+                                        <abbr title="Email">E:</abbr>
+                                        <a href={'mailto:{0}'.replace('{0}', l.contactEmail)}>{l.contactEmail}</a>
+                                    </address>
+                                </div>
+                                )}
                         </div>
                     </div>
                     <div className="card text-white bg-secondary my-3 py-4 text-center">

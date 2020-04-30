@@ -28,7 +28,7 @@ const CheckoutForm = (props) => {
     const [error, setError] = useState(null);
     const stripe = useStripe();
     const elements = useElements();
-
+    console.log(props)
     // Handle real-time validation errors from the card Element.
     const handleChange = (event) => {
         if (event.error) {
@@ -41,17 +41,36 @@ const CheckoutForm = (props) => {
     // Handle form submission.
     const handleSubmit = async (event) => {
         event.preventDefault();
-        const card = elements.getElement(CardElement);
-        const result = await stripe.createToken(card);
+        if (!stripe || !elements) {
+            // Stripe.js has not yet loaded.
+            // Make sure to disable form submission until Stripe.js has loaded.
+            return;
+        }
+
+        const result = await stripe.confirmCardPayment(props.clientSecret, {
+            payment_method: {
+                card: elements.getElement(CardElement),
+                billing_details: {
+                    name: props.name,
+                },
+            }
+        });
+
         if (result.error) {
             // Inform the user if there was an error.
             setError(result.error.message);
         } else {
             setError(null);
-            // The setup has succeeded. Display a success message and send
-            // result.setupIntent.payment_method to your server to save the
-            // card to a Customer
-            props.stripeTokenHandler(result.token);
+
+            // The payment has been processed!
+            if (result.paymentIntent.status === 'succeeded') {
+                // Show a success message to your customer
+                // There's a risk of the customer closing the window before callback
+                // execution. Set up a webhook or plugin to listen for the
+                // payment_intent.succeeded event that handles any business critical
+                // post-payment actions.
+                props.stripeTokenHandler(result.paymentIntent)
+            }
         }
     };
 
@@ -70,7 +89,7 @@ const CheckoutForm = (props) => {
                 <div className="card-errors" role="alert">{error}</div>
             </div>
             <button type="submit" className="btn btn-success btn-block" disabled={props.disabled}>
-                Submit Payment
+                Complete Checkout
             </button>
         </form>
     );

@@ -24,8 +24,10 @@ namespace Infrastructure.Data
         public DbSet<ItemType> ItemTypes { get; set; }
         public DbSet<LineItem> LineItems { get; set; }
         public DbSet<Merchant> Merchants { get; set; }
+        public DbSet<MerchantLocation> MerchantLocations { get; set; }
         public DbSet<MerchantType> MerchantTypes { get; set; }
         public DbSet<MerchantUser> MerchantUsers { get; set; }
+        public DbSet<MerchantWorkflow> MerchantWorkflows { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderStatusType> OrderStatusTypes { get; set; }
         public DbSet<Payment> Payments { get; set; }
@@ -46,7 +48,7 @@ namespace Infrastructure.Data
         public DbSet<User> Users { get; set; }
         public DbSet<UserStatusType> UserStatusTypes { get; set; }
         public DbSet<VoidReasonType> VoidReasonTypes { get; set; }
-        public DbSet<WorkflowItem> WorkflowItems { get; set; }
+        public DbSet<WorkflowStep> WorkflowSteps { get; set; }
         public DbSet<Workflow> Workflows { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -66,8 +68,10 @@ namespace Infrastructure.Data
             modelBuilder.Entity<ItemType>();
             modelBuilder.Entity<LineItem>();
             modelBuilder.Entity<Merchant>();
+            modelBuilder.Entity<MerchantLocation>();
             modelBuilder.Entity<MerchantType>();
             modelBuilder.Entity<MerchantUser>();
+            modelBuilder.Entity<MerchantWorkflow>();
             modelBuilder.Entity<Order>();
             modelBuilder.Entity<OrderStatusType>();
             modelBuilder.Entity<Payment>();
@@ -88,7 +92,7 @@ namespace Infrastructure.Data
             modelBuilder.Entity<User>();
             modelBuilder.Entity<UserStatusType>();
             modelBuilder.Entity<VoidReasonType>();
-            modelBuilder.Entity<WorkflowItem>();
+            modelBuilder.Entity<WorkflowStep>();
             modelBuilder.Entity<Workflow>();
 
             modelBuilder.Model.GetEntityTypes()

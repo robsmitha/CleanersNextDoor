@@ -7,11 +7,6 @@ namespace Domain.Entities
 {
     public class Workflow : BaseType
     {
-        /// <summary>
-        /// Associated Merchant
-        /// </summary>
-        public int MerchantID { get; set; }
-        [ForeignKey("MerchantID")]
-        public Merchant Merchant { get; set; }
+        
     }
 }

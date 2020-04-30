@@ -1,19 +1,14 @@
-﻿using Application.Models;
-using AutoMapper;
-using Domain.Entities;
+﻿using AutoMapper;
 using Infrastructure.Data;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Application.Merchants.Queries.GetMerchants
 {
-    public class GetMerchantsQuery : IRequest<List<MerchantModel>>
+    public class GetMerchantsQuery : IRequest<List<GetMerchantsModel>>
     {
         public GetMerchantsQuery()
         {
@@ -21,7 +16,7 @@ namespace Application.Merchants.Queries.GetMerchants
         }
     }
 
-    public class GetMerchantsQueryHandler : IRequestHandler<GetMerchantsQuery, List<MerchantModel>>
+    public class GetMerchantsQueryHandler : IRequestHandler<GetMerchantsQuery, List<GetMerchantsModel>>
     {
         private readonly ICleanersNextDoorContext _context;
         private IMapper _mapper;
@@ -34,7 +29,7 @@ namespace Application.Merchants.Queries.GetMerchants
             _context = context;
             _mapper = mapper;
         }
-        public async Task<List<MerchantModel>> Handle(GetMerchantsQuery request, CancellationToken cancellationToken)
+        public async Task<List<GetMerchantsModel>> Handle(GetMerchantsQuery request, CancellationToken cancellationToken)
         {
             var data = from m in _context.Merchants.AsEnumerable()
                        join i in _context.Items.AsEnumerable() on m.ID equals i.MerchantID into tmp_i
@@ -44,13 +39,13 @@ namespace Application.Merchants.Queries.GetMerchants
                        where m.Active
                        select new { m, i };
 
-            if (data == null || data.FirstOrDefault() == null) return new List<MerchantModel>();
-            var merchants = new Dictionary<int, MerchantModel>();
+            if (data == null || data.FirstOrDefault() == null) return new List<GetMerchantsModel>();
+            var merchants = new Dictionary<int, GetMerchantsModel>();
             foreach (var row in data)
             {
                 if (!merchants.TryGetValue(row.m.ID, out var merchant))
                 {
-                    merchant = _mapper.Map<MerchantModel>(row.m);
+                    merchant = _mapper.Map<GetMerchantsModel>(row.m);
                     merchants.Add(row.m.ID, merchant);
                 }
                 if(row.i != null)

@@ -6,7 +6,7 @@ export const merchantService = {
     getMerchants,
     getMerchant,
     getItems,
-    makePayment
+    getMerchantWorkflow
 };
 function getMerchants() {
     return get(`merchants/GetMerchants`)
@@ -20,6 +20,6 @@ function getItems(merchantId) {
     return get(`merchants/${merchantId}/items`)
 }
 
-function makePayment(data) {
-    return post('/merchants/charge', data)
+function getMerchantWorkflow(merchantId) {
+    return get(`merchants/GetMerchantWorkflow/${merchantId}`)
 }
