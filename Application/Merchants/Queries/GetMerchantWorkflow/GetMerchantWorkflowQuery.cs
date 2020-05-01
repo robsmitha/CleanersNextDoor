@@ -65,7 +65,7 @@ namespace Application.Merchants.Queries.GetMerchantWorkflow
                     step.Address = _mapper.Map<WorkflowStepAddressModel>(m.ca);
                 }
                 //TODO: calculate default scheduled at time based on correspondence time, steps, etc.
-                step.ScheduledAt = DateTime.Now;
+                step.ScheduledAt = DateTime.Now.AddDays(2);
                 model.Steps.Add(step);
             }
 

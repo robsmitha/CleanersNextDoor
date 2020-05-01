@@ -32,4 +32,12 @@ namespace Domain.Entities
         [ForeignKey("WorkflowID")]
         public Workflow Workflow { get; set; }
     }
+    public static class ServiceRequsetExtensions
+    {
+        public static bool IsUpcoming(this ServiceRequest @this)
+        {
+            if (@this?.ServiceRequestStatusType == null) return false;
+            return @this.ServiceRequestStatusType.IsActiveServiceRequest;
+        }
+    }
 }

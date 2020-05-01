@@ -306,6 +306,12 @@ namespace Infrastructure.Data
             context.Items.AddRange(items);
             context.SaveChanges();
 
+            var confirmedServiceRequestStatusType = new ServiceRequestStatusType
+            {
+                Name = "Confirmed",
+                Description = "We have confirmed your service request with the merchant.",
+                IsActiveServiceRequest = true
+            };
             var serviceRequestStatusTypes = new List<ServiceRequestStatusType>
             {
                 new ServiceRequestStatusType
@@ -313,35 +319,36 @@ namespace Infrastructure.Data
                     Name = "Created",
                     Description = "The service request has been created and we are confirming with the merchant."
                 },
-                new ServiceRequestStatusType
-                {
-                    Name = "Acknowledged",
-                    Description = "We have recieved your service request. We are making arrangements to accomodate the request."
-                },
+                confirmedServiceRequestStatusType,
                 new ServiceRequestStatusType
                 {
                     Name = "Picking Up",
-                    Description = "The driver is picking up your items."
+                    Description = "The driver is picking up your items.",
+                    IsActiveServiceRequest = true
                 },
                 new ServiceRequestStatusType
                 {
                     Name = "Merchant Recieved",
-                    Description = "The merchant has recieved your service request and is making preparations."
+                    Description = "The merchant has recieved your service request and is making preparations.",
+                    IsActiveServiceRequest = true
                 },
                 new ServiceRequestStatusType
                 {
                     Name = "Dropping Off",
-                    Description = "The driver is dropping off your items."
+                    Description = "The driver is dropping off your items.",
+                    IsActiveServiceRequest = true
                 },
                 new ServiceRequestStatusType
                 {
                     Name = "Customer Recieved",
-                    Description = "The driver has dropped off the items and the service request has been completed."
+                    Description = "The driver has dropped off the items and the service request has been completed.",
+                    IsCompleteServiceRequest = true
                 },
                 new ServiceRequestStatusType
                 {
                     Name = "Cancelled",
-                    Description = "The service request was cancelled."
+                    Description = "The service request was cancelled.",
+                    IsCompleteServiceRequest = true
                 },
             };
             context.ServiceRequestStatusTypes.AddRange(serviceRequestStatusTypes);
@@ -466,7 +473,8 @@ namespace Infrastructure.Data
                 {
                     WorkflowID = laundryWorkflow.ID,
                     MerchantID = m.ID,
-                    IsDefault = true
+                    IsDefault = true,
+                    DefaultServiceRequestStatusTypeID = confirmedServiceRequestStatusType.ID
                 });
                 context.MerchantWorkflows.Add(new MerchantWorkflow
                 {

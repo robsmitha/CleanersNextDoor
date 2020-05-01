@@ -43,19 +43,18 @@ namespace Application.Customers.Commands.RemoveCartItem
         }
         public async Task<bool> Handle(RemoveCartItemCommand request, CancellationToken cancellationToken)
         {
-            try
+            var orderLineItems = _context.LineItems.Where(l => l.OrderID == request.OrderID);
+            var removeLineItems = orderLineItems.Where(l => l.ItemID == request.ItemID);
+            _context.LineItems.RemoveRange(removeLineItems);
+
+            if (orderLineItems.Count() == removeLineItems.Count())
             {
-                var lineItems = _context.LineItems
-                    .Include(o => o.Order)
-                    .Where(l => l.OrderID == request.OrderID && l.ItemID == request.ItemID && l.Order.CustomerID == request.CustomerID);
-                _context.LineItems.RemoveRange(lineItems);
-                await _context.SaveChangesAsync(cancellationToken);
-                return true;
+                var order = await _context.Orders.FindAsync(request.OrderID);
+                _context.Orders.Remove(order);
             }
-            catch(Exception e)
-            {
-                return false;
-            }
+
+            await _context.SaveChangesAsync(cancellationToken);
+            return true;
         }
     } 
 

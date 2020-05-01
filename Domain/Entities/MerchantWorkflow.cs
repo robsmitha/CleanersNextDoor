@@ -23,5 +23,13 @@ namespace Domain.Entities
         /// Indicates the default merchant workflow to use at checkout
         /// </summary>
         public bool IsDefault { get; set; }
+
+        /// <summary>
+        /// Indicates the default ServiceRequestStatusType to start workflow at.
+        /// If null, start in "Created" ServiceRequestStatusType
+        /// </summary>
+        [ForeignKey("DefaultServiceRequestStatusTypeID")]
+        public int? DefaultServiceRequestStatusTypeID { get; set; }
+        public ServiceRequestStatusType DefaultServiceRequestStatusType;
     }
 }

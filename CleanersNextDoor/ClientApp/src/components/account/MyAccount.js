@@ -95,8 +95,8 @@ export class MyAccount extends Component {
                                 <p className="lead text-white-50">
                                     Manage account information, recurring services, payment methods and more!
                                 </p>
-                                <Link to="/" className="btn btn-success btn-lg mr-2">
-                                    Recent Orders
+                                <Link to="/order-history" className="btn btn-success btn-lg mr-2">
+                                    Orders
                                 </Link>
                                 <Link to="/" className="btn btn-secondary btn-lg">
                                     See Merchants
@@ -128,13 +128,13 @@ export class MyAccount extends Component {
                         </h3>
                         <div className="row">
                             <div className="col-md-4 mb-4">
-                                <Link className="text-decoration-none" to="/edit-account">
+                                <Link className="text-decoration-none" to="/order-history">
                                     <div className="card h-100">
-                                        <div className="card-body p-4">
+                                        <div className="card-bod p-4">
                                             <div className="d-flex w-100 justify-content-between text-dark">
-                                                <h5 className="mb-1">Edit Account</h5>
+                                                <h5 className="mb-1">Orders</h5>
                                             </div>
-                                            <p className="mb-1 text-muted">Need to change your account? Edit your account here.</p>
+                                            <p className="mb-1 text-muted">Track progress of upcomming service requests and review past order history.</p>
                                         </div>
                                     </div>
                                 </Link>
@@ -172,13 +172,13 @@ export class MyAccount extends Component {
                                 </Link>
                             </div>
                             <div className="col-md-4 mb-4">
-                                <Link className="text-decoration-none" to="/order-history">
+                                <Link className="text-decoration-none" to="/edit-account">
                                     <div className="card h-100">
-                                        <div className="card-bod p-4">
+                                        <div className="card-body p-4">
                                             <div className="d-flex w-100 justify-content-between text-dark">
-                                                <h5 className="mb-1">Orders</h5>
+                                                <h5 className="mb-1">Edit Account</h5>
                                             </div>
-                                            <p className="mb-1 text-muted">Track progress of upcomming service requests and review past order history.</p>
+                                            <p className="mb-1 text-muted">Need to change your account? Edit your account here.</p>
                                         </div>
                                     </div>
                                 </Link>

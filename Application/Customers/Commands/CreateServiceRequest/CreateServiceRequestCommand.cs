@@ -2,6 +2,7 @@
 using Domain.Entities;
 using Infrastructure.Data;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -48,10 +49,15 @@ namespace Application.Customers.Commands.CreateServiceRequest
         {
             var data = from o in _context.Orders.AsEnumerable()
                        join li in _context.LineItems.AsEnumerable() on o.ID equals li.OrderID
+                       join mw in _context.MerchantWorkflows.AsEnumerable() on new { o.MerchantID, request.ServiceRequest.WorkflowID, HasDefaultSRST = true } equals new { mw.MerchantID, mw.WorkflowID, HasDefaultSRST = mw.DefaultServiceRequestStatusTypeID != null } into tmp_mw
+                       from mw in tmp_mw.DefaultIfEmpty()
+                       join srst in _context.ServiceRequestStatusTypes.AsEnumerable() on mw?.DefaultServiceRequestStatusTypeID equals srst.ID into tmp_srst
+                       from srst in tmp_srst.DefaultIfEmpty()
                        where o.ID == request.OrderID
-                       select new { o, li };
+                       select new { o, li, srst };
 
             var order = data.First().o;
+            var serviceRequestStatusType = data.First().srst;
 
             #region Create Payment record
             var paymentStatusTypePaid = _context.PaymentStatusTypes
@@ -72,13 +78,12 @@ namespace Application.Customers.Commands.CreateServiceRequest
             #endregion
 
             #region Create Service Request record
-            var created = _context.ServiceRequestStatusTypes
-                .FirstOrDefault(o => o.Name.ToUpper() == "CREATED");
+            serviceRequestStatusType ??= await _context.ServiceRequestStatusTypes.FirstOrDefaultAsync(o => o.Name.ToUpper() == "CREATED");
             var serviceRequest = new ServiceRequest
             {
                 OrderID = request.OrderID,
                 WorkflowID = request.ServiceRequest.WorkflowID,
-                ServiceRequestStatusTypeID = created.ID,
+                ServiceRequestStatusTypeID = serviceRequestStatusType.ID,
                 Name = request.ServiceRequest.Name,
                 Phone = request.ServiceRequest.Phone,
                 Email = request.ServiceRequest.Email

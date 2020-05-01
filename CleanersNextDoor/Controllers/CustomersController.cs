@@ -15,6 +15,7 @@ using Application.Customers.Queries.GetCustomer;
 using Application.Customers.Queries.GetCustomerAddresses;
 using Application.Customers.Queries.GetCustomerByEmail;
 using Application.Customers.Queries.GetCustomerCart;
+using Application.Customers.Queries.GetOrderHistory;
 using Application.Customers.Queries.GetPaymentMethods;
 using Domain.Entities;
 using Infrastructure.Identity;
@@ -139,6 +140,12 @@ namespace CleanersNextDoor.Controllers
         public IStripePublicKey StripePublicKey()
         {
             return _stripe.StripePublicKey();
+        }
+
+        [HttpGet("orderHistory")]
+        public async Task<OrderHistoryModel> GetOrderHistory()
+        {
+            return await _mediator.Send(new GetOrderHistoryQuery(_identity.ClaimID));
         }
     }
 }
