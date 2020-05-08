@@ -1,8 +1,9 @@
 ﻿using Application.Common.Mappings;
+using Domain.Entities;
 
 namespace Application.Customers.Queries.GetCustomerCart
 {
-    public class CustomerCartItemModel : IMapFrom<LineItemModel>
+    public class CustomerCartItemModel : IMapFrom<LineItem>
     {
         public int ID { get; set; }
         public decimal ItemAmount { get; set; }

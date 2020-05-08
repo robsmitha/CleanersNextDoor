@@ -24,9 +24,11 @@ namespace Infrastructure.Data
         public DbSet<CustomerAddress> CustomerAddresses { get; set; }
         public DbSet<Discount> Discounts { get; set; }
         public DbSet<Item> Items { get; set; }
+        public DbSet<ItemImage> ItemImages { get; set; }
         public DbSet<ItemType> ItemTypes { get; set; }
         public DbSet<LineItem> LineItems { get; set; }
         public DbSet<Merchant> Merchants { get; set; }
+        public DbSet<MerchantImage> MerchantImages { get; set; }
         public DbSet<MerchantLocation> MerchantLocations { get; set; }
         public DbSet<MerchantType> MerchantTypes { get; set; }
         public DbSet<MerchantUser> MerchantUsers { get; set; }

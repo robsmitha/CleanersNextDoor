@@ -3,23 +3,28 @@ import { get, post } from './api.service';
 
 
 export const merchantService = {
-    getMerchants,
+    searchMerchants,
     getMerchant,
     getItems,
-    getMerchantWorkflow
+    getMerchantWorkflow,
+    getItem
 };
-function getMerchants() {
-    return get(`merchants/GetMerchants`)
+function searchMerchants(data) {
+    return post(`merchants/searchMerchants`, data)
 }
 
 function getMerchant(merchantId) {
     return get(`merchants/${merchantId}`)
 }
 
-function getItems(merchantId) {
-    return get(`merchants/${merchantId}/items`)
+function getItems(merchantId, itemTypeId) {
+    return get(`merchants/${merchantId}/items/${itemTypeId && itemTypeId != null ? itemTypeId : 0}`)
 }
 
 function getMerchantWorkflow(merchantId) {
     return get(`merchants/GetMerchantWorkflow/${merchantId}`)
+}
+
+function getItem(itemId) {
+    return get(`merchants/getItem/${itemId}`)
 }

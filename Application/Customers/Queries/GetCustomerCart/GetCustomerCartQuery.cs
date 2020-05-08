@@ -41,42 +41,43 @@ namespace Application.Customers.Queries.GetCustomerCart
         }
         public async Task<CustomerCartModel> Handle(GetCustomerCartQuery request, CancellationToken cancellationToken)
         {
-            var data = from o in _context.Orders.AsEnumerable()
-                       join ost in _context.OrderStatusTypes.AsEnumerable() on o.OrderStatusTypeID equals ost.ID
-                       join li in _context.LineItems.AsEnumerable() on o.ID equals li.OrderID into tmp_li
-                       from li in tmp_li.DefaultIfEmpty()
-                       join i in _context.Items.AsEnumerable() on li?.ItemID equals i.ID into tmp_i
-                       from i in tmp_i.DefaultIfEmpty()
-                       where o.CustomerID == request.CustomerID
-                       && o.MerchantID == request.MerchantID
-                       && o.IsOpenOrder()
-                       select new { o, li };
-
-            if (data == null || data.FirstOrDefault() == null) return new CustomerCartModel();
-            var lineItems = data.First().li != null
-                ? _mapper.Map<List<LineItemModel>>(data.Select(row => row.li))
-                : null;
-            if (lineItems == null) return new CustomerCartModel();
-
-            var cartItems = new Dictionary<int, CustomerCartItemModel>();
-            foreach (var lineItem in lineItems)
+            var data = await Task.FromResult(from o in _context.Orders.AsEnumerable()
+                                             join m in _context.Merchants.AsEnumerable() on o.MerchantID equals m.ID
+                                             join ost in _context.OrderStatusTypes.AsEnumerable() on o.OrderStatusTypeID equals ost.ID
+                                             join li in _context.LineItems.AsEnumerable() on o.ID equals li.OrderID into tmp_li
+                                             from li in tmp_li.DefaultIfEmpty()
+                                             join i in _context.Items.AsEnumerable() on li?.ItemID equals i.ID into tmp_i
+                                             from i in tmp_i.DefaultIfEmpty()
+                                             where o.CustomerID == request.CustomerID
+                                             && o.MerchantID == request.MerchantID
+                                             && o.IsOpenOrder()
+                                             select new { o, li });
+            var rows = data?.ToList();
+            if (rows == null || rows.Count == 0) return new CustomerCartModel();
+            var dict_ci = new Dictionary<int, CustomerCartItemModel>();
+            var total = 0M;
+            foreach (var row in rows)
             {
-                if(!cartItems.ContainsKey(lineItem.ItemID))
-                    cartItems.Add(lineItem.ItemID, _mapper.Map<CustomerCartItemModel>(lineItem));
-                
-                cartItems[lineItem.ItemID].CurrentQuantity++;
-            }
+                if (row.li != null)
+                {
+                    if (!dict_ci.ContainsKey(row.li.ItemID))
+                        dict_ci.Add(row.li.ItemID, _mapper.Map<CustomerCartItemModel>(row.li));
 
-            var distinctCartItems = cartItems.Values.ToList();
-            var total = distinctCartItems.Sum(li => li.Price);
-            var paymentIntent = request.AllowCheckout
-                ? _stripe.CreatePaymentIntent(orderId: data.First().o.ID, centAmount: Convert.ToInt64(total * 100))
+                    dict_ci[row.li.ItemID].CurrentQuantity++;
+                    total += row.li.ItemAmount;
+                }
+            }
+            var order = rows[0].o;
+            var paymentIntent = request.AllowCheckout && total > 0
+                ? _stripe.CreatePaymentIntent(orderId: order.ID, centAmount: Convert.ToInt64(total * 100))
                 : null;
-            await Task.FromResult(0);
             return new CustomerCartModel(
-                cartItems: distinctCartItems, 
+                cartItems: dict_ci.Values.ToList(), 
                 displayPrice: total.ToString("C"), 
-                clientSecret: paymentIntent?.ClientSecret);
+                clientSecret: paymentIntent?.ClientSecret,
+                orderId: order.ID,
+                merchantId: order.MerchantID,
+                merchantName: order.Merchant.Name);
         }
     }
 }

@@ -15,6 +15,9 @@ using CleanersNextDoor.Common;
 using System;
 using CleanersNextDoor.Services;
 using Application.Common.Interfaces;
+using Domain.Services.GoogleGeocode.Interfaces;
+using Domain.Services.GoogleGeocode;
+using Domain.Services.Configuration.Models;
 
 namespace CleanersNextDoor
 {
@@ -53,7 +56,7 @@ namespace CleanersNextDoor
 
             // configure jwt authentication
             var appSettings = appSettingsSection.Get<AppSettings>();
-            var key = Encoding.ASCII.GetBytes(appSettings.Secret);
+            var key = Encoding.ASCII.GetBytes(appSettings.JwtSecret);
             services.AddAuthentication(x =>
             {
                 x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -78,6 +81,7 @@ namespace CleanersNextDoor
             services.AddScoped<IAuthenticationService, AuthenticationSerivce>();
             services.AddScoped<IIdentityService, IdentityService>();
             services.AddScoped<IStripeService, StripeService>();
+            services.AddScoped<IGoogleGeocodeService, GoogleGeocodeService>();
 
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>

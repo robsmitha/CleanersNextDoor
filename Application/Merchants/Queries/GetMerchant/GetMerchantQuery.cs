@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Domain.Entities;
 using Infrastructure.Data;
 using MediatR;
 using System.Collections.Generic;
@@ -33,23 +34,38 @@ namespace Application.Merchants.Queries.GetMerchant
         public async Task<GetMerchantModel> Handle(GetMerchantQuery request, CancellationToken cancellationToken)
         {
             var data = from m in _context.Merchants.AsEnumerable()
-                       join ml in _context.MerchantLocations.AsEnumerable() on m.ID equals ml.MerchantID
-                       join ct in _context.CorrespondenceTypes.AsEnumerable() on ml.CorrespondenceTypeID equals ct.ID
+                       join mt in _context.MerchantTypes.AsEnumerable() on m.MerchantTypeID equals mt.ID
+                       join ml in _context.MerchantLocations.AsEnumerable() on m.ID equals ml.MerchantID into tmp_ml
+                       from ml in tmp_ml.DefaultIfEmpty()
+                       join ct in _context.CorrespondenceTypes.AsEnumerable() on ml?.CorrespondenceTypeID equals ct.ID into tmp_ct
+                       from ct in tmp_ct.DefaultIfEmpty()
+                       join mi in _context.MerchantImages.AsEnumerable() on m.ID = m.ID equals mi.MerchantID into tmp_mi
+                       from mi in tmp_mi.DefaultIfEmpty()
                        where m.ID == request.MerchantID
-                       select new { m, ml };
+                       select new { m, ml, mi };
 
             if (data == null || data.FirstOrDefault() == null) return new GetMerchantModel();
 
-            var model = _mapper.Map<GetMerchantModel>(data.First().m);
-            var locations = data.Select(row => row.ml).ToArray();
-            model.Locations.Add(_mapper.Map<MerchantLocationModel>(locations[0]));
-            //TODO: revist grouping strategy to group by BaseAddress.Equals()
-            for (int i = 1; i < locations.Length; i++)
-                if (!locations[i].Equals(locations[i - 1]))
-                    model.Locations.Add(_mapper.Map<MerchantLocationModel>(locations[i]));
 
-            await Task.FromResult(0);
-            return model;
+            var model = _mapper.Map<GetMerchantModel>(data.First().m);
+            var dict_ml = new Dictionary<int, MerchantLocationModel>();
+            var dict_mi = new Dictionary<int, MerchantImageModel>();
+            foreach (var row in data)
+            {
+                if(row.ml != null && !dict_ml.ContainsKey(row.ml.ID) 
+                    && !model.Locations.Any(l => l.City.ToLower().Contains(row.ml.City.ToLower())))
+                {
+                    dict_ml.Add(row.ml.ID, _mapper.Map<MerchantLocationModel>(row.ml));
+                    model.Locations.Add(dict_ml[row.ml.ID]);
+                }
+                if (row.mi != null  && !dict_mi.ContainsKey(row.mi.ID))
+                {
+                    dict_mi.Add(row.mi.ID, _mapper.Map<MerchantImageModel>(row.mi));
+                    model.Images.Add(dict_mi[row.mi.ID]);
+                }
+            }
+
+            return await Task.FromResult(model);
         }
     }
 }

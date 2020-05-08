@@ -88,7 +88,7 @@ const CheckoutForm = (props) => {
                 />
                 <div className="card-errors" role="alert">{error}</div>
             </div>
-            <button type="submit" className="btn btn-success btn-block" disabled={props.disabled}>
+            <button type="submit" className="btn btn-dark btn-block" disabled={props.disabled}>
                 Complete Checkout
             </button>
         </form>

@@ -1,10 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using Application.Merchants;
+﻿using System.Threading.Tasks;
 using Application.Merchants.Queries.GetMerchant;
+using Application.Merchants.Queries.GetMerchantItem;
 using Application.Merchants.Queries.GetMerchantItems;
-using Application.Merchants.Queries.GetMerchants;
 using Application.Merchants.Queries.GetMerchantWorkflow;
+using Application.Merchants.Queries.SearchMerchants;
 using Infrastructure.Identity;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -24,25 +23,30 @@ namespace CleanersNextDoor.Controllers
             _identity = identity;
         }
 
-        [HttpGet("GetMerchants")]
-        public async Task<IEnumerable<GetMerchantsModel>> GetMerchants()
+        [HttpPost("SearchMerchants")]
+        public async Task<ActionResult<SearchMerchantsResponse>> SearchMerchants(SearchMerchantsRequest request = null)
         {
-            return await _mediator.Send(new GetMerchantsQuery());
+            return await _mediator.Send(new SearchMerchantsQuery(request));
         }
         [HttpGet("{id}")]
         public async Task<ActionResult<GetMerchantModel>> GetMerchant(int id)
         {
             return await _mediator.Send(new GetMerchantQuery(id));
         }
-        [HttpGet("{id}/items")]
-        public async Task<IEnumerable<MerchantItemModel>> GetMerchantItems(int id)
+        [HttpGet("{id}/items/{itemTypeId}")]
+        public async Task<ActionResult<GetMerchantItemsResponse>> GetMerchantItems(int id, int itemTypeId = 0)
         {
-            return await _mediator.Send(new GetMerchantItemsQuery(id));
+            return await _mediator.Send(new GetMerchantItemsQuery(id, itemTypeId));
         }
         [HttpGet("GetMerchantWorkflow/{id}")]
         public async Task<ActionResult<GetMerchantWorkflowModel>> GetMerchantWorkflow(int id)
         {
             return await _mediator.Send(new GetMerchantWorkflowQuery(id, _identity.ClaimID));
+        }
+        [HttpGet("GetItem/{id}")]
+        public async Task<ActionResult<GetMerchantItemResponse>> GetItem(int id)
+        {
+            return await _mediator.Send(new GetMerchantItemQuery(id));
         }
     }
 }

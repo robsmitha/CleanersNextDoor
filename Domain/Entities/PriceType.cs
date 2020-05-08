@@ -8,6 +8,16 @@ namespace Domain.Entities
 {
     public class PriceType : BaseType
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        public bool IsVariableCost { get; set; }
+
+        /// <summary>
+        /// TODO: implment PricingModel that maps variable cost logic 
+        /// (i.e buy one get one, custom pricing model flows )
+        /// </summary>
+        //public int PricingModelID { get; set; }
 
     }
 }

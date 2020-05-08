@@ -8,6 +8,11 @@ namespace Application.Customers.Commands.CreateCartItem
     {
         public int ItemID { get; set; }
         public int OrderID { get; set; }
-        public int? NewQty { get; set; }
+        public int NewQty { get; set; }
+        public CreateCartItemModel() { }
+        public CreateCartItemModel(int orderId)
+        {
+            OrderID = orderId;
+        }
     }
 }

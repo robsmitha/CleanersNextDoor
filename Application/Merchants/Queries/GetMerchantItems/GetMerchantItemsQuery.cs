@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using Infrastructure.Data;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,15 +10,17 @@ using System.Threading.Tasks;
 
 namespace Application.Merchants.Queries.GetMerchantItems
 {
-    public class GetMerchantItemsQuery : IRequest<IEnumerable<MerchantItemModel>>
+    public class GetMerchantItemsQuery : IRequest<GetMerchantItemsResponse>
     {
         public int MerchantID { get; set; }
-        public GetMerchantItemsQuery(int merchantId)
+        public int ItemTypeID { get; set; }
+        public GetMerchantItemsQuery(int merchantId, int itemTypeId = 0)
         {
             MerchantID = merchantId;
+            ItemTypeID = itemTypeId;
         }
     }
-    public class GetItemsByMerchantIDQueryHandler : IRequestHandler<GetMerchantItemsQuery, IEnumerable<MerchantItemModel>>
+    public class GetItemsByMerchantIDQueryHandler : IRequestHandler<GetMerchantItemsQuery, GetMerchantItemsResponse>
     {
         private readonly ICleanersNextDoorContext _context;
         private readonly IMapper _mapper;
@@ -32,15 +33,35 @@ namespace Application.Merchants.Queries.GetMerchantItems
             _context = context;
             _mapper = mapper;
         }
-        public async Task<IEnumerable<MerchantItemModel>> Handle(GetMerchantItemsQuery request, CancellationToken cancellationToken)
+        public async Task<GetMerchantItemsResponse> Handle(GetMerchantItemsQuery request, CancellationToken cancellationToken)
         {
-            var collection = await _context.Items
-                .Where(i => i.MerchantID == request.MerchantID)
-                .ToListAsync();
+            var data = from i in _context.Items.AsEnumerable()
+                       join it in _context.ItemTypes.AsEnumerable() on i.ItemTypeID equals it.ID
+                       join ut in _context.UnitTypes.AsEnumerable() on i.UnitTypeID equals ut.ID
+                       join pt in _context.PriceTypes.AsEnumerable() on i.PriceTypeID equals pt.ID
+                       join ii in _context.ItemImages.AsEnumerable() on new { ItemID = i.ID, IsDefault = true } equals new { ii.ItemID , ii.IsDefault } into tmp_ii
+                       from ii in tmp_ii.DefaultIfEmpty()
+                       where i.MerchantID == request.MerchantID
+                       select new { i, ii };
 
-            return collection != null
-                ? _mapper.Map<IEnumerable<MerchantItemModel>>(collection)
-                : new List<MerchantItemModel>();
+            if (data == null || data.FirstOrDefault() == null) return new GetMerchantItemsResponse();
+            var items = new List<GetMerchantItemModel>();
+            foreach (var row in data)
+            {
+                var item = _mapper.Map<GetMerchantItemModel>(row.i);
+                item.DefaultImageUrl = !string.IsNullOrWhiteSpace(row.ii?.ImageUrl)
+                     ? row.ii.ImageUrl
+                     : string.Empty; //TODO: configure default image at item type lvl or appsetting
+                items.Add(item);
+            }
+            var response = new GetMerchantItemsResponse();
+
+            if(request.ItemTypeID > 0)
+                response.Items = items.Where(i => i.ItemTypeID == request.ItemTypeID).ToList();
+            else
+                response.Items = items;
+
+            return await Task.FromResult(response);
         }
     }
 }

@@ -1,0 +1,43 @@
+﻿.light-overlay .overlay-content, .dark-overlay .overlay-content, .gradient-overlay .overlay-content {
+    position: relative;
+    z-index: 20;
+}
+
+.light-overlay::after, .dark-overlay::after, .gradient-overlay::after {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    content: ' ';
+    opacity: .3;
+    background: #000;
+}
+
+.bg-cover {
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: cover;
+}
+
+.light-overlay, .dark-overlay, .gradient-overlay {
+    position: relative;
+    overflow: hidden;
+}
+
+.badge-transparent {
+    color: #212529;
+    background: rgba(248,249,250,0.9);
+}
+
+.pt-7, .py-7 {
+    padding-top: 8rem !important;
+}
+
+.pb-6, .py-6 {
+    padding-bottom: 6rem !important;
+}
+
+.pt-6, .py-6 {
+    padding-top: 6rem !important;
+}

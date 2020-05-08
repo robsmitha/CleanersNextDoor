@@ -365,15 +365,21 @@ export class Payment extends Component {
     static renderCart(cart, merchantId) {
         let cartItems = cart.cartItems;
         return (
-            <div>
+            <div className="card border-0 shadow mb-3">
                 <div className="list-group list-group-flush">
                     {cartItems.map(c =>
                         <div className="list-group-item" key={c.id}>
-                            <div className="d-flex w-100 justify-content-between">
-                                <h5 className="mb-1"> {c.itemName}</h5>
-                                <small>{c.displayPrice}</small>
+                            <div className="form-row">
+                                <div className="col-md-7">
+                                    <small className="text-muted"> {c.itemName}</small>
+                                </div>
+                                <div className="col-2 text-right">
+                                    <small className="text-muted">X {c.currentQuantity}</small>
+                                </div>
+                                <div className="col-3 text-right">
+                                    <small className="text-muted">{c.displayPrice}</small>
+                                </div>
                             </div>
-                            <small className="text-muted">QTY: {c.currentQuantity}</small>
                         </div>
                     )}
                     <div className="list-group-item">
@@ -382,8 +388,8 @@ export class Payment extends Component {
                             {cart.displayPrice}
                         </span>
                     </div>
-                    <Link to={'/request-service/:id'.replace(':id', merchantId)} className="list-group-item list-group-item-action text-center">
-                        Go Back
+                    <Link to={'/cart/:id'.replace(':id', merchantId)} className="list-group-item list-group-item-action text-center">
+                        Modify order
                     </Link>
                 </div>
             </div>

@@ -23,5 +23,24 @@ namespace Application.Merchants.Queries.GetMerchant
         public string CorrespondenceTypeName { get; set; }
         public string CorrespondenceTypeDescription { get; set; }
         public bool IsDefault { get; set; }
+        public string Location
+        {
+            get
+            {
+                var fields = new[] { Street1, Street2, City, StateAbbreviation, Zip };
+                var sb = new StringBuilder();
+                for (var i = 0; i < fields.Length; i++)
+                {
+                    if (string.IsNullOrWhiteSpace(fields[i]))
+                        continue;
+
+                    sb.Append($"{fields[i]}, ");
+                }
+                var location = sb.ToString().Trim();
+                return location.EndsWith(",")
+                    ? location[0..^1]
+                    : location;
+            }
+        }
     }
 }

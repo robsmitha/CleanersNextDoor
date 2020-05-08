@@ -8,6 +8,6 @@ namespace Infrastructure.Identity
     {
         string token_type { get; set; }
         string access_token { get; set; }
-        string expires_in { get; set; }
+        DateTime expires_at { get; set; }
     }
 }

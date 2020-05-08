@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
-import { Collapse, Container, Navbar, NavbarBrand, NavbarToggler, NavItem, NavLink } from 'reactstrap';
+import { Collapse, Container, Navbar, NavbarBrand, NavbarToggler, NavItem, NavLink, UncontrolledDropdown, DropdownMenu, DropdownItem, DropdownToggle } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import './NavMenu.css';
-import { GiHouse } from "react-icons/gi";
-import { FaSignOutAlt, FaUser, FaUserPlus, FaSignInAlt } from 'react-icons/fa'
+import { FaSignOutAlt, FaUser, FaUserPlus, FaSignInAlt, FaCompass, FaAddressCard } from 'react-icons/fa'
 import { AuthConsumer } from './../context/AuthContext'
 
 export class NavMenu extends Component {
@@ -39,17 +38,17 @@ export class NavMenu extends Component {
                     {({ authenticated }) => (
                         <header>
                             <Navbar className="main-nav navbar-expand-sm navbar-toggleable-sm box-shadow fixed-top bg-white border-bottom shadow-sm navbar-light">
-                                <Container>
+                                <Container fluid>
                                     <NavbarBrand tag={Link} to="/">
-                                        <GiHouse />
-                                        &nbsp;
-                                        CleanersNextDoor
+                                        <span className="h4">
+                                            <FaCompass />
+                                        </span>
                                     </NavbarBrand>
                                     <NavbarToggler onClick={this.toggleNavbar} className="mr-2" />
                                     <Collapse isOpen={!this.state.collapsed} navbar>
                                         <ul className="navbar-nav">
                                             <NavItem>
-                                                <NavLink tag={Link} to="/">Home</NavLink>
+                                                <NavLink tag={Link} to="/">Merchants</NavLink>
                                             </NavItem>
                                             <NavItem>
                                                 <NavLink tag={Link} to="/how-it-works">How it works</NavLink>
@@ -66,16 +65,20 @@ export class NavMenu extends Component {
                                                     <FaSignInAlt />&nbsp;Sign in
                                                 </NavLink>
                                             </NavItem>
-                                            <NavItem hidden={!authenticated}>
-                                                <NavLink tag={Link} to="/account">
-                                                    <FaUser />&nbsp;Account
-                                                </NavLink>
-                                            </NavItem>
-                                            <NavItem hidden={!authenticated}>
-                                                <NavLink tag={Link} to="/sign-out">
-                                                    <FaSignOutAlt />&nbsp;Sign out
-                                                </NavLink>
-                                            </NavItem>
+                                            <UncontrolledDropdown nav inNavbar hidden={!authenticated}>
+                                                <DropdownToggle nav caret>
+                                                    <FaUser /> Account
+                                                </DropdownToggle>
+                                                <DropdownMenu right className="animate slideIn">
+                                                    <DropdownItem tag={Link} to="/account">
+                                                        <FaAddressCard />&nbsp;My account
+                                                    </DropdownItem>
+                                                    <DropdownItem divider />
+                                                    <DropdownItem tag={Link} to="/sign-out">
+                                                        <FaSignOutAlt />&nbsp;Sign out
+                                                    </DropdownItem>
+                                                </DropdownMenu>
+                                            </UncontrolledDropdown>
                                         </ul>
                                     </Collapse>
                                 </Container>

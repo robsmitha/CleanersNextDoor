@@ -33,38 +33,38 @@ namespace Infrastructure.Data
             {
                 MerchantTypeID = cleanersMerchantType.ID,
                 Name = "Five Star Cleaners",
-                Description = "Founded in 1987 by the Hernandez brothers, our establishment has been serving up rich coffee sourced from artisan farmers in various regions of South and Central America. We are dedicated to travelling the world, finding the best coffee, and bringing back to you here in our cafe.",
+                Description = "We know you are on the go and it is not easy to handle all of your day to day chores without feeling stressed! Errands are a part of life but what if you could free up this time in your routine? We can help! Let us show you our first class dry cleaning and laundry services and you'll see why we are the best laundry service around. We have been in the biz since 1994 and we know our stuff. You can trust the professionals to take care of your laundry services. Try us out today and see for yourself!",
                 WebsiteUrl = "robsmitha.com",
-                CallToAction = "Once you try it, our coffee will be a blissful addition to your everyday morning routine - we guarantee it!",
-                ShortDescription = "Every cup of our quality artisan coffee starts with locally sourced, hand picked ingredients.",
+                CallToAction = "Once you try our services, you will love the newfound free time in your routine - we guarantee it!",
+                ShortDescription = "No other laundry service can even come close to impressing you like ours.",
             };
             var testMerchant2 = new Merchant
             {
                 MerchantTypeID = cleanersMerchantType.ID,
-                Name = "Second Base Cleaners",
-                Description = "Founded in 1987 by the Hernandez brothers, our establishment has been serving up rich coffee sourced from artisan farmers in various regions of South and Central America. We are dedicated to travelling the world, finding the best coffee, and bringing back to you here in our cafe.",
+                Name = "Easy Street Cleaners",
+                Description = "We know you are on the go and it is not easy to handle all of your day to day chores without feeling stressed! Errands are a part of life but what if you could free up this time in your routine? We can help! Let us show you our first class dry cleaning and laundry services and you'll see why we are the best laundry service around. We have been in the biz since 1994 and we know our stuff. You can trust the professionals to take care of your laundry services. Try us out today and see for yourself!",
                 WebsiteUrl = "robsmitha.com",
-                CallToAction = "Once you try it, our coffee will be a blissful addition to your everyday morning routine - we guarantee it!",
-                ShortDescription = "Every cup of our quality artisan coffee starts with locally sourced, hand picked ingredients.",
+                CallToAction = "Once you try our services, you will love the newfound free time in your routine - we guarantee it!",
+                ShortDescription = "Our services use environment friendly products so you can feel good about your impact.",
             };
             var testMerchant3 = new Merchant
             {
                 MerchantTypeID = cleanersMerchantType.ID,
-                Name = "Third Time's the Charm Cleaners",
-                Description = "Founded in 1987 by the Hernandez brothers, our establishment has been serving up rich coffee sourced from artisan farmers in various regions of South and Central America. We are dedicated to travelling the world, finding the best coffee, and bringing back to you here in our cafe.",
+                Name = "Lucky Charm Cleaners",
+                Description = "We know you are on the go and it is not easy to handle all of your day to day chores without feeling stressed! Errands are a part of life but what if you could free up this time in your routine? We can help! Let us show you our first class dry cleaning and laundry services and you'll see why we are the best laundry service around. We have been in the biz since 1994 and we know our stuff. You can trust the professionals to take care of your laundry services. Try us out today and see for yourself!",
                 WebsiteUrl = "robsmitha.com",
-                CallToAction = "Once you try it, our coffee will be a blissful addition to your everyday morning routine - we guarantee it!",
-                ShortDescription = "Every cup of our quality artisan coffee starts with locally sourced, hand picked ingredients.",
+                CallToAction = "Once you try our services, you will love the newfound free time in your routine - we guarantee it!",
+                ShortDescription = "We'll be your good luck charm!",
             };
 
             var testMerchant4 = new Merchant
             {
                 MerchantTypeID = cleanersMerchantType.ID,
-                Name = "Forty Oz Cleaners",
-                Description = "Founded in 1987 by the Hernandez brothers, our establishment has been serving up rich coffee sourced from artisan farmers in various regions of South and Central America. We are dedicated to travelling the world, finding the best coffee, and bringing back to you here in our cafe.",
+                Name = "Unicorn Cleaners",
+                Description = "We know you are on the go and it is not easy to handle all of your day to day chores without feeling stressed! Errands are a part of life but what if you could free up this time in your routine? We can help! Let us show you our first class dry cleaning and laundry services and you'll see why we are the best laundry service around. We have been in the biz since 1994 and we know our stuff. You can trust the professionals to take care of your laundry services. Try us out today and see for yourself!",
                 WebsiteUrl = "robsmitha.com",
-                CallToAction = "Once you try it, our coffee will be a blissful addition to your everyday morning routine - we guarantee it!",
-                ShortDescription = "Every cup of our quality artisan coffee starts with locally sourced, hand picked ingredients.",
+                CallToAction = "Once you try our services, you will love the newfound free time in your routine - we guarantee it!",
+                ShortDescription = "A truly amazing cleaners with awesome Google reviews.",
             };
 
             //add test merchants
@@ -78,6 +78,34 @@ namespace Infrastructure.Data
             context.Merchants.AddRange(merchants);
             context.SaveChanges();
 
+            var merchantImages = new List<MerchantImage>
+            {
+                new MerchantImage
+                {
+                    IsDefault = true,
+                    MerchantID = testMerchant1.ID,
+                    ImageUrl = "https://smitha-cdn.s3.us-east-2.amazonaws.com/Content/images/work1.jpg"
+                },
+                new MerchantImage
+                {
+                    IsDefault = true,
+                    MerchantID = testMerchant2.ID,
+                    ImageUrl = "https://smitha-cdn.s3.us-east-2.amazonaws.com/Content/images/work2.jpg"
+                },
+                new MerchantImage
+                {
+                    IsDefault = true,
+                    MerchantID = testMerchant3.ID,
+                    ImageUrl = "https://smitha-cdn.s3.us-east-2.amazonaws.com/Content/images/work3.jpg"
+                },
+                new MerchantImage
+                {
+                    IsDefault = true,
+                    MerchantID = testMerchant4.ID,
+                    ImageUrl = "https://smitha-cdn.s3.us-east-2.amazonaws.com/Content/images/work4.jpg"
+                }
+            };
+            context.MerchantImages.AddRange(merchantImages);
 
             //add price type
             var priceTypes = new List<PriceType>
@@ -91,6 +119,7 @@ namespace Infrastructure.Data
                 {
                     Name = "Variable",
                     Description = "Variable Cost Price",
+                    IsVariableCost = true
                 }
             };
 
@@ -154,7 +183,8 @@ namespace Infrastructure.Data
                 new UnitType
                 {
                     Name = "Quantity",
-                    Description = "Unit is measured in quantities"
+                    Description = "Unit is measured in quantities",
+                    PerUnit = "Each"
                 }
             };
             context.UnitTypes.AddRange(unitTypes);
@@ -245,66 +275,137 @@ namespace Infrastructure.Data
             };
 
             context.PaymentTypes.AddRange(paymentTypes);
-
             context.SaveChanges();
 
+            var laundryType = itemTypes.Single(t => t.Name == "Laundry");
+            var alterationType = itemTypes.Single(t => t.Name == "Alteration");
+            var dressType = itemTypes.Single(t => t.Name == "Dress");
+            var suitType = itemTypes.Single(t => t.Name == "Suit");
+
             var items = new List<Item>();
-            foreach (var merchant in merchants)
+            for (int i = 0; i < merchants.Count; i++)
             {
-                items.Add(new Item
+                var m = merchants[i];
+                var laundry = new Item
                 {
-                    ItemTypeID = itemTypes.Single(t => t.Name == "Laundry").ID,
-                    MerchantID = merchant.ID,
+                    MerchantID = m.ID,
+                    ItemTypeID = laundryType.ID,
                     Cost = 0,
                     Price = 1.99M,
                     PriceTypeID = priceTypes.First().ID,
                     UnitTypeID = unitTypes.First().ID,
                     Name = "Laundry item",
                     Description = "A single laundry item. Lorem ipsum dolor sit amet, consectetur adipisicing elit.",
-                    MaxAllowed = 10
-                });
+                    MaxAllowed = 25,
+                    ShortDescription = "Easy wash and fold."
+                };
+                items.Add(laundry);
 
-                items.Add(new Item
+
+                var alteration = new Item
                 {
-                    ItemTypeID = itemTypes.Single(t => t.Name == "Alteration").ID,
-                    MerchantID = merchant.ID,
+                    MerchantID = m.ID,
+                    ItemTypeID = alterationType.ID,
                     Cost = 0,
                     Price = 5.99M,
                     PriceTypeID = priceTypes.First().ID,
                     UnitTypeID = unitTypes.First().ID,
                     Name = "Clothing Alteration",
                     Description = "Alteration services. Lorem ipsum dolor sit amet, consectetur adipisicing elit.",
-                    MaxAllowed = 4
-                });
+                    MaxAllowed = 7,
+                    ShortDescription = "Alteration serivces at a great price."
+                };
+                items.Add(alteration);
 
-                items.Add(new Item
+                var even = i == 0 || i % 2 == 0;
+                if (even)
                 {
-                    ItemTypeID = itemTypes.Single(t => t.Name == "Dress").ID,
-                    MerchantID = merchant.ID,
-                    Cost = 0,
-                    Price = 4.99M,
-                    PriceTypeID = priceTypes.First().ID,
-                    UnitTypeID = unitTypes.First().ID,
-                    Name = "Dress Cleaning",
-                    Description = "Dress cleaning services. Lorem ipsum dolor sit amet, consectetur adipisicing elit.",
-                    MaxAllowed = 3
-                });
-
-                items.Add(new Item
+                    var suit = new Item
+                    {
+                        MerchantID = m.ID,
+                        ItemTypeID = suitType.ID,
+                        Cost = 0,
+                        Price = 4.99M,
+                        PriceTypeID = priceTypes.First().ID,
+                        UnitTypeID = unitTypes.First().ID,
+                        Name = "Suit & Jacket Cleaning",
+                        Description = "Suit & Jacket Cleaning services. Lorem ipsum dolor sit amet, consectetur adipisicing elit.",
+                        MaxAllowed = 9,
+                        ShortDescription = "Go in there with a nice clean suit."
+                    };
+                    items.Add(suit);
+                }
+                else
                 {
-                    ItemTypeID = itemTypes.Single(t => t.Name == "Suit").ID,
-                    MerchantID = merchant.ID,
-                    Cost = 0,
-                    Price = 4.99M,
-                    PriceTypeID = priceTypes.First().ID,
-                    UnitTypeID = unitTypes.First().ID,
-                    Name = "Suit & Jacket Cleaning",
-                    Description = "Suit & Jacket Cleaning services. Lorem ipsum dolor sit amet, consectetur adipisicing elit.",
-                    MaxAllowed = 2
-                });
+                    var dress = new Item
+                    {
+                        MerchantID = m.ID,
+                        ItemTypeID = dressType.ID,
+                        Cost = 0,
+                        Price = 4.99M,
+                        PriceTypeID = priceTypes.First().ID,
+                        UnitTypeID = unitTypes.First().ID,
+                        Name = "Dress Cleaning",
+                        Description = "Dress cleaning services. Lorem ipsum dolor sit amet, consectetur adipisicing elit.",
+                        MaxAllowed = 9,
+                        ShortDescription = "Nothing like a clean dress."
+                    };
+                    items.Add(dress);
+                }
             }
+
             context.Items.AddRange(items);
             context.SaveChanges();
+
+            foreach (var i in items)
+            {
+                if(i.ItemTypeID == laundryType.ID)
+                {
+                    context.ItemImages.Add(new ItemImage
+                    {
+                        IsDefault = true,
+                        ItemID = i.ID,
+                        ImageUrl = "https://smitha-cdn.s3.us-east-2.amazonaws.com/Content/images/laundry.jpg"
+                    });
+                }
+                else if (i.ItemTypeID == alterationType.ID)
+                {
+                    context.ItemImages.Add(new ItemImage
+                    {
+                        IsDefault = true,
+                        ItemID = i.ID,
+                        ImageUrl = "https://smitha-cdn.s3.us-east-2.amazonaws.com/Content/images/alterations.jpg"
+                    });
+                }
+                else if (i.ItemTypeID == dressType.ID)
+                {
+                    context.ItemImages.Add(new ItemImage
+                    {
+                        IsDefault = true,
+                        ItemID = i.ID,
+                        ImageUrl = "https://smitha-cdn.s3.us-east-2.amazonaws.com/Content/images/dress.jpg"
+                    });
+                }
+                else if (i.ItemTypeID == suitType.ID)
+                {
+                    context.ItemImages.Add(new ItemImage
+                    {
+                        IsDefault = true,
+                        ItemID = i.ID,
+                        ImageUrl = "https://smitha-cdn.s3.us-east-2.amazonaws.com/Content/images/suit.jpg"
+                    });
+                }
+                else
+                {
+                    //default image
+                    context.ItemImages.Add(new ItemImage
+                    {
+                        IsDefault = true,
+                        ItemID = i.ID,
+                        ImageUrl = "https://smitha-cdn.s3.us-east-2.amazonaws.com/Content/images/shirts.jpg"
+                    });
+                }
+            }
 
             var confirmedServiceRequestStatusType = new ServiceRequestStatusType
             {
@@ -483,23 +584,109 @@ namespace Infrastructure.Data
                 });
             }
 
-            for (int i = 0; i < merchants.Count; i++)
+            var testMerchant1Locations = new List<MerchantLocation>
             {
-                var m = merchants[i];
-                foreach (var ct in correspondenceTypes.Where(c => c.MerchantConfigures))
+                new MerchantLocation
                 {
-                    context.MerchantLocations.Add(new MerchantLocation
-                    {
-                        Street1 = "3481 Melrose Place",
-                        City = "Beverly Hills",
-                        StateAbbreviation = "CA",
-                        Zip = "90210",
-                        MerchantID = m.ID,
-                        IsDefault = true,
-                        CorrespondenceTypeID = ct.ID,
+                    City = "Tampa",
+                    StateAbbreviation = "FL",
+                    Latitude = 27.950575,
+                    Longitude = -82.457176,
+                    MerchantID = testMerchant1.ID,
                         Phone = "(123) 456-7890",
                         ContactEmail = "name@example.com",
                         OperatingHours = "Monday - Friday: 9:00 AM to 5:00 PM",
+                },
+                new MerchantLocation
+                {
+                    City = "Tallahassee",
+                    StateAbbreviation = "FL",
+                    Latitude = 30.455000,
+                    Longitude = -84.253334,
+                    MerchantID = testMerchant1.ID,
+                        Phone = "(123) 456-7890",
+                        ContactEmail = "name@example.com",
+                        OperatingHours = "Monday - Friday: 9:00 AM to 5:00 PM",
+                        IsDefault = true
+                },
+            };
+
+            var testMerchant2Locations = new List<MerchantLocation>
+            {
+                new MerchantLocation
+                {
+                    City = "Tallahassee",
+                    StateAbbreviation = "FL",
+                    Latitude = 30.455000,
+                    Longitude = -84.253334,
+                    MerchantID = testMerchant2.ID,
+                        Phone = "(123) 456-7890",
+                        ContactEmail = "name@example.com",
+                        OperatingHours = "Monday - Friday: 9:00 AM to 5:00 PM",
+                        IsDefault = true
+                },
+                new MerchantLocation
+                {
+                    City = "New York",
+                    StateAbbreviation = "NY",
+                    Latitude = 40.712776,
+                    Longitude =  -74.005974,
+                    MerchantID = testMerchant2.ID,
+                        Phone = "(123) 456-7890",
+                        ContactEmail = "name@example.com",
+                        OperatingHours = "Monday - Friday: 9:00 AM to 5:00 PM",
+                },
+            };
+            var merchantLocations = new List<MerchantLocation>
+            {
+                new MerchantLocation
+                {
+                    City = "Beverly Hills",
+                    StateAbbreviation = "CA",
+                    Latitude = 34.077200,
+                    Longitude = -118.422450,
+                    MerchantID = testMerchant3.ID,
+                        Phone = "(123) 456-7890",
+                        ContactEmail = "name@example.com",
+                        OperatingHours = "Monday - Friday: 9:00 AM to 5:00 PM",
+                        IsDefault = true
+                },
+                new MerchantLocation
+                {
+                    City = "Redmond",
+                    StateAbbreviation = "WA",
+                    Latitude = 47.751076,
+                    Longitude =  -120.740135,
+                    MerchantID = testMerchant4.ID,
+                    Phone = "(123) 456-7890",
+                    ContactEmail = "name@example.com",
+                    OperatingHours = "Monday - Friday: 9:00 AM to 5:00 PM",
+                        IsDefault = true
+                }
+            };
+            merchantLocations.AddRange(testMerchant1Locations);
+            merchantLocations.AddRange(testMerchant2Locations);
+
+            for (int i = 0; i < merchantLocations.Count; i++)
+            {
+                var m = merchantLocations[i];
+                foreach (var ct in correspondenceTypes.Where(c => c.MerchantConfigures))
+                {
+                    //configuring dropoff/pickup location
+                    context.MerchantLocations.Add(new MerchantLocation
+                    {
+                        Street1 = m.Street1,
+                        City = m.City,
+                        StateAbbreviation = m.StateAbbreviation,
+                        Zip = m.Zip,
+                        Latitude = m.Latitude,
+                        Longitude = m.Longitude,
+                        MerchantID = m.MerchantID,
+                        IsDefault = m.IsDefault,
+                        CorrespondenceTypeID = ct.ID,
+                        Phone = m.Phone,
+                        ContactEmail = m.ContactEmail,
+                        OperatingHours = m.OperatingHours,
                     });
                 }
             }

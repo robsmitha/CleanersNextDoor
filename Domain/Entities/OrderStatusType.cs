@@ -18,4 +18,13 @@ namespace Domain.Entities
         /// </summary>
         public bool CanAddLineItem { get; set; }
     }
+    public static class OrderStatusTypeExtensions
+    {
+        public static bool IsOpenOrderStatus(this OrderStatusType @this)
+        {
+            if (@this == null) return false;
+
+            return @this.CanAddLineItem && @this.CanAddPayment;
+        }
+    }
 }

@@ -1,0 +1,57 @@
+﻿.light-overlay .overlay-content, .dark-overlay .overlay-content, .gradient-overlay .overlay-content {
+    position: relative;
+    z-index: 20;
+}
+.light-overlay::after, .dark-overlay::after, .gradient-overlay::after {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    content: ' ';
+    opacity: .3;
+    background: #000;
+}
+
+.bg-cover {
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: cover;
+}
+.light-overlay, .dark-overlay, .gradient-overlay {
+    position: relative;
+    overflow: hidden;
+}
+.badge-transparent {
+    color: #212529;
+    background: rgba(248,249,250,0.9);
+}
+.pt-7, .py-7 {
+    padding-top: 8rem !important;
+}
+.pb-6, .py-6 {
+    padding-bottom: 6rem !important;
+}
+
+.pt-6, .py-6 {
+    padding-top: 6rem !important;
+}
+.nav-pills-custom .nav-link:first-of-type {
+    margin-left: 0;
+}
+
+.nav-pills-custom .nav-link {
+    margin: 10px;
+    color: #007bff;
+    border: 1px solid #007bff;
+    border-radius: 50px;
+}
+
+    .nav-pills-custom .nav-link.active, .nav-pills-custom .nav-link:hover, .nav-pills-custom .nav-link:focus {
+        color: #fff;
+        background: #007bff;
+    }
+/* css */
+html {
+    scroll-behavior: smooth;
+}

@@ -22,7 +22,7 @@ namespace Domain.Entities
         /// <summary>
         /// Customer who placed the service request if logged in
         /// </summary>
-        public int? CustomerID { get; set; }
+        public int CustomerID { get; set; }
 
         [ForeignKey("CustomerID")]
         public Customer Customer { get; set; }
@@ -36,9 +36,9 @@ namespace Domain.Entities
         /// <returns></returns>
         public static bool IsOpenOrder(this Order @this)
         {
+            if (@this == null) return false;
             if (@this?.OrderStatusType == null) return false;
-            return @this.OrderStatusType.CanAddPayment 
-                && @this.OrderStatusType.CanAddLineItem;
+            return @this.OrderStatusType.IsOpenOrderStatus();
         }
     }
 }

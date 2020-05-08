@@ -14,7 +14,7 @@ export class Footer extends Component {
     render() {
         return (
             <div>
-                <footer className="bg-light pt-4 pt-md-5 border-top">
+                <footer className="bg-white pt-4 pt-md-5 border-top">
                     <div className="container">
                         <div className="row">
                             <div className="col-12 col-md">

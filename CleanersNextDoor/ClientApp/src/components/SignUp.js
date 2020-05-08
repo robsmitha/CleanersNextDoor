@@ -2,7 +2,7 @@
 import { Link, Redirect } from 'react-router-dom'
 import { AuthConsumer } from './../context/AuthContext'
 import { IconContext } from 'react-icons'
-import { FaCheckCircle, FaHome } from 'react-icons/fa'
+import { FaCheckCircle, FaHome, FaCompass } from 'react-icons/fa'
 import TextInput from './../helpers/TextInput';
 import handleChange from './../helpers/HandleChange';
 import { customerService } from '../services/customer.service';
@@ -155,7 +155,7 @@ export class SignUp extends Component {
                                     <div className="row">
                                         <div className="col-md-9 col-lg-8 mx-auto">
                                             <h1 className="h3">
-                                                <FaHome /> CleanersNextDoor
+                                                <FaCompass /> CleanersNextDoor
                                             </h1>
                                             <p>
                                                 Convienent laundry pickup and delivery services.&nbsp;

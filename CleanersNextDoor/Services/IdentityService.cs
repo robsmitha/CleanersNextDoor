@@ -74,7 +74,7 @@ namespace CleanersNextDoor.Services
                     new CookieOptions
                     {
                         HttpOnly = true,
-                        Expires = Convert.ToDateTime(accessToken.expires_in)
+                        Expires = Convert.ToDateTime(accessToken.expires_at)
                     });
 
                 //reset authenticated flag

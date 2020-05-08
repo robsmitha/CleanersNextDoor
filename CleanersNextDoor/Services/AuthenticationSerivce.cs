@@ -16,6 +16,8 @@ using System.Text;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Logging;
 using Application.Common.Interfaces;
+using Domain.Services.Configuration.Interfaces;
+using Domain.Services.Configuration.Models;
 
 namespace CleanersNextDoor.Services
 {
@@ -113,7 +115,7 @@ namespace CleanersNextDoor.Services
                 var expires = DateTime.UtcNow.AddDays(7);
 
                 //TODO: GetBytes on customer.Secret 
-                var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_appSettings.Secret));
+                var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_appSettings.JwtSecret));
                 var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
                 var claims = new[] {
                     new Claim(ClaimTypes.NameIdentifier, customer.ID.ToString()),
@@ -134,7 +136,7 @@ namespace CleanersNextDoor.Services
                 {
                     access_token = jwtToken,
                     token_type = "",
-                    expires_in = expires.ToString()
+                    expires_at = expires
                 };
 
                 _identity.SetIdentity(accessToken, claims);
@@ -170,7 +172,7 @@ namespace CleanersNextDoor.Services
                     ValidateIssuerSigningKey = true,
                     ValidAudience = _appSettings.JwtIssuer,
                     ValidIssuer = _appSettings.JwtIssuer,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_appSettings.Secret))
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_appSettings.JwtSecret))
                 };
 
                 var principal = new JwtSecurityTokenHandler()

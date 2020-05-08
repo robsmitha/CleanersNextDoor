@@ -74,7 +74,7 @@ export class OrderHistory extends Component {
                                 ? 'Loading Orders'
                                 : openOrders.map((o, index) =>
                                     <Link key={o.id}
-                                        to={'/request-service/:id'.replace(':id', o.merchantID)}
+                                        to={'/cart/:id'.replace(':id', o.merchantID)}
                                         className="list-group-item list-group-item-action p-1">
                                         <div className="d-flex w-100 justify-content-between">
                                             <h5 className="mb-1">{o.merchantName}</h5>

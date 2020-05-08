@@ -15,8 +15,9 @@ import { SignUp } from './components/SignUp'
 
 //Merchant services
 import { Merchant } from './components/merchants/Merchant';
-import { RequestService } from './components/merchants/RequestService';
+import { Cart } from './components/merchants/Cart';
 import { Payment } from './components/merchants/Payment';
+import { Item } from './components/merchants/Item';
 
 //Customer account
 import { MyAccount } from './components/account/MyAccount'
@@ -38,21 +39,23 @@ export default class App extends Component {
             <div>
                 <AuthProvider>
                     <LayoutRoute exact path='/' component={Home} />
+                    <LayoutRoute path='/how-it-works' component={HowItWorks} />
+                    <NoNavLayoutRoute path='/sign-in' component={SignIn} />
+                    <NoNavLayoutRoute path='/sign-up' component={SignUp} />
+                    <NoNavLayoutRoute path='/sign-out' component={SignOut} />
+
                     <LayoutRoute path='/account' component={MyAccount} />
                     <LayoutRoute path='/saved-addresses' component={SavedAddresses} />
                     <LayoutRoute path='/new-address' component={NewAddress} />
                     <LayoutRoute path='/payment-methods' component={PaymentMethods} />
                     <LayoutRoute path='/new-payment-method' component={NewPaymentMethod} />
-                    <LayoutRoute path='/merchant/:id' component={Merchant} />
-                    <LayoutRoute path='/request-service/:id' component={RequestService} />
-                    <LayoutRoute path='/how-it-works' component={HowItWorks} />
-                    <LayoutRoute path='/order-details/:id' component={OrderDetails} />
+                    <LayoutRoute exact path='/order-details/:id' component={OrderDetails} />
                     <LayoutRoute path='/order-history' component={OrderHistory} />
 
-                    <NoNavLayoutRoute path='/payment/:id' component={Payment} />
-                    <NoNavLayoutRoute path='/sign-in' component={SignIn} />
-                    <NoNavLayoutRoute path='/sign-up' component={SignUp} />
-                    <NoNavLayoutRoute path='/sign-out' component={SignOut} />
+                    <LayoutRoute exact path='/merchant/:id' component={Merchant} />
+                    <LayoutRoute exact path='/cart/:id' component={Cart} />
+                    <LayoutRoute exact path='/item/:id' component={Item} />
+                    <NoNavLayoutRoute exact path='/payment/:id' component={Payment} />
 
                 </AuthProvider>
             </div>

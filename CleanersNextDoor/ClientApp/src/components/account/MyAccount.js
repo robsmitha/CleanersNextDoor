@@ -188,9 +188,9 @@ export class MyAccount extends Component {
                                     <div className="card h-100">
                                         <div className="card-body p-4">
                                             <div className="d-flex w-100 justify-content-between text-dark">
-                                                <h5 className="mb-1">Recurring Services</h5>
+                                                <h5 className="mb-1">Subscription</h5>
                                             </div>
-                                            <p className="mb-1 text-muted">Schedule recurring services for a automated service requests on the dates you choose.</p>
+                                            <p className="mb-1 text-muted">Subscription services for a automated service requests on the dates you choose.</p>
                                         </div>
                                     </div>
                                 </Link>

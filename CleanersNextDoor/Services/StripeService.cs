@@ -1,5 +1,7 @@
 ﻿using Application.Common.Interfaces;
 using Domain.Entities;
+using Domain.Services.Configuration.Interfaces;
+using Domain.Services.Configuration.Models;
 using Infrastructure.Data;
 using Infrastructure.Identity;
 using Microsoft.Extensions.Options;
@@ -52,7 +54,6 @@ namespace CleanersNextDoor.Services
             {
                 Amount = centAmount,
                 Currency = "usd",
-                // Verify your integration in this guide by including this parameter
                 Metadata = new Dictionary<string, string>
                 {
                     { "orderId", orderId.ToString() },

@@ -1,7 +1,7 @@
 ﻿import React, { Component } from 'react';
 import { Link, Redirect } from 'react-router-dom'
 import { AuthConsumer } from './../context/AuthContext'
-import { FaHome } from 'react-icons/fa'
+import { FaHome, FaCompass } from 'react-icons/fa'
 
 export class SignOut extends Component {
     render() {
@@ -26,7 +26,7 @@ export class SignOut extends Component {
                     <div className="row">
                         <div className="col-sm-9 col-md-7 col-lg-5 mx-auto">
                             <h1 className="h3 mb-4 text-center">
-                                <FaHome /> CleanersNextDoor
+                                <FaCompass /> CleanersNextDoor
                             </h1>
                             <h2 className="h4 mb-2">Are you sure you want to sign out?</h2>
                             <button type="button" onClick={signOut} className="btn btn-primary btn-block my-3">

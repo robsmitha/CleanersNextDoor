@@ -11,6 +11,7 @@ namespace Application.Merchants.Queries.GetMerchant
         public GetMerchantModel()
         {
             Locations = new List<MerchantLocationModel>();
+            Images = new List<MerchantImageModel>();
         }
         public int ID { get; set; }
         public string Name { get; set; }
@@ -22,5 +23,6 @@ namespace Application.Merchants.Queries.GetMerchant
         public bool Active { get; set; }
         public string MerchantTypeName { get; set; }
         public List<MerchantLocationModel> Locations { get; set; }
+        public List<MerchantImageModel> Images { get; set; }
     }
 }

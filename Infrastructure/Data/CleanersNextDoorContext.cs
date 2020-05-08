@@ -1,5 +1,6 @@
 ﻿using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Infrastructure.Data
@@ -21,9 +22,11 @@ namespace Infrastructure.Data
         public DbSet<CorrespondenceType> CorrespondenceTypes { get; set; }
         public DbSet<CorrespondenceStatusType> CorrespondenceStatusTypes { get; set; }
         public DbSet<Item> Items { get; set; }
+        public DbSet<ItemImage> ItemImages { get; set; }
         public DbSet<ItemType> ItemTypes { get; set; }
         public DbSet<LineItem> LineItems { get; set; }
         public DbSet<Merchant> Merchants { get; set; }
+        public DbSet<MerchantImage> MerchantImages { get; set; }
         public DbSet<MerchantLocation> MerchantLocations { get; set; }
         public DbSet<MerchantType> MerchantTypes { get; set; }
         public DbSet<MerchantUser> MerchantUsers { get; set; }
@@ -65,6 +68,7 @@ namespace Infrastructure.Data
             modelBuilder.Entity<CustomerAddress>();
             modelBuilder.Entity<Discount>();
             modelBuilder.Entity<Item>();
+            modelBuilder.Entity<ItemImage>();
             modelBuilder.Entity<ItemType>();
             modelBuilder.Entity<LineItem>();
             modelBuilder.Entity<Merchant>();
@@ -103,6 +107,23 @@ namespace Infrastructure.Data
         public bool EnsureCreated()
         {
             return Database.EnsureCreated();
+        }
+    }
+    public static class DbSetExtensions
+    {
+        /// <summary>
+        /// This performance optimization turns off entity framework change tracking (NOTE: breaks foreign key mappings).
+        /// For enumerables that wont be sending updates to the db.
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <param name="dbSet"></param>
+        /// <returns></returns>
+        public static IEnumerable<TEntity> AsUntrackedEnumerable<TEntity>(this DbSet<TEntity> dbSet)
+            where TEntity : class
+        {
+            if (dbSet == null) return new List<TEntity>();
+
+            return dbSet.AsNoTracking().AsEnumerable();
         }
     }
 }
