@@ -1,7 +1,5 @@
 using Application;
 using Infrastructure;
-using Infrastructure.Data;
-using Infrastructure.Identity;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
@@ -15,9 +13,7 @@ using CleanersNextDoor.Common;
 using System;
 using CleanersNextDoor.Services;
 using Application.Common.Interfaces;
-using Domain.Services.GoogleGeocode.Interfaces;
-using Domain.Services.GoogleGeocode;
-using Domain.Services.Configuration.Models;
+using Infrastructure.Services;
 
 namespace CleanersNextDoor
 {
@@ -33,6 +29,10 @@ namespace CleanersNextDoor
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // configure strongly typed settings objects
+            var appSettingsSection = Configuration.GetSection("AppSettings");
+            services.Configure<AppSettings>(appSettingsSection);
+
             services.AddDistributedMemoryCache();
 
             services.AddSession(options =>
@@ -49,10 +49,6 @@ namespace CleanersNextDoor
 
             services.AddCors();
             services.AddControllersWithViews();
-
-            // configure strongly typed settings objects
-            var appSettingsSection = Configuration.GetSection("AppSettings");
-            services.Configure<AppSettings>(appSettingsSection);
 
             // configure jwt authentication
             var appSettings = appSettingsSection.Get<AppSettings>();
@@ -78,8 +74,9 @@ namespace CleanersNextDoor
                 };
             });
 
-            services.AddScoped<IAuthenticationService, AuthenticationSerivce>();
-            services.AddScoped<IIdentityService, IdentityService>();
+            services.AddScoped<IAppUserService, AppUserService>();
+
+            //TODO: move Domain.Services to Infrastructure.Services
             services.AddScoped<IStripeService, StripeService>();
             services.AddScoped<IGoogleGeocodeService, GoogleGeocodeService>();
 

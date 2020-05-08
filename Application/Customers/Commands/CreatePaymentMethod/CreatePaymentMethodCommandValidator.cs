@@ -1,8 +1,5 @@
-﻿using FluentValidation;
-using Infrastructure.Data;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Application.Common.Interfaces;
+using FluentValidation;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -10,8 +7,8 @@ namespace Application.Customers.Commands.CreatePaymentMethod
 {
     public class CreatePaymentMethodCommandValidator : AbstractValidator<CreatePaymentMethodCommand>
     {
-        private readonly ICleanersNextDoorContext _context;
-        public CreatePaymentMethodCommandValidator(ICleanersNextDoorContext context)
+        private readonly IApplicationDbContext _context;
+        public CreatePaymentMethodCommandValidator(IApplicationDbContext context)
         {
             _context = context;
 

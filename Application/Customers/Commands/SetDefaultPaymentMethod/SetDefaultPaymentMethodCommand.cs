@@ -1,10 +1,8 @@
-﻿using Infrastructure.Data;
+﻿using Application.Common.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -22,8 +20,8 @@ namespace Application.Customers.Commands.SetDefaultPaymentMethod
     }
     public class SetDefaultPaymentMethodCommandHandler : IRequestHandler<SetDefaultPaymentMethodCommand, bool>
     {
-        private readonly ICleanersNextDoorContext _context;
-        public SetDefaultPaymentMethodCommandHandler(ICleanersNextDoorContext context)
+        private readonly IApplicationDbContext _context;
+        public SetDefaultPaymentMethodCommandHandler(IApplicationDbContext context)
         {
             _context = context;
         }

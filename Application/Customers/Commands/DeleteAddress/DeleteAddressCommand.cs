@@ -1,11 +1,9 @@
-﻿using AutoMapper;
-using Infrastructure.Data;
+﻿using Application.Common.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -24,9 +22,9 @@ namespace Application.Customers.Commands.DeleteAddress
 
     public class DeleteAddressCommandHandler : IRequestHandler<DeleteAddressCommand, bool>
     {
-        private readonly ICleanersNextDoorContext _context;
+        private readonly IApplicationDbContext _context;
 
-        public DeleteAddressCommandHandler(ICleanersNextDoorContext context)
+        public DeleteAddressCommandHandler(IApplicationDbContext context)
         {
             _context = context;
         }

@@ -1,10 +1,7 @@
-﻿using FluentValidation;
-using Infrastructure.Data;
-using Microsoft.EntityFrameworkCore;
-using System;
+﻿using Application.Common.Interfaces;
+using FluentValidation;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -12,8 +9,8 @@ namespace Application.Customers.Commands.CreateCartItem
 {
     public class CreateCartItemCommandValidator : AbstractValidator<CreateCartItemCommand>
     {
-        private readonly ICleanersNextDoorContext _context;
-        public CreateCartItemCommandValidator(ICleanersNextDoorContext context)
+        private readonly IApplicationDbContext _context;
+        public CreateCartItemCommandValidator(IApplicationDbContext context)
         {
             _context = context;
 

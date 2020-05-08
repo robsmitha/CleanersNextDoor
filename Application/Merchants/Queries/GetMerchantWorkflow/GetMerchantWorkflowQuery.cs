@@ -1,11 +1,9 @@
-﻿using Application.Merchants.Queries.GetMerchantWorkflow;
+﻿using Application.Common.Interfaces;
 using AutoMapper;
-using Infrastructure.Data;
 using MediatR;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -23,9 +21,9 @@ namespace Application.Merchants.Queries.GetMerchantWorkflow
     }
     public class GetWorkflowQueryHandler : IRequestHandler<GetMerchantWorkflowQuery, GetMerchantWorkflowModel>
     {
-        private readonly ICleanersNextDoorContext _context;
+        private readonly IApplicationDbContext _context;
         private readonly IMapper _mapper;
-        public GetWorkflowQueryHandler(ICleanersNextDoorContext context, IMapper mapper)
+        public GetWorkflowQueryHandler(IApplicationDbContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;

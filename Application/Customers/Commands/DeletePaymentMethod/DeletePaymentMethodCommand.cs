@@ -1,10 +1,7 @@
 ﻿using Application.Common.Interfaces;
-using Infrastructure.Data;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -23,10 +20,10 @@ namespace Application.Customers.Commands.DeletePaymentMethod
 
     public class DeletePaymentMethodCommandHandler : IRequestHandler<DeletePaymentMethodCommand, bool>
     {
-        private readonly ICleanersNextDoorContext _context;
+        private readonly IApplicationDbContext _context;
         private readonly IStripeService _stripe;
 
-        public DeletePaymentMethodCommandHandler(ICleanersNextDoorContext context, IStripeService stripe)
+        public DeletePaymentMethodCommandHandler(IApplicationDbContext context, IStripeService stripe)
         {
             _context = context;
             _stripe = stripe;

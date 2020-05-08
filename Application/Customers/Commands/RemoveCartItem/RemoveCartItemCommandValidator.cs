@@ -1,11 +1,8 @@
-﻿using Domain.Entities;
+﻿using Application.Common.Interfaces;
+using Domain.Entities;
 using FluentValidation;
-using Infrastructure.Data;
-using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -13,8 +10,8 @@ namespace Application.Customers.Commands.RemoveCartItem
 {
     public class RemoveCartItemCommandValidator : AbstractValidator<RemoveCartItemCommand>
     {
-        private readonly ICleanersNextDoorContext _context;
-        public RemoveCartItemCommandValidator(ICleanersNextDoorContext context)
+        private readonly IApplicationDbContext _context;
+        public RemoveCartItemCommandValidator(IApplicationDbContext context)
         {
             _context = context;
 

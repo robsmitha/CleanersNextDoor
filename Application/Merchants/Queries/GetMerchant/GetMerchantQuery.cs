@@ -1,6 +1,5 @@
-﻿using AutoMapper;
-using Domain.Entities;
-using Infrastructure.Data;
+﻿using Application.Common.Interfaces;
+using AutoMapper;
 using MediatR;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,11 +19,11 @@ namespace Application.Merchants.Queries.GetMerchant
 
     public class GetMerchantQueryHandler : IRequestHandler<GetMerchantQuery, GetMerchantModel>
     {
-        private readonly ICleanersNextDoorContext _context;
+        private readonly IApplicationDbContext _context;
         private IMapper _mapper;
 
         public GetMerchantQueryHandler(
-            ICleanersNextDoorContext context,
+            IApplicationDbContext context,
             IMapper mapper
             )
         {

@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Domain.Entities;
 using System.Threading;
 using CleanersNextDoor.Common;
+using Application.Common.Interfaces;
 
 namespace CleanersNextDoor.Controllers
 {
@@ -16,45 +17,45 @@ namespace CleanersNextDoor.Controllers
     [Authorize]
     public class AuthenticationController : ControllerBase
     {
-        private readonly IAuthenticationService _auth;
-        public AuthenticationController(IAuthenticationService auth)
+        private readonly IIdentityService _identity;
+        public AuthenticationController(IIdentityService identity)
         {
-            _auth = auth;
+            _identity = identity;
         }
 
         [HttpPost("Authorize")]
         [AllowAnonymous]
-        public async Task<IApplicationUser> Authorize()
+        public async Task<IAppUser> Authorize()
         {
             var token = HttpContext.Request.Cookies["access_token"];
             var authenticated = HttpContext.Session.Get<bool>("authenticated");
             if (!authenticated && token != null)
             {
                 var accessToken = JsonSerializer.Deserialize<AccessToken>(token);
-                return await _auth.RefreshToken(accessToken);
+                return await _identity.RefreshToken(accessToken);
             }
-            return new ApplicationUser(authenticated);
+            return new AppUser(authenticated);
         }
 
         [HttpPost("SignOut")]
         public ActionResult<bool> SignOut()
         {
-            _auth.ClearAuthentication();
+            _identity.ClearAuthentication();
             return true;
         }
         [AllowAnonymous]
         [HttpPost("SignIn")]
-        public async Task<IApplicationUser> SignIn(Customer data)
+        public async Task<IAppUser> SignIn(Customer data)
         {
-            return await _auth.AuthenticateCustomer(data.Email, data.Password);
+            return await _identity.AuthenticateCustomer(data.Email, data.Password);
         }
 
         [AllowAnonymous]
         [HttpPost("SignUp")]
-        public async Task<IApplicationUser> SignUp(Customer data)
+        public async Task<IAppUser> SignUp(Customer data)
         {
             var cancellationToken = new CancellationToken();
-            return await _auth.CreateCustomer(data, cancellationToken);
+            return await _identity.CreateCustomer(data, cancellationToken);
         }
     }
 }

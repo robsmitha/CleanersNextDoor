@@ -1,11 +1,8 @@
-﻿using AutoMapper;
-using Infrastructure.Data;
+﻿using Application.Common.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -23,8 +20,8 @@ namespace Application.Customers.Commands.SetDefaultAddress
     }
     public class SetDefaultAddressCommandHandler : IRequestHandler<SetDefaultAddressCommand, bool>
     {
-        private readonly ICleanersNextDoorContext _context;
-        public SetDefaultAddressCommandHandler(ICleanersNextDoorContext context)
+        private readonly IApplicationDbContext _context;
+        public SetDefaultAddressCommandHandler(IApplicationDbContext context)
         {
             _context = context;
         }

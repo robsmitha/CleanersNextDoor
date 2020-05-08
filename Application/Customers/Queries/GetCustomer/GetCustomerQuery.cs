@@ -1,10 +1,6 @@
-﻿using AutoMapper;
-using Domain.Entities;
-using Infrastructure.Data;
-using Infrastructure.Identity;
+﻿using Application.Common.Interfaces;
+using AutoMapper;
 using MediatR;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,11 +18,11 @@ namespace Application.Customers.Queries.GetCustomer
 
     public class GetCustomerQueryHandler : IRequestHandler<GetCustomerQuery, CustomerModel>
     {
-        private readonly ICleanersNextDoorContext _context;
+        private readonly IApplicationDbContext _context;
         private IMapper _mapper;
 
         public GetCustomerQueryHandler(
-            ICleanersNextDoorContext context,
+            IApplicationDbContext context,
             IMapper mapper
             )
         {

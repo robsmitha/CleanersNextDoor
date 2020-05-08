@@ -1,11 +1,8 @@
-﻿using Domain.Entities;
+﻿using Application.Common.Interfaces;
 using FluentValidation;
-using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -13,8 +10,8 @@ namespace Application.Customers.Commands.CreateServiceRequest
 {
     public class CreateServiceRequestCommandValidator : AbstractValidator<CreateServiceRequestCommand>
     {
-        private readonly ICleanersNextDoorContext _context;
-        public CreateServiceRequestCommandValidator(ICleanersNextDoorContext context)
+        private readonly IApplicationDbContext _context;
+        public CreateServiceRequestCommandValidator(IApplicationDbContext context)
         {
             _context = context;
 

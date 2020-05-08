@@ -1,11 +1,10 @@
-﻿using AutoMapper;
+﻿using Application.Common.Interfaces;
+using AutoMapper;
 using Domain.Entities;
-using Infrastructure.Data;
 using MediatR;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -21,9 +20,9 @@ namespace Application.Customers.Queries.GetOrderHistory
     }
     public class GetOrderHistoryQueryHandler : IRequestHandler<GetOrderHistoryQuery, OrderHistoryModel>
     {
-        private readonly ICleanersNextDoorContext _context;
+        private readonly IApplicationDbContext _context;
         private readonly IMapper _mapper;
-        public GetOrderHistoryQueryHandler(ICleanersNextDoorContext context, IMapper mapper)
+        public GetOrderHistoryQueryHandler(IApplicationDbContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;

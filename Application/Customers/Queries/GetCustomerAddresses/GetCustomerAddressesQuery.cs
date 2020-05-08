@@ -1,5 +1,5 @@
-﻿using Domain.Entities;
-using Infrastructure.Data;
+﻿using Application.Common.Interfaces;
+using Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
@@ -21,8 +21,8 @@ namespace Application.Customers.Queries.GetCustomerAddresses
 
     public class GetCustomerAddressesQueryHandler : IRequestHandler<GetCustomerAddressesQuery, List<CustomerAddress>>
     {
-        private readonly ICleanersNextDoorContext _context;
-        public GetCustomerAddressesQueryHandler(ICleanersNextDoorContext context) 
+        private readonly IApplicationDbContext _context;
+        public GetCustomerAddressesQueryHandler(IApplicationDbContext context) 
         {
             _context = context;
         }

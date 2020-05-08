@@ -1,12 +1,10 @@
 ﻿using Application.Common.Interfaces;
 using Domain.Entities;
-using Infrastructure.Data;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -30,8 +28,8 @@ namespace Application.Customers.Commands.CreateServiceRequest
     }
     public class CreateServiceRequestCommandHandler : IRequestHandler<CreateServiceRequestCommand, int>
     {
-        private readonly ICleanersNextDoorContext _context;
-        public CreateServiceRequestCommandHandler(ICleanersNextDoorContext context)
+        private readonly IApplicationDbContext _context;
+        public CreateServiceRequestCommandHandler(IApplicationDbContext context)
         {
             _context = context;
         }

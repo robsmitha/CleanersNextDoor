@@ -1,12 +1,7 @@
-﻿using AutoMapper;
-using Infrastructure.Data;
-using Infrastructure.Identity;
+﻿using Application.Common.Interfaces;
+using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -22,11 +17,11 @@ namespace Application.Customers.Queries.GetCustomerByEmail
     }
     public class GetCustomerByEmailQueryHandler : IRequestHandler<GetCustomerByEmailQuery, CustomerModel>
     {
-        private readonly ICleanersNextDoorContext _context;
+        private readonly IApplicationDbContext _context;
         private IMapper _mapper;
 
         public GetCustomerByEmailQueryHandler(
-            ICleanersNextDoorContext context,
+            IApplicationDbContext context,
             IMapper mapper
             )
         {

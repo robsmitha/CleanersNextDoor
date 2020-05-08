@@ -10,9 +10,9 @@ namespace Infrastructure.Repositories
 {
     public class GenericRepository<TEntity> where TEntity : class
     {
-        protected CleanersNextDoorContext context;
+        protected ApplicationDbContext context;
         internal DbSet<TEntity> dbSet;
-        public GenericRepository(CleanersNextDoorContext context)
+        public GenericRepository(ApplicationDbContext context)
         {
             this.context = context;
             this.dbSet = context.Set<TEntity>();

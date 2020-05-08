@@ -1,8 +1,7 @@
-﻿using AutoMapper;
+﻿using Application.Common.Interfaces;
+using Application.Common.Models;
+using AutoMapper;
 using Domain.Entities;
-using Domain.Services.GoogleGeocode.Interfaces;
-using Domain.Services.GoogleGeocode.Models;
-using Infrastructure.Data;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -33,12 +32,12 @@ namespace Application.Merchants.Queries.SearchMerchants
 
     public class SearchMerchantsQueryHandler : IRequestHandler<SearchMerchantsQuery, SearchMerchantsResponse>
     {
-        private readonly ICleanersNextDoorContext _context;
+        private readonly IApplicationDbContext _context;
         private IMapper _mapper;
         private IGoogleGeocodeService _geocode;
 
         public SearchMerchantsQueryHandler(
-            ICleanersNextDoorContext context,
+            IApplicationDbContext context,
             IMapper mapper,
             IGoogleGeocodeService geocode
             )

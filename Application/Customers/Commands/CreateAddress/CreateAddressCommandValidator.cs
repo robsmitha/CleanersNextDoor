@@ -1,13 +1,8 @@
-﻿using AutoMapper;
+﻿using Application.Common.Interfaces;
 using Domain.Entities;
 using FluentValidation;
-using Infrastructure.Data;
-using Infrastructure.Identity;
-using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -15,18 +10,17 @@ namespace Application.Customers.Commands.CreateAddress
 {
     public class CreateAddressCommandValidator : AbstractValidator<CreateAddressCommand>
     {
-        //Inject SS address service
-        private readonly ICleanersNextDoorContext _context;
-        private readonly IIdentityService _identity;
+        private readonly IApplicationDbContext _context;
+        private readonly IAppUserService _user;
         private readonly List<CustomerAddress> customerAddresses;
-        public CreateAddressCommandValidator(ICleanersNextDoorContext context,
-            IIdentityService identity)
+        public CreateAddressCommandValidator(IApplicationDbContext context,
+            IAppUserService user)
         {
             _context = context;
-            _identity = identity;
+            _user = user;
 
             customerAddresses = _context.CustomerAddresses
-                   .Where(a => a.CustomerID == _identity.ClaimID)
+                   .Where(a => a.CustomerID == _user.ClaimID)
                    .ToList();
 
 
@@ -83,12 +77,9 @@ namespace Application.Customers.Commands.CreateAddress
         /// <param name="name"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public async Task<bool> HasUniqueName(CreateAddressCommand args, string name, CancellationToken cancellationToken)
-        {
-            await Task.FromResult(0);
-            return string.IsNullOrEmpty(args.Name) 
-                || !customerAddresses.Any(a => a.Name.ToLower() == args.Name.ToLower());
-        }
+        public async Task<bool> HasUniqueName(CreateAddressCommand args, string name, CancellationToken cancellationToken) =>
+            await Task.FromResult(string.IsNullOrEmpty(args.Name)
+                || !customerAddresses.Any(a => a.Name.ToLower() == args.Name.ToLower()));
 
         public async Task<bool> BeDeliverableAddress(CreateAddressCommand args, string street1,
             CancellationToken cancellationToken)

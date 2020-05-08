@@ -1,10 +1,8 @@
-﻿using AutoMapper;
-using Infrastructure.Data;
+﻿using Application.Common.Interfaces;
+using AutoMapper;
 using MediatR;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -22,11 +20,11 @@ namespace Application.Merchants.Queries.GetMerchantItems
     }
     public class GetItemsByMerchantIDQueryHandler : IRequestHandler<GetMerchantItemsQuery, GetMerchantItemsResponse>
     {
-        private readonly ICleanersNextDoorContext _context;
+        private readonly IApplicationDbContext _context;
         private readonly IMapper _mapper;
 
         public GetItemsByMerchantIDQueryHandler(
-            ICleanersNextDoorContext context,
+            IApplicationDbContext context,
             IMapper mapper
             )
         {

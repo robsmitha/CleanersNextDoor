@@ -1,14 +1,13 @@
-﻿using Domain.Entities;
-using System;
+﻿using Application.Common.Interfaces;
+using Domain.Entities;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Infrastructure.Data
 {
     public static class DbInitializer
     {
-        public static void Initialize(ICleanersNextDoorContext context)
+        public static void Initialize(IApplicationDbContext context)
         {
             if (!context.EnsureCreated())
             {
@@ -156,26 +155,6 @@ namespace Infrastructure.Data
             };
             context.ItemTypes.AddRange(itemTypes);
 
-            //add card types
-            var cardTypes = new List<CardType>
-            {
-                new CardType
-                {
-                    Name = "Visa",
-                    Description = "Visa Card"
-                },
-                new CardType
-                {
-                    Name = "America Express",
-                    Description = "America Express"
-                },
-                new CardType
-                {
-                    Name = "Discover",
-                    Description = "Discover"
-                },
-            };
-            context.CardTypes.AddRange(cardTypes);
 
             //unit types
             var unitTypes = new List<UnitType>

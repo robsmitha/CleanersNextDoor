@@ -1,6 +1,6 @@
-﻿using AutoMapper;
+﻿using Application.Common.Interfaces;
+using AutoMapper;
 using Domain.Entities;
-using Infrastructure.Data;
 using MediatR;
 using System.Linq;
 using System.Threading;
@@ -38,11 +38,11 @@ namespace Application.Customers.Commands.CreateAddress
     }
     public class CreateAddressCommandHandler : IRequestHandler<CreateAddressCommand, bool>
     {
-        private readonly ICleanersNextDoorContext _context;
+        private readonly IApplicationDbContext _context;
         private readonly IMapper _mapper;
 
         public CreateAddressCommandHandler(
-            ICleanersNextDoorContext context,
+            IApplicationDbContext context,
             IMapper mapper
             )
         {

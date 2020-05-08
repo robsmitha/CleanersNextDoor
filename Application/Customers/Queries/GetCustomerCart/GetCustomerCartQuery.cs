@@ -1,7 +1,6 @@
 ﻿using Application.Common.Interfaces;
 using AutoMapper;
 using Domain.Entities;
-using Infrastructure.Data;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -25,12 +24,12 @@ namespace Application.Customers.Queries.GetCustomerCart
     }
     public class GetCustomerCartQueryHandler : IRequestHandler<GetCustomerCartQuery, CustomerCartModel>
     {
-        private readonly ICleanersNextDoorContext _context;
+        private readonly IApplicationDbContext _context;
         private readonly IStripeService _stripe;
         private IMapper _mapper;
 
         public GetCustomerCartQueryHandler(
-            ICleanersNextDoorContext context,
+            IApplicationDbContext context,
             IMapper mapper, 
             IStripeService stripe
             )

@@ -1,9 +1,6 @@
-﻿using FluentValidation;
-using Infrastructure.Data;
+﻿using Application.Common.Interfaces;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -12,8 +9,8 @@ namespace Application.Users.Commands.CreateUser
     public class CreateUserCommandValidator
         : AbstractValidator<CreateUserCommand>
     {
-        private readonly ICleanersNextDoorContext _context;
-        public CreateUserCommandValidator(ICleanersNextDoorContext context)
+        private readonly IApplicationDbContext _context;
+        public CreateUserCommandValidator(IApplicationDbContext context)
         {
             _context = context;
             RuleFor(v => v.User.Username)

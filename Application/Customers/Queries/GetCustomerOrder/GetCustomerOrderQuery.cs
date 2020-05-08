@@ -1,10 +1,6 @@
-﻿using Application.Customers;
+﻿using Application.Common.Interfaces;
 using AutoMapper;
-using Infrastructure.Data;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -21,11 +17,11 @@ namespace Application.Customers.Queries.GetCustomerOrder
 
     public class GetOrderQueryHandler : IRequestHandler<GetCustomerOrderQuery, GetCustomerOrderModel>
     {
-        private readonly ICleanersNextDoorContext _context;
+        private readonly IApplicationDbContext _context;
         private IMapper _mapper;
 
         public GetOrderQueryHandler(
-            ICleanersNextDoorContext context,
+            IApplicationDbContext context,
             IMapper mapper
             )
         {

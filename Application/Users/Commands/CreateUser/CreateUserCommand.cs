@@ -1,11 +1,9 @@
-﻿using AutoMapper;
+﻿using Application.Common.Interfaces;
+using AutoMapper;
 using Domain.Entities;
 using Domain.Models;
-using Infrastructure.Data;
 using MediatR;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -21,11 +19,11 @@ namespace Application.Users.Commands.CreateUser
     }
     public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, UserModel>
     {
-        private readonly ICleanersNextDoorContext _context;
+        private readonly IApplicationDbContext _context;
         private IMapper _mapper;
 
         public CreateUserCommandHandler(
-            ICleanersNextDoorContext context,
+            IApplicationDbContext context,
             IMapper mapper
             )
         {

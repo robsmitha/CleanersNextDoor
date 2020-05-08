@@ -1,5 +1,6 @@
-﻿using Domain.Entities;
-using Infrastructure.Data;
+﻿using Application.Common.Extensions;
+using Application.Common.Interfaces;
+using Domain.Entities;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -25,9 +26,9 @@ namespace Application.Customers.Commands.CreateCartItem
     }
     public class CreateCartItemCommandHandler : IRequestHandler<CreateCartItemCommand, CreateCartItemModel>
     {
-        private readonly ICleanersNextDoorContext _context;
+        private readonly IApplicationDbContext _context;
 
-        public CreateCartItemCommandHandler(ICleanersNextDoorContext context)
+        public CreateCartItemCommandHandler(IApplicationDbContext context)
         {
             _context = context;
         }

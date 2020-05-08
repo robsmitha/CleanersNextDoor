@@ -1,3 +1,4 @@
+using Application.Common.Interfaces;
 using Infrastructure.Data;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
@@ -21,7 +22,7 @@ namespace CleanersNextDoor
                 try
                 {
                     var context = services
-                        .GetRequiredService<ICleanersNextDoorContext>();
+                        .GetRequiredService<IApplicationDbContext>();
 
                     //context.Database.Migrate();
 

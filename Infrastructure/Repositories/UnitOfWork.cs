@@ -8,8 +8,8 @@ namespace Infrastructure.Repositories
 {
     public class UnitOfWork : IDisposable
     {
-        private readonly CleanersNextDoorContext _context;
-        public UnitOfWork(CleanersNextDoorContext context)
+        private readonly ApplicationDbContext _context;
+        public UnitOfWork(ApplicationDbContext context)
         {
             _context = context;
         }

@@ -1,13 +1,9 @@
 ﻿using Application.Common.Interfaces;
 using AutoMapper;
 using Domain.Entities;
-using Infrastructure.Data;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -30,11 +26,11 @@ namespace Application.Customers.Commands.CreatePaymentMethod
     public class CreatePaymentMethodCommandHandler : IRequestHandler<CreatePaymentMethodCommand, CreatePaymentMethodModel>
     {
 
-        private readonly ICleanersNextDoorContext _context;
+        private readonly IApplicationDbContext _context;
         private readonly IMapper _mapper;
         private readonly IStripeService _stripe;
         public CreatePaymentMethodCommandHandler(
-            ICleanersNextDoorContext context,
+            IApplicationDbContext context,
             IMapper mapper,
             IStripeService stripe
             )
