@@ -1,8 +1,10 @@
 ﻿import React, { Component } from 'react';
 import { Link, Redirect } from 'react-router-dom'
 import { AuthConsumer } from './../../context/AuthContext'
-import { Row, Col, Container, Badge, Card, CardBody, CardFooter } from 'reactstrap'
+import { Row, Col, Container, Badge, Card, CardBody } from 'reactstrap'
 import { customerService } from '../../services/customer.service'
+import Loading from '../../helpers/Loading';
+import { FaPlusCircle, FaTimesCircle } from 'react-icons/fa';
 
 
 export class PaymentMethods extends Component {
@@ -10,7 +12,6 @@ export class PaymentMethods extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            loading: true,
             paymentMethods: null
         }
     }
@@ -19,14 +20,13 @@ export class PaymentMethods extends Component {
         this.populatePaymentMethods()
     }
 
-    populatePaymentMethods() {
-        customerService.getPaymentMethods()
-            .then(data => {
-                this.setState({
-                    paymentMethods: data,
-                    loading: false
-                })
+    async populatePaymentMethods() {
+        const data = await customerService.getPaymentMethods()
+        if (data) {
+            this.setState({
+                paymentMethods: data
             })
+        }
     }
 
     removePaymentMethod = event => {
@@ -42,107 +42,92 @@ export class PaymentMethods extends Component {
     }
 
     render() {
+        const { paymentMethods } = this.state
         return (
-            <div>
-                <AuthConsumer>
-                    {({ authenticated }) => (
-                        <div>
-                            {!authenticated
-                                ? <Redirect to='/' />
-                                : this.renderLayout()}
-                        </div>
-                    )}
-                </AuthConsumer>
-            </div>
-        )
+            <AuthConsumer>
+                {({ authenticated }) => (
+                    <div>
+                        {!authenticated
+                            ? <Redirect to='/' />
+                            : PaymentMethods.renderPaymentMethods(paymentMethods, this.checkHandler, this.removePaymentMethod)}
+                    </div>
+                )}
+            </AuthConsumer>
+            )
     }
 
-    renderLayout() {
-        let contents = this.state.loading
-            ? <p><em>Loading...</em></p>
-            : this.renderPaymentMethods(this.state.paymentMethods);
+    static renderPaymentMethods(paymentMethods, checkHandler, removePaymentMethod) {
         return (
-            <div>
-                <header className="bg-primary py-3 mb-5">
-                    <Container className="h-100">
-                        <Row className="h-100 align-items-center">
-                            <Col>
-                                <h1 className="display-4 text-white mt-5 mb-2">
-                                    Payment Method
-                                </h1>
-                                <p className="lead text-white-50">
-                                    Set up your default payment methods for a speedy checkout process.
-                                </p>
-                                <Link to="/new-payment-method" className="btn btn-success btn-lg mr-2">
-                                    New Payment
-                                </Link>
-                                <Link to="/account" className="btn btn-secondary btn-lg">
-                                    My Account
-                                </Link>
-                            </Col>
-                        </Row>
-                    </Container>
-                </header>
-                {contents}
-            </div>
-        )
-    }
-
-    renderPaymentMethods(paymentMethods) {
-        return (
-            <div>
-                <Container>
-
-                    <h3>
-                        My Payment Methods
-                    </h3>
-                    <p>
+            <Container className="mt-3 mb-5">
+                <Link to={'/'}>Home</Link>&nbsp;&minus;&nbsp;
+                <Link to={'/account'}>Account</Link>&nbsp;&minus;&nbsp;Your payment methods
+                <div className="my-md-5 my-4">
+                    <h1 className="h3">
+                        Payment Methods
+                            </h1>
+                    <p className="text-muted">
                         Payment methods are stored using secure payment services to tokenize and protect card information.
                     </p>
+                </div>
+                {paymentMethods === null
+                    ? <Loading message="Loading payment methods, please wait" />
+                    : <div>
+                        <Row>
+                            {paymentMethods.map(pm =>
+                                <Col md="4" key={pm.id} className="mb-4">
+                                    <Card className="h-100">
+                                        <CardBody>
+                                            <div className="custom-control custom-radio">
+                                                <input type="radio"
+                                                    id={'isDefault' + pm.id}
+                                                    name="isDefault"
+                                                    className="custom-control-input"
+                                                    value={pm.id}
+                                                    id={'isDefault' + pm.id}
+                                                    checked={pm.isDefault}
+                                                    onChange={checkHandler}
+                                                />
+                                                <label className={'custom-control-label'} htmlFor={'isDefault' + pm.id}>
+                                                    <span className="sr-only">Default payment method</span>
+                                                    <h5 className={'mb-0 '.concat(pm.isDefault ? 'text-primary' : '')}>
+                                                        {pm.cardBrand} - {pm.last4}
+                                                    </h5>
+                                                    <small className="d-block text-muted">{pm.expMonth}/{pm.expYear}</small>
+                                                </label>
+                                            </div>
+                                            <div className="my-2" hidden={true}>
+                                                <Badge hidden={pm.nameOnCard === null || pm.nameOnCard.length === 0} color="light" className="border" pill>{pm.nameOnCard !== null ? pm.nameOnCard.toUpperCase() : ''}</Badge>
+                                            </div>
+                                            <div className="mt-2">
+                                                <button type="button" className="btn btn-link btn-sm pl-0 text-danger" value={pm.id} onClick={removePaymentMethod}>
+                                                    <FaTimesCircle /> REMOVE
+                                                </button>
+                                            </div>
+                                        </CardBody>
+                                    </Card>
+                                </Col>
+                            )}
 
-                    <Row hidden={paymentMethods.length === 0}>
-                        {paymentMethods.map(pm =>
-                            <Col md="4" key={pm.id} className="mb-4">
-                                <Card className={pm.isDefault ? 'h-100 border-primary' : 'h-100'}>
-                                    <CardBody className="pb-0 border-bottom-0">
-                                        <Row>
-                                            <Col>
-                                                <p className="mb-1 font-weight-bold">
-                                                    {pm.cardBrand} - {pm.last4}
-                                                </p>
-                                                <small className="d-block text-muted">{pm.expMonth}/{pm.expYear}</small>
-                                                <Badge hidden={pm.nameOnCard === null  || pm.nameOnCard.length === 0} color="light" className="border" pill>{pm.nameOnCard !== null ? pm.nameOnCard.toUpperCase() : ''}</Badge>
-                                            </Col>
-                                            <Col xs="auto">
-                                                <div className="custom-control custom-radio">
-                                                    <input type="radio" id={'isDefault' + pm.id} name="isDefault" className="custom-control-input" value={pm.id} id={'isDefault' + pm.id} checked={pm.isDefault} onChange={this.checkHandler} />
-                                                    <label className={'custom-control-label ' + (pm.isDefault ? 'font-weight-bold' : '')} htmlFor={'isDefault' + pm.id}>DEFAULT</label>
-                                                </div>
-                                            </Col>
-                                        </Row>
-                                    </CardBody>
-                                    <CardFooter className="bg-white pt-0 border-top-0">
-                                        <button type="button" className="btn btn-link btn-sm text-danger pl-0" value={pm.id} onClick={this.removePaymentMethod}>
-                                            REMOVE
-                                        </button>
-                                    </CardFooter>
-                                </Card>
+                            <Col md="4" className="mb-4">
+                                <Link to='/new-payment-method' className="text-decoration-none">
+                                    <Card className="h-100">
+                                        <CardBody>
+                                            <span className="sr-only" hidden={paymentMethods.length > 0}>
+                                                You have no saved payment methods.
+                                            </span>
+                                            <h5 className={'mb-1 '}>
+                                                <FaPlusCircle /> New payment method
+                                            </h5>
+                                            <small className={'d-block '.concat(paymentMethods.length === 0 ? 'text-danger' : 'text-muted')}>Add a new payment method</small>
+                                        </CardBody>
+                                    </Card>
+                                </Link>
                             </Col>
-                        )}
-                    </Row>
-                    <div hidden={paymentMethods.length > 0} className="mb-4">
-                        <p className="lead mb-1">
-                            You have no saved payment methods.
-                        </p>
-                        <small className="text-muted">
-                            <Link to='/new-payment-method' className="text-decoration-none">
-                                Add a new payment method&nbsp;
-                            </Link>
-                            to speed up the checkout process.
-                        </small>
+
+                        </Row>
                     </div>
-                </Container>
-            </div>
+                }
+            </Container>
         )
     }
 }

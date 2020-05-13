@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Collapse, Container, Navbar, NavbarBrand, NavbarToggler, NavItem, NavLink, UncontrolledDropdown, DropdownMenu, DropdownItem, DropdownToggle } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import './NavMenu.css';
-import { FaSignOutAlt, FaUser, FaUserPlus, FaSignInAlt, FaCompass, FaAddressCard } from 'react-icons/fa'
+import { FaSignOutAlt, FaUser, FaUserPlus, FaSignInAlt, FaCompass, FaAddressCard, FaHistory } from 'react-icons/fa'
 import { AuthConsumer } from './../context/AuthContext'
 
 export class NavMenu extends Component {
@@ -72,6 +72,9 @@ export class NavMenu extends Component {
                                                 <DropdownMenu right className="animate slideIn">
                                                     <DropdownItem tag={Link} to="/account">
                                                         <FaAddressCard />&nbsp;My account
+                                                    </DropdownItem>
+                                                    <DropdownItem tag={Link} to="/order-history">
+                                                        <FaHistory />&nbsp;Orders
                                                     </DropdownItem>
                                                     <DropdownItem divider />
                                                     <DropdownItem tag={Link} to="/sign-out">

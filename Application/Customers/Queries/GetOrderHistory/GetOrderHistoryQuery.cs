@@ -32,6 +32,7 @@ namespace Application.Customers.Queries.GetOrderHistory
         {
             var data = from o in _context.Orders.AsEnumerable()
                        join m in _context.Merchants.AsEnumerable() on o.MerchantID equals m.ID
+                       join mt in _context.MerchantTypes.AsEnumerable() on m.MerchantTypeID equals mt.ID
                        join ost in _context.OrderStatusTypes.AsEnumerable() on o.OrderStatusTypeID equals ost.ID
                        join li in _context.LineItems.AsEnumerable() on o.ID equals li.OrderID
                        join sr in _context.ServiceRequests.AsEnumerable() on o.ID equals sr.OrderID into tmp_sr

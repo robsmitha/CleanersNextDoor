@@ -1,7 +1,7 @@
 ﻿import React, { Component } from 'react';
 import { Link, Redirect } from 'react-router-dom'
-import { Container, Row, Col } from 'reactstrap';
-import { FaLock } from 'react-icons/fa';
+import { Container, Row, Col, FormGroup, Card, CardHeader, CardBody } from 'reactstrap';
+import { FaLock, FaCreditCard } from 'react-icons/fa';
 import { AuthConsumer } from './../../context/AuthContext'
 import TextInput from './../../helpers/TextInput';
 import handleChange from './../../helpers/HandleChange';
@@ -85,81 +85,100 @@ export class NewPaymentMethod extends Component {
 
     render() {
         return (
-            <div>
-                <AuthConsumer>
-                    {({ authenticated }) => (
-                        <div>
-                            {!authenticated
-                                ? <Redirect to='/sign-in' />
-                                : this.renderContent()}
-                        </div>
-                    )}
-                </AuthConsumer>
-            </div>
+            <AuthConsumer>
+                {({ authenticated }) => (
+                    <div>
+                        {!authenticated
+                            ? <Redirect to='/sign-in' />
+                            : NewPaymentMethod.renderCreatePaymentMethodForm(
+                                this.state,
+                                this.changeHandler,
+                                this.checkHandler,
+                                this.stripePromise,
+                                this.stripePaymentMethodHandler
+                            )}
+                    </div>
+                )}
+            </AuthConsumer>
         )
     }
-    renderContent() {
-        return (
-            <div>
-                <header className="bg-primary py-3 mb-5 shadow">
-                    <div className="container h-100">
-                        <div className="row h-100 align-items-center">
-                            <div className="col-lg-12">
-                                <h1 className="display-4 text-white mt-5 mb-2">
-                                    New Payment Method
-                                </h1>
-                                <p className="lead text-white-50">
-                                    Create a new payment method by securely entering your card information below.
-                                </p>
-                                <Link to="/account" className="btn btn-success btn-lg mr-2">My Account</Link>
-                                <Link to="/payment-methods" className="btn btn-secondary btn-lg">Payment Methods</Link>
-                            </div>
-                        </div>
-                    </div>
-                </header>
-                <Container>
+    static renderCreatePaymentMethodForm(state, changeHandler, checkHandler, stripePromise, stripePaymentMethodHandler) {
+        const { formControls, isDefault, formIsValid } = state
 
-                    <h3>
-                        Payment method details
-                     </h3>
-                    <p className="mb-1">
+        return (
+            <Container className="mt-3 mb-5">
+                <Link to={'/'}>Home</Link>&nbsp;&minus;&nbsp;
+                <Link to={'/account'}>Account</Link>&nbsp;&minus;&nbsp;
+                <Link to={'/payment-methods'}>Payment methods</Link>&nbsp;&minus;&nbsp;New payment method
+                <div className="my-md-5 my-4">
+                    <h1 className="h3">
+                        New Payment Method
+                    </h1>
+                    <p className="text-muted">
                         By completing this form, you authorize CleanersNextDoor to send instructions to the financial institution that issued your card
                         to take payments from your card account in accordance with the terms of my agreement with CleanersNextDoor.
                     </p>
+                </div>
 
-                    <Row>
-                        <Col sm="9" md="7" lg="5">
+                <Row>
+                    <Col sm="9" md="7" lg="5">
 
-                            <TextInput name="nameOnCard"
-                                placeholder={this.state.formControls.nameOnCard.placeholder}
-                                label={this.state.formControls.nameOnCard.label}
-                                value={this.state.formControls.nameOnCard.value}
-                                valid={this.state.formControls.nameOnCard.valid ? 1 : 0}
-                                onChange={this.changeHandler} />
+                        <TextInput name="nameOnCard"
+                            placeholder={formControls.nameOnCard.placeholder}
+                            label={formControls.nameOnCard.label}
+                            value={formControls.nameOnCard.value}
+                            valid={formControls.nameOnCard.valid ? 1 : 0}
+                            onChange={changeHandler} />
 
 
-                            <div className="form-group">
-                                <div className="custom-control custom-checkbox">
-                                    <input type="checkbox" className="custom-control-input" id="isDefault" name="isDefault" onChange={this.checkHandler} checked={this.state.isDefault} />
-                                    <label className="custom-control-label" htmlFor="isDefault">
-                                        Make this my default payment method
+                        <div className="form-group">
+                            <div className="custom-control custom-checkbox">
+                                <input type="checkbox" className="custom-control-input" id="isDefault" name="isDefault" onChange={checkHandler} checked={isDefault} />
+                                <label className="custom-control-label" htmlFor="isDefault">
+                                    Make this my default payment method
                                     </label>
-                                </div>
                             </div>
+                        </div>
 
-                            <Elements stripe={this.stripePromise}>
-                                <PaymentMethodForm
-                                    nameOnCard={this.state.formControls.nameOnCard.value}
-                                    stripePaymentMethodHandler={this.stripePaymentMethodHandler}
-                                    disabled={!this.state.formIsValid} />
-                            </Elements>
-                        </Col>
-                    </Row>
-                    <small className="text-muted d-block mb-4">
-                        <FaLock /> Your data is securely tokenized by leading payment services.
-                    </small>
-                </Container>
-            </div>
+                        <Elements stripe={stripePromise}>
+                            <PaymentMethodForm
+                                nameOnCard={formControls.nameOnCard.value}
+                                stripePaymentMethodHandler={stripePaymentMethodHandler}
+                                disabled={!formIsValid} />
+                        </Elements>
+
+                        <small className="text-muted d-block mt-3 mb-4">
+                            Your data is securely tokenized by leading payment services.&nbsp;<FaLock />
+                        </small>
+                    </Col>
+
+                    <Col sm="5" md="4" lg="4" className="ml-lg-auto">
+                        <Card className="h-100 border-0 shadow">
+                            <CardHeader className="bg-primary text-white border-bottom-0">
+                                <Row>
+                                    <Col><h5>Why do you need this info?</h5></Col>
+                                    <Col xs="auto"><FaCreditCard /></Col>
+                                </Row>
+                            </CardHeader>
+                            <CardBody>
+                                <p>
+                                    Saving default payment methods is a completely optional feature of our system.
+                                    
+                                    </p>
+                                <p className="font-weight-bold">
+                                    Your data is never shared with third parties.
+                                    </p>
+                                <p>
+                                    The goal with default payment methods is to make checkout as few fields as possible.
+                                    </p>
+                                <p>
+                                    Another great benefit of saving your default payment method is to make it easier to setup automatic subscriptions.
+                                    </p>
+                            </CardBody>
+                        </Card>
+                    </Col>
+                </Row>
+            </Container>
         )
     }
 }

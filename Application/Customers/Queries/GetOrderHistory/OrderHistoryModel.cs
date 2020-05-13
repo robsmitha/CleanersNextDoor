@@ -25,15 +25,15 @@ namespace Application.Customers.Queries.GetOrderHistory
         public int ID { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? ModifiedTime { get; set; }
-        public string DisplayCreated => CreatedAt.ToString("MM/dd/yyyy hh:mm tt");
         public string DisplayUpdated => ModifiedTime.HasValue 
             ? ModifiedTime.Value.ToString("MM/dd/yyyy hh:mm tt") 
-            : null;
+            : CreatedAt.ToString("MM/dd/yyyy hh:mm tt");
         public string Note { get; set; }
         public int OrderStatusTypeID { get; set; }
         public string OrderStatusTypeName { get; set; }
         public int MerchantID { get; set; }
         public string MerchantName { get; set; }
+        public string MerchantMerchantTypeName { get; set; }
         public bool IsOpenOrder { get; set; }
         public bool IsUpcomingOrder { get; set; }
         public string DisplayOrderTotal => LineItems.Sum(l => l.ItemAmount).ToString("C");
@@ -55,6 +55,7 @@ namespace Application.Customers.Queries.GetOrderHistory
         public string Phone { get; set; }
         public string Email { get; set; }
         public string ServiceRequestStatusTypeName { get; set; }
+        public string ServiceRequestStatusTypeDescription { get; set; }
         public string WorkflowName { get; set; }
     }
 }

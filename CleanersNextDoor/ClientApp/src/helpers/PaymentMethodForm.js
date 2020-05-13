@@ -83,7 +83,7 @@ const PaymentMethodForm = (props) => {
                 />
                 <div className="card-errors" role="alert">{error}</div>
             </div>
-            <button type="submit" className="btn btn-success btn-block" disabled={props.disabled}>
+            <button type="submit" className="btn btn-primary btn-block" disabled={props.disabled}>
                 Save payment method
             </button>
         </form>

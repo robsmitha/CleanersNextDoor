@@ -15,6 +15,7 @@ using Application.Customers.Queries.GetCustomer;
 using Application.Customers.Queries.GetCustomerAddresses;
 using Application.Customers.Queries.GetCustomerByEmail;
 using Application.Customers.Queries.GetCustomerCart;
+using Application.Customers.Queries.GetCustomerOrder;
 using Application.Customers.Queries.GetOrderHistory;
 using Application.Customers.Queries.GetPaymentMethods;
 using Domain.Entities;
@@ -146,6 +147,11 @@ namespace CleanersNextDoor.Controllers
         public async Task<OrderHistoryModel> GetOrderHistory()
         {
             return await _mediator.Send(new GetOrderHistoryQuery(_user.ClaimID));
+        }
+        [HttpGet("getOrder/{id}")]
+        public async Task<GetCustomerOrderModel> GetOrder(int id)
+        {
+            return await _mediator.Send(new GetCustomerOrderQuery(id, _user.ClaimID));
         }
     }
 }

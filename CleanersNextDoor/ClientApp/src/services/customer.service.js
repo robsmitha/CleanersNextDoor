@@ -19,7 +19,8 @@ export const customerService = {
     stripeClientSecret,
     stripePublicKey,
     createServiceRequest,
-    getOrderHistory
+    getOrderHistory,
+    getOrder
 };
 //Customer
 function getCustomer() {
@@ -82,3 +83,7 @@ function stripePublicKey() {
 function getOrderHistory() {
     return get(`${_CONTROLLER}/orderHistory`)
 }
+function getOrder(orderId) {
+    return get(`${_CONTROLLER}/getOrder/${orderId}`)
+}
+

@@ -1,5 +1,6 @@
 ﻿import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
+import { Container, Row, Col } from 'reactstrap';
 
 export class HowItWorks extends Component {
     constructor(props) {
@@ -12,51 +13,43 @@ export class HowItWorks extends Component {
 
     render() {
         return (
-            <div>
-                <header className="bg-primary py-3 mb-5">
-                    <div className="container h-100">
-                        <div className="row h-100 align-items-center">
-                            <div className="col-lg-12">
-                                <h1 className="display-4 text-white mt-5 mb-2">
-                                    How it Works
-                                </h1>
-                                <p className="lead text-white-50">
-                                    Select from many merchant services such as laundry, alterations and more. <br />
+            <section className="pb-6">
+                <Container className="mt-3 mb-5">
+                    <Link to={'/'}>Home</Link> &minus; How it Works
+
+                <div className="my-md-5 my-4">
+                        <h1 className="h3">
+                            How it Works
+                    </h1>
+                        <p className="text-muted">
+                            Select from many merchant services such as laundry, alterations and more. <br />
                                     Enter pick up and delivery information. <strong>It's that easy.</strong>
-                                </p>
-                                <Link to="/" className="btn btn-success btn-lg">Try it out</Link>
-                            </div>
-                        </div>
-                    </div>
-                </header>
-                <div className="container">
-                    <div className="my-3">
-                        <h3>You Need a Laundry Service</h3>
-                        <p>
-                            Laundry errands can be a hassle.
-                            Our pick up and delivery services make it easy.
                         </p>
                     </div>
-                    <div className="my-3">
-
-                        <h3>Merchants Provide Services</h3>
-                        <p>
-                            Dry cleaning, alterations, suit cleanings and more.
-                        </p>
-                        <Link to="/" className="text-decoration-none">
-                            Browse Merchants
-                        </Link>
-
+                    <div className="py-4">
+                        <h2 className="mb-3 text-primary h4">Service</h2>
+                        <Row>
+                            <Col md="6">
+                                <h5>You Need a Laundry Service</h5>
+                                <p className="text-muted mb-4">Laundry errands can be a hassle.
+                                    Our pick up and delivery services make it easy.</p>
+                            </Col>
+                            <Col md="6">
+                                <h5>Merchants Provide Services</h5>
+                                <p className="text-muted mb-4">
+                                    Dry cleaning, alterations, suit cleanings and more.
+                                    </p>
+                            </Col>
+                            <Col md="6">
+                                <h5>We Bring the Service to You</h5>
+                                <p className="text-muted mb-4">
+                                    Schedule a pick up and delivery that works for your schedule. We will make it happen.
+                                    </p>
+                            </Col>
+                        </Row>
                     </div>
-                    <div className="my-3">
-
-                        <h3>We Bring the Service to You</h3>
-                        <p>
-                            Schedule a pick up and delivery that works for your schedule. We will make it happen.
-                        </p>
-                    </div>
-                </div>
-            </div>
+                </Container>
+            </section>
             )
     }
 }

@@ -18,7 +18,6 @@ class AuthProvider extends Component {
 
     componentDidMount() {
         authenticationService.appUser.subscribe(x => {
-            console.log(x)
             if (x !== null && x.authenticated) {
                 authenticationService.authorize()
                     .then(data => {

@@ -1,8 +1,10 @@
 ﻿import React, { Component } from 'react';
 import { Link, Redirect } from 'react-router-dom'
 import { AuthConsumer } from './../../context/AuthContext'
-import { Row, Col, Container, Badge, Card, CardBody, CardFooter } from 'reactstrap'
+import { Row, Col, Container, Badge, Card, CardBody } from 'reactstrap'
 import { customerService } from '../../services/customer.service'
+import Loading from '../../helpers/Loading';
+import { FaPlusCircle, FaTimesCircle } from 'react-icons/fa';
 
 
 export class SavedAddresses extends Component {
@@ -10,8 +12,7 @@ export class SavedAddresses extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            loading: true,
-            customer: null
+            addresses: null
         }
     }
 
@@ -19,14 +20,11 @@ export class SavedAddresses extends Component {
         this.populateAddressInformation()
     }
 
-    populateAddressInformation() {
-        customerService.getAddresses()
-            .then(data => {
-                this.setState({
-                    addresses: data,
-                    loading: false
-                })
-            })
+    async populateAddressInformation() {
+        const data = await customerService.getAddresses()
+        this.setState({
+            addresses: data
+        })
     }
 
     removeAddress = event => {
@@ -43,105 +41,78 @@ export class SavedAddresses extends Component {
 
     render() {
         return (
-            <div>
-                <AuthConsumer>
-                    {({ authenticated }) => (
-                        <div>
-                            {!authenticated
-                                ? <Redirect to='/' />
-                                : this.renderLayout()}
-                        </div>
-                    )}
-                </AuthConsumer>
-            </div>
+            <AuthConsumer>
+                {({ authenticated }) => (
+                    <div>
+                        {!authenticated
+                            ? <Redirect to='/' />
+                            : SavedAddresses.renderAddresses(this.state.addresses, this.checkHandler, this.removeAddress)}
+                    </div>
+                )}
+            </AuthConsumer>
         )
     }
 
-    renderLayout() {
-        let contents = this.state.loading
-            ? <p><em>Loading...</em></p>
-            : this.renderAddresses(this.state.addresses);
+    static renderAddresses(addresses, checkHandler, removeAddress) {
         return (
-            <div>
-                <header className="bg-primary py-3 mb-5">
-                    <Container className="h-100">
-                        <Row className="h-100 align-items-center">
-                            <Col>
-                                <h1 className="display-4 text-white mt-5 mb-2">
-                                    Saved Addresses
-                                </h1>
-                                <p className="lead text-white-50">
-                                    Set up your default saved addresses for speedy pick up and delivery.
-                                </p>
-                                <Link to="/new-address" className="btn btn-success btn-lg mr-2">
-                                    New Address
-                                </Link>
-                                <Link to="/account" className="btn btn-secondary btn-lg">
-                                    My Account
+            <Container className="mt-3 mb-5">
+                <Link to={'/'}>Home</Link>&nbsp;&minus;&nbsp;
+                <Link to={'/account'}>Account</Link>&nbsp;&minus;&nbsp;Your saved addresses
+                <div className="my-md-5 my-4">
+                    <h1 className="h3">
+                        Saved addresses
+                            </h1>
+                    <p className="text-muted">Address information is used for scheduling pick up and delivery services.</p>
+                </div>
+                {addresses === null
+                    ? <Loading message="Loading addresses, please wait" />
+                    : <div>
+                        <Row>
+                            {addresses.map(a =>
+                                <Col md="4" key={a.id} className="mb-4">
+                                    <Card className="h-100">
+                                        <CardBody>
+                                            <div className="custom-control custom-radio">
+                                                <input type="radio" id={'isDefault' + a.id} name="isDefault" className="custom-control-input" value={a.id} id={'isDefault' + a.id} checked={a.isDefault} onChange={checkHandler} />
+                                                <label className={'custom-control-label'} htmlFor={'isDefault' + a.id}>
+                                                    <span className="sr-only">Default Address</span>
+                                                    <h5 className={'mb-0 '.concat(a.isDefault ? 'text-primary' : '')}>
+                                                        {a.street1} {a.street2}
+                                                    </h5>
+                                                    <small className="d-block text-muted">{a.city}, {a.stateAbbreviation}. {a.zip}</small>
+                                                </label>
+                                            </div>
+                                            <div className="my-2" hidden={true}>
+                                                <Badge hidden={a.name.length === 0} color="light" className="border" pill>{a.name.toUpperCase()}</Badge>
+                                            </div>
+                                            <div className="mt-2">
+                                                <button type="button" className="btn btn-link btn-sm pl-0 text-danger" value={a.id} onClick={removeAddress}>
+                                                    <FaTimesCircle /> REMOVE
+                                                </button>
+                                            </div>
+                                        </CardBody>
+                                    </Card>
+                                </Col>
+                            )}
+                            <Col md="4" className="mb-4">
+                                <Link to='/new-address' className="text-decoration-none">
+                                    <Card className="h-100">
+                                        <CardBody>
+                                            <span className="sr-only" hidden={addresses.length > 0}>
+                                                You have no saved addresses.
+                                            </span>
+                                            <h5 className={'mb-1 '}>
+                                                <FaPlusCircle /> New address
+                                            </h5>
+                                            <small className={'d-block '.concat(addresses.length === 0 ? 'text-danger' : 'text-muted')}>Add a new address</small>
+                                        </CardBody>
+                                    </Card>
                                 </Link>
                             </Col>
                         </Row>
-                    </Container>
-                </header>
-                {contents}
-            </div>
-        )
-    }
-
-    renderAddresses(addresses) {
-        return (
-            <div>
-                <Container>
-                    <h3>
-                        My Addresses
-                    </h3>
-                    <p>
-                        Address information is used for scheduling pick up and delivery services.
-                    </p>
-
-                    <Row hidden={addresses.length === 0}>
-                        {addresses.map(a =>
-                            <Col md="4" key={a.id} className="mb-4">
-                                <Card className={'h-100 ' + (a.isDefault ? 'border-primary' : '')}>
-                                    <CardBody className="pb-0 border-bottom-0">
-                                        <Row>
-                                            <Col>
-                                                <p className="mb-1 font-weight-bold">
-                                                    {a.street1} {a.street2}
-                                                </p>
-                                                <small className="d-block text-muted">{a.city}, {a.stateAbbreviation}. {a.zip}</small>
-                                                <Badge hidden={a.name.length === 0} color="light" className="border" pill>{a.name.toUpperCase()}</Badge>
-                                            </Col>
-                                            <Col xs="auto">
-                                                <div className="custom-control custom-radio">
-                                                    <input type="radio" id={'isDefault' + a.id} name="isDefault" className="custom-control-input" value={a.id} id={'isDefault' + a.id} checked={a.isDefault} onChange={this.checkHandler} />
-                                                    <label className={'custom-control-label ' + (a.isDefault ? 'font-weight-bold' : '')} htmlFor={'isDefault' + a.id}>DEFAULT</label>
-                                                </div>
-                                            </Col>
-                                        </Row>
-                                    </CardBody>
-                                    <CardFooter className="bg-white pt-0 border-top-0">
-                                        <button type="button" className="btn btn-link btn-sm text-danger pl-0" value={a.id} onClick={this.removeAddress}>
-                                            REMOVE
-                                        </button>
-                                    </CardFooter>
-                                </Card>
-                            </Col>
-                        )}
-                    </Row>
-                    <div hidden={addresses.length > 0} className="mb-4">
-                        <p className="lead mb-1">
-                            You have no saved addresses.
-                        </p>
-                        <small className="text-muted">
-                            <Link to='/new-address' className="text-decoration-none">
-                                Add a new address&nbsp;
-                            </Link>
-                            to speed up the checkout process.
-                        </small>
                     </div>
-                </Container>
-            </div>
-            )
+                }
+            </Container>
+        )
     }
 }

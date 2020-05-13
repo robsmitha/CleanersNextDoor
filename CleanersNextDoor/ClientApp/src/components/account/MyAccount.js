@@ -1,8 +1,9 @@
 ﻿import React, { Component } from 'react';
 import { Link, Redirect } from 'react-router-dom'
-import { Col, Card, CardBody } from 'reactstrap'
+import { Col, Card, CardBody, Container, Row } from 'reactstrap'
 import { AuthConsumer } from './../../context/AuthContext'
 import { customerService } from '../../services/customer.service'
+import { FaAddressCard, FaHistory, FaMapMarker, FaCreditCard } from 'react-icons/fa';
 
 export class MyAccount extends Component {
     constructor(props) {
@@ -17,34 +18,100 @@ export class MyAccount extends Component {
         this.populateCustomer()
     }
 
-    populateCustomer() {
-        customerService.getCustomer()
-            .then(data => {
-                if (data.id > 0) {
-                    this.setState({
-                        customer: data,
-                        loading: false
-                    })
-                }
+    async populateCustomer() {
+        const data = await customerService.getCustomer()
+        if (data.id > 0) {
+            this.setState({
+                customer: data,
+                loading: false
             })
+        }
     }
 
     render() {
+        const { customer } = this.state
         return (
-            <div>
-                <AuthConsumer>
-                    {({ authenticated }) => (
-                        <div>
-                            {!authenticated
-                                ? <Redirect to='/sign-up' />
-                                : this.renderLayout()}
-                        </div>
-                    )}
-                </AuthConsumer>
-            </div>
+            <AuthConsumer>
+                {({ authenticated }) => (
+                    <div>
+                        {!authenticated
+                            ? <Redirect to='/sign-up' />
+                            : MyAccount.renderAccount(customer)}
+                    </div>
+                )}
+            </AuthConsumer>
             )
     }
 
+    static renderAccount(customer) {
+        return (
+            <Container className="mt-3 mb-5">
+
+                <Link to={'/'}>Home</Link> &minus; Your account
+
+                <div className="my-md-5 my-4">
+                    <h1 className="h3">
+                        Your account
+                    </h1>
+                    <p className="text-muted">Manage your account and settings here.</p>
+                </div>
+
+                <Row>
+
+                    <Col md="4" className="mb-4">
+                        <Link className="text-decoration-none" to={'order-history'}>
+                            <Card className="h-100">
+                                <CardBody>
+                                    <h5 className="card-title mb-3">
+                                        <FaHistory className="text-primary" /> Orders
+                                    </h5>
+                                    <p className="text-muted card-text text-sm">
+                                        Track progress of upcomming service requests and review past order history.
+                                    </p>
+                                </CardBody>
+                            </Card>
+                        </Link>
+                    </Col>
+
+                    <Col md="4" className="mb-4">
+                        <Link className="text-decoration-none" to={'saved-addresses'}>
+                            <Card className="h-100">
+                                <CardBody>
+                                    <h5 className="card-title mb-3">
+                                        <FaAddressCard className="text-primary" /> Saved Addresses
+                                    </h5>
+                                    <p className="text-muted card-text text-sm">
+                                        {customer !== null && !customer.hasAddresses
+                                            ? <span className="text-danger">Set up your default saved addresses to skip at checkout.</span>
+                                            : 'Keep your default saved addresses up to date to skip address steps at checkout.'}
+                                    </p>
+                                </CardBody>
+                            </Card>
+                        </Link>
+                    </Col>
+
+                    <Col md="4" className="mb-4">
+                        <Link className="text-decoration-none" to={'payment-methods'}>
+                            <Card className="h-100">
+                                <CardBody>
+                                    <h5 className="card-title mb-3">
+                                        <FaCreditCard className="text-primary" /> Payment Methods
+                                    </h5>
+                                    <p className="text-muted card-text text-sm">
+                                        {customer !== null && !customer.hasPaymentMethods
+                                            ? <span className="text-danger">Add a secure stored payment method to skip card information at checkout.</span>
+                                            : 'Maintain stored payment methods to skip card information steps at checkout.'}
+                                    </p>
+                                </CardBody>
+                            </Card>
+                        </Link>
+                    </Col>
+
+                </Row>
+
+            </Container>
+            )
+    }
 
     static renderCustomer(customer) {
         return (
@@ -120,94 +187,6 @@ export class MyAccount extends Component {
                                 edit your account.
                             </Link>
                         </small>
-                    </div>
-
-                    <div>
-                        <h3 className="mb-3">
-                            More Settings
-                        </h3>
-                        <div className="row">
-                            <div className="col-md-4 mb-4">
-                                <Link className="text-decoration-none" to="/order-history">
-                                    <div className="card h-100">
-                                        <div className="card-bod p-4">
-                                            <div className="d-flex w-100 justify-content-between text-dark">
-                                                <h5 className="mb-1">Orders</h5>
-                                            </div>
-                                            <p className="mb-1 text-muted">Track progress of upcomming service requests and review past order history.</p>
-                                        </div>
-                                    </div>
-                                </Link>
-                            </div>
-                            <div className="col-md-4 mb-4">
-                                <Link className="text-decoration-none" to="/saved-addresses">
-                                    <div className={this.state.customer !== null && !this.state.customer.hasAddresses ? 'card h-100 border-danger' : 'card h-100'}>
-                                        <div className="card-body p-4">
-                                            <div className="d-flex w-100 justify-content-between text-dark">
-                                                <h5 className="mb-1">Saved Addresses</h5>
-                                            </div>
-                                            <p className="mb-1 text-muted">
-                                                {this.state.customer !== null && !this.state.customer.hasAddresses
-                                                    ? <span className="text-danger">Set up your default saved addresses to skip at checkout.</span>
-                                                    : 'Keep your default saved addresses up to date to ensure flawless services.'}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </Link>
-                            </div>
-                            <div className="col-md-4 mb-4">
-                                <Link className="text-decoration-none" to="/payment-methods">
-                                    <div className={this.state.customer !== null && !this.state.customer.hasPaymentMethods ? 'card h-100 border-danger' : 'card h-100'}>
-                                        <div className="card-body p-4">
-                                            <div className="d-flex w-100 justify-content-between text-dark">
-                                                <h5 className="mb-1">Payment Methods</h5>
-                                            </div>
-                                            <p className="mb-1 text-muted">
-                                                {this.state.customer !== null && !this.state.customer.hasPaymentMethods
-                                                    ? <span className="text-danger">Add a secure stored payment method to skip card information at checkout.</span>
-                                                    : 'Keep your default stored payment methods up to date to ensure flawless services.'}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </Link>
-                            </div>
-                            <div className="col-md-4 mb-4">
-                                <Link className="text-decoration-none" to="/edit-account">
-                                    <div className="card h-100">
-                                        <div className="card-body p-4">
-                                            <div className="d-flex w-100 justify-content-between text-dark">
-                                                <h5 className="mb-1">Edit Account</h5>
-                                            </div>
-                                            <p className="mb-1 text-muted">Need to change your account? Edit your account here.</p>
-                                        </div>
-                                    </div>
-                                </Link>
-                            </div>
-                            <div className="col-md-4 mb-4">
-                                <Link className="text-decoration-none" to="/recurring-services">
-                                    <div className="card h-100">
-                                        <div className="card-body p-4">
-                                            <div className="d-flex w-100 justify-content-between text-dark">
-                                                <h5 className="mb-1">Subscription</h5>
-                                            </div>
-                                            <p className="mb-1 text-muted">Subscription services for a automated service requests on the dates you choose.</p>
-                                        </div>
-                                    </div>
-                                </Link>
-                            </div>
-                            <Col md="4" className="mb-4">
-                                <Link className="text-decoration-none" to="/help">
-                                    <Card className="h-100" to="/help">
-                                        <CardBody className="p-4">
-                                            <div className="d-flex w-100 justify-content-between text-dark">
-                                                <h5 className="mb-1">Help</h5>
-                                            </div>
-                                            <p className="mb-1 text-muted">How can we help? Send a message to our support team.</p>
-                                        </CardBody>
-                                    </Card>
-                                </Link>
-                            </Col>
-                        </div>
                     </div>
                 </div>
             </div>

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Domain.Entities
 {
-    public class Correspondence : BaseEntity
+    public class Correspondence : BaseAddress
     {
         /// <summary>
         /// Scheduled correspondence time
@@ -39,14 +39,5 @@ namespace Domain.Entities
         public int CorrespondenceStatusTypeID { get; set; }
         [ForeignKey("CorrespondenceStatusTypeID")]
         public CorrespondenceStatusType CorrespondenceStatusType { get; set; }
-
-        public string Note { get; set; }
-        public string Street1 { get; set; }
-        public string Street2 { get; set; }
-        public string City { get; set; }
-        public string StateAbbreviation { get; set; }
-        public string Zip { get; set; }
-        public decimal Latitude { get; set; }
-        public decimal Longitude { get; set; }
     }
 }
