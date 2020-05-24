@@ -21,7 +21,6 @@ export class OrderDetails extends Component {
 
     getOrder = async() => {
         const data = await customerService.getOrder(this.state.id)
-        console.log(data)
         if (data && data.order.id > 0) {
             this.setState({ orderDetails: data })
         }

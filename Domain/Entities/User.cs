@@ -17,6 +17,8 @@ namespace Domain.Entities
         public string ImageUrl { get; set; }
         public string DisplayName { get; set; }
         public bool EmailVerified { get; set; }
+        //TODO: Add JWT check in authorization process
+        //public string JWT { get; set; }
         public int UserStatusTypeID { get; set; }
         [ForeignKey("UserStatusTypeID")]
         public UserStatusType UserStatusType { get; set; }

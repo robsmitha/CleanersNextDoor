@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { AuthConsumer } from './../../context/AuthContext'
 import { merchantService } from '../../services/merchant.service'
 import Loading from '../../helpers/Loading';
-import { FaStar, FaHeart, FaMapMarker, FaShoppingCart } from 'react-icons/fa';
+import { FaStar, FaHeart, FaMapMarker, FaShoppingCart, FaClock } from 'react-icons/fa';
 import './Merchant.css'
 export class Merchant extends Component {
     constructor(props) {
@@ -112,8 +112,8 @@ export class Merchant extends Component {
                                 <p><FaMapMarker />&nbsp;{defaultLocation[0].location}</p>
                                 <span className="d-block">
                                     <span className="text-white">
-                                        <FaShoppingCart />&nbsp;
-                                        0 items in your cart
+                                        <FaClock />&nbsp;
+                                        {defaultLocation[0].operatingHours}
                                     </span>
                                 </span>
                             </div>

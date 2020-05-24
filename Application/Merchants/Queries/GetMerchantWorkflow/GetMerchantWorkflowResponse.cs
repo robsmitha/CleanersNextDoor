@@ -1,19 +1,16 @@
-﻿using Application.Common.Mappings;
-using Domain.Entities;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Application.Merchants.Queries.GetMerchantWorkflow
 {
-    public class GetMerchantWorkflowModel : IMapFrom<MerchantWorkflow>
+    public class GetMerchantWorkflowResponse
     {
-        public GetMerchantWorkflowModel()
+        public GetMerchantWorkflowResponse()
         {
             Steps = new List<WorkflowStepModel>();
         }
-        public int WorkflowID { get; set; }
-        public string MerchantName { get; set; }
+        public MerchantWorkflowModel Workflow { get; set; }
         public WorkflowCustomerModel Customer { get; set; }
         public List<WorkflowStepModel> Steps { get; set; }
     }

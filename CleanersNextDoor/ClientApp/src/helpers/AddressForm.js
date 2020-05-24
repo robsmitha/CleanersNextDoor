@@ -3,8 +3,9 @@ import TextInput from './TextInput'
 
 const AddressForm = props => {
 
+    const { disabled } = props.disabled !== undefined ? props.disabled : false
     return (
-        <div hidden={props.hidden !== undefined ? props.hidden : false}>
+        <div>
             <TextInput name="street1"
                 placeholder={props.street1.placeholder}
                 label={props.street1.label}
@@ -12,7 +13,8 @@ const AddressForm = props => {
                 onChange={props.changeHandler}
                 touched={props.street1.touched ? 1 : 0}
                 valid={props.street1.valid ? 1 : 0}
-                errors={props.street1.errors} />
+                errors={props.street1.errors}
+                disabled={disabled} />
             <TextInput name="street2"
                 placeholder={props.street2.placeholder}
                 label={props.street2.label}
@@ -20,7 +22,8 @@ const AddressForm = props => {
                 onChange={props.changeHandler}
                 touched={props.street2.touched ? 1 : 0}
                 valid={props.street2.valid ? 1 : 0}
-                errors={props.street2.errors} />
+                errors={props.street2.errors}
+                disabled={disabled} />
             <div className="form-row">
                 <div className="col-md-4">
                     <TextInput name="city"
@@ -30,12 +33,17 @@ const AddressForm = props => {
                         onChange={props.changeHandler}
                         touched={props.city.touched ? 1 : 0}
                         valid={props.city.valid ? 1 : 0}
-                        errors={props.city.errors} />
+                        errors={props.city.errors}
+                        disabled={disabled} />
                 </div>
                 <div className="col-md-4">
                     <div className="form-group">
                         <label className="font-weight-bold">State</label>
-                        <select className="form-control" name="stateAbbreviation" value={props.stateAbbreviation.value} onChange={props.changeHandler}>
+                        <select className="form-control" 
+                        name="stateAbbreviation" 
+                        value={props.stateAbbreviation.value} 
+                        onChange={props.changeHandler}
+                        disabled={disabled}>
                             <option value="">Select One</option>
                             <option value="FL">Florida</option>
                             <option value="NY">New York</option>
@@ -51,7 +59,8 @@ const AddressForm = props => {
                         onChange={props.changeHandler}
                         touched={props.zip.touched ? 1 : 0}
                         valid={props.zip.valid ? 1 : 0}
-                        errors={props.zip.errors} />
+                        errors={props.zip.errors} 
+                        disabled={disabled}/>
                 </div>
             </div>
             <TextInput name="note"
@@ -61,7 +70,8 @@ const AddressForm = props => {
                 onChange={props.changeHandler}
                 touched={props.note.touched ? 1 : 0}
                 valid={props.note.valid ? 1 : 0}
-                errors={props.note.errors} />
+                errors={props.note.errors}
+                disabled={disabled} />
             <TextInput name="scheduledAt" type="date"
                 placeholder={props.scheduledAt.placeholder}
                 label={props.scheduledAt.label}
@@ -69,7 +79,8 @@ const AddressForm = props => {
                 onChange={props.changeHandler}
                 touched={props.scheduledAt.touched ? 1 : 0}
                 valid={props.scheduledAt.valid ? 1 : 0}
-                errors={props.scheduledAt.errors} />
+                errors={props.scheduledAt.errors}
+                disabled={disabled} />
         </div>
     )
 }

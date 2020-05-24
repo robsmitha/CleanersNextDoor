@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Application.Merchants.Queries.GetMerchantWorkflow
 {
-    public class GetMerchantWorkflowQuery : IRequest<GetMerchantWorkflowModel>
+    public class GetMerchantWorkflowQuery : IRequest<GetMerchantWorkflowResponse>
     {
         public int MerchantID { get; set; }
         public int CustomerID { get; set; }
@@ -19,7 +19,7 @@ namespace Application.Merchants.Queries.GetMerchantWorkflow
             CustomerID = customerId;
         }
     }
-    public class GetWorkflowQueryHandler : IRequestHandler<GetMerchantWorkflowQuery, GetMerchantWorkflowModel>
+    public class GetWorkflowQueryHandler : IRequestHandler<GetMerchantWorkflowQuery, GetMerchantWorkflowResponse>
     {
         private readonly IApplicationDbContext _context;
         private readonly IMapper _mapper;
@@ -28,7 +28,7 @@ namespace Application.Merchants.Queries.GetMerchantWorkflow
             _context = context;
             _mapper = mapper;
         }
-        public async Task<GetMerchantWorkflowModel> Handle(GetMerchantWorkflowQuery request, CancellationToken cancellationToken)
+        public async Task<GetMerchantWorkflowResponse> Handle(GetMerchantWorkflowQuery request, CancellationToken cancellationToken)
         {
             var data = from mw in _context.MerchantWorkflows.AsEnumerable()
                        join m in _context.Merchants.AsEnumerable() on mw.MerchantID equals m.ID
@@ -40,12 +40,15 @@ namespace Application.Merchants.Queries.GetMerchantWorkflow
                        from ml in tmp_ml.DefaultIfEmpty()
                        join ca in _context.CustomerAddresses.AsEnumerable() on new { request.CustomerID, ws.CorrespondenceTypeID, IsDefault = true } equals new { ca.CustomerID, ca.CorrespondenceTypeID, ca.IsDefault} into tmp_ca
                        from ca in tmp_ca.DefaultIfEmpty()
+                       join mi in _context.MerchantImages.AsEnumerable() on new { MerchantID = m.ID, IsDefault = true } equals new { mi.MerchantID, mi.IsDefault } into tmp_mi
+                       from mi in tmp_mi.DefaultIfEmpty()
                        where mw.MerchantID == request.MerchantID && mw.IsDefault
-                       select new { mw, ws, c, ca, ml };
+                       select new { mw, ws, c, ca, ml, mi };
 
-            if (data == null || data.FirstOrDefault() == null) return new GetMerchantWorkflowModel();
-            
-            var model = _mapper.Map<GetMerchantWorkflowModel>(data.First().mw);
+            if (data == null || data.FirstOrDefault() == null) return new GetMerchantWorkflowResponse();
+
+            var model = new GetMerchantWorkflowResponse();
+            model.Workflow = _mapper.Map<MerchantWorkflowModel>(data.First().mw);
             model.Customer = data.First().c != null
                 ? _mapper.Map<WorkflowCustomerModel>(data.First().c)
                 : new WorkflowCustomerModel();
@@ -65,6 +68,11 @@ namespace Application.Merchants.Queries.GetMerchantWorkflow
                 //TODO: calculate default scheduled at time based on correspondence time, steps, etc.
                 step.ScheduledAt = DateTime.Now.AddDays(2);
                 model.Steps.Add(step);
+
+                if (m.mi != null && !string.IsNullOrEmpty(m.mi.ImageUrl)
+                    && string.IsNullOrEmpty(model.Workflow.MerchantDefaultImageUrl))
+                    model.Workflow.MerchantDefaultImageUrl = m.mi.ImageUrl;
+
             }
 
             await Task.FromResult(0);

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Collapse, Container, Navbar, NavbarBrand, NavbarToggler, NavItem, NavLink, UncontrolledDropdown, DropdownMenu, DropdownItem, DropdownToggle } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import './NavMenu.css';
-import { FaSignOutAlt, FaUser, FaUserPlus, FaSignInAlt, FaCompass, FaAddressCard, FaHistory } from 'react-icons/fa'
+import { FaSignOutAlt, FaUser, FaUserPlus, FaSignInAlt, FaCompass, FaAddressCard, FaHistory, FaShoppingCart } from 'react-icons/fa'
 import { AuthConsumer } from './../context/AuthContext'
 
 export class NavMenu extends Component {
@@ -65,6 +65,7 @@ export class NavMenu extends Component {
                                                     <FaSignInAlt />&nbsp;Sign in
                                                 </NavLink>
                                             </NavItem>
+                                                    
                                             <UncontrolledDropdown nav inNavbar hidden={!authenticated}>
                                                 <DropdownToggle nav caret>
                                                     <FaUser /> Account

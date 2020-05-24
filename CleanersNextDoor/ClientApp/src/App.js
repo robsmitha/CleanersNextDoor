@@ -55,7 +55,7 @@ export default class App extends Component {
                     <LayoutRoute exact path='/merchant/:id' component={Merchant} />
                     <LayoutRoute exact path='/cart/:id' component={Cart} />
                     <LayoutRoute exact path='/item/:id' component={Item} />
-                    <NoNavLayoutRoute exact path='/payment/:id' component={Payment} />
+                    <LayoutRoute exact path='/payment/:id' component={Payment} />
 
                 </AuthProvider>
             </div>

@@ -28,7 +28,6 @@ const CheckoutForm = (props) => {
     const [error, setError] = useState(null);
     const stripe = useStripe();
     const elements = useElements();
-    console.log(props)
     // Handle real-time validation errors from the card Element.
     const handleChange = (event) => {
         if (event.error) {
@@ -51,7 +50,7 @@ const CheckoutForm = (props) => {
             payment_method: {
                 card: elements.getElement(CardElement),
                 billing_details: {
-                    name: props.name,
+                    name: props.cardHolderName,
                 },
             }
         });

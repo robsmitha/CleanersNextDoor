@@ -39,7 +39,7 @@ namespace CleanersNextDoor.Controllers
             return await _mediator.Send(new GetMerchantItemsQuery(id, itemTypeId));
         }
         [HttpGet("GetMerchantWorkflow/{id}")]
-        public async Task<ActionResult<GetMerchantWorkflowModel>> GetMerchantWorkflow(int id)
+        public async Task<ActionResult<GetMerchantWorkflowResponse>> GetMerchantWorkflow(int id)
         {
             return await _mediator.Send(new GetMerchantWorkflowQuery(id, _user.ClaimID));
         }
