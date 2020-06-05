@@ -20,7 +20,8 @@ export const customerService = {
     stripePublicKey,
     createServiceRequest,
     getOrderHistory,
-    getOrder
+    getOrder,
+    tryPayWithPaymentMethod
 };
 //Customer
 function getCustomer() {
@@ -69,6 +70,10 @@ function cartTransaction(data) {
 }
 function createServiceRequest(data) {
     return post(`${_CONTROLLER}/createServiceRequest`, data)
+}
+
+function tryPayWithPaymentMethod(data) {
+    return post(`${_CONTROLLER}/tryPayWithPaymentMethod`, data)
 }
 
 function stripeClientSecret() {

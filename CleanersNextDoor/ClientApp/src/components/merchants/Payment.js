@@ -41,7 +41,7 @@ export class Payment extends Component {
                 email: {
                     value: '',
                     placeholder: 'Email',
-                    label: 'Email Address',
+                    label: 'Email address',
                     valid: false,
                     touched: false,
                     validationRules: {
@@ -78,7 +78,7 @@ export class Payment extends Component {
                 street2: {
                     value: '',
                     placeholder: 'Street 2',
-                    label: 'Apt / suite (optional)',
+                    label: 'Apt / suite',
                     valid: true,
                     touched: false,
                     errors: []
@@ -121,8 +121,8 @@ export class Payment extends Component {
                 },
                 scheduledAt: {
                     value: '',
-                    placeholder: 'Scheduled At',
-                    label: 'Scheduled At',
+                    placeholder: 'Pickup date',
+                    label: 'Pickup date',
                     valid: false,
                     touched: false,
                     validationRules: {
@@ -133,7 +133,7 @@ export class Payment extends Component {
                 note: {
                     value: '',
                     placeholder: 'Note',
-                    label: 'Note (Optional)',
+                    label: 'Note',
                     valid: true,
                     touched: false,
                     validationRules: {
@@ -148,12 +148,22 @@ export class Payment extends Component {
                     valid: false,
                     touched: false,
                     validationRules: {
-                        isRequired: true,
-                        minLength: 2
+                        isRequired: true
+                    },
+                    errors: []
+                },
+                stripePaymentMethodId: {
+                    value: '',
+                    placeholder: 'Payment methods',
+                    label: 'Payment methods',
+                    valid: true,
+                    touched: false,
+                    validationRules: {
                     },
                     errors: []
                 }
-            }
+            },
+            paymentMethods: null
         };
 
 
@@ -164,8 +174,29 @@ export class Payment extends Component {
     componentDidMount() {
         this.populateCustomerCart()
         this.populateWorkflow()
+        this.populatePaymentMethods()
     }
 
+    async populatePaymentMethods() {
+        const data = await customerService.getPaymentMethods()
+        if (data) {
+            const defaultPaymentMethod = data.filter(pm => pm.isDefault === true)
+            const stripePaymentMethodId = defaultPaymentMethod.length > 0
+                ? defaultPaymentMethod[0].stripePaymentMethodID
+                : '';
+            const updateFormControls = {
+                ...this.state.formControls
+            }
+            if (stripePaymentMethodId.length > 0) {
+                updateFormControls.stripePaymentMethodId.valid = true;
+                updateFormControls.stripePaymentMethodId.value = stripePaymentMethodId;
+            }
+            this.setState({
+                paymentMethods: data,
+                formControls: updateFormControls
+            })
+        }
+    }
     populateCustomerCart() {
         customerService.getCart(this.state.merchantId, true)
             .then(data => {
@@ -226,21 +257,54 @@ export class Payment extends Component {
                     merchantId: workflow.merchantID,
                     merchantName: workflow.merchantName,
                     merchantDefaultImageUrl: workflow.merchantDefaultImageUrl,
+                    merchantCallToAction: workflow.merchantCallToAction,
                     customer: customer,
                     steps: steps
                 });
             })
     }
 
+    stripePaymentMethodHandler = () => {
+        const { formControls } = this.state
+        const payment = {
+            stripePaymentMethodId: formControls.stripePaymentMethodId.value
+        }
+        const data = this.processServiceRequest(payment)
+        //try charge
+        customerService.tryPayWithPaymentMethod(data)
+            .then(this.handleResponse)
+    }
+
     stripeTokenHandler = async (paymentIntent) => {
+        const payment = {
+            stripePaymentMethodId: paymentIntent.payment_method
+        }
+        const data = this.processServiceRequest(payment)
+        customerService.createServiceRequest(data)
+            .then(this.handleResponse)
+    }
+
+    handleResponse = (data) => {
+        if (data !== null) {
+            if (data > 0) {
+                this.props.history.push(`/order-details/:id`.replace(':id', data))
+            } else {
+                alert(data)
+            }
+        }
+        else {
+            //request failed
+            alert('request failed')
+        }
+
+        this.setState({
+            formIsValid: true
+        });
+    }
+    processServiceRequest = (payment) => {
+
         const { formControls, workflowId } = this.state
 
-        const payment = {
-            stripePaymentMethodId: paymentIntent.payment_method,
-            centAmount: paymentIntent.amount,
-            currency: paymentIntent.currency,
-            chargedTimestamp: paymentIntent.created
-        }
         const serviceRequest = {
             name: formControls.name.value,
             phone: formControls.phone.value,
@@ -289,32 +353,17 @@ export class Payment extends Component {
             orderID: this.state.orderId,
             payment,
             serviceRequest,
-            correspondenceAddresses
+            correspondenceAddresses,
+            merchantId: this.state.merchantId
         }
 
-        customerService.createServiceRequest(data)
-            .then(data => {
-                if (data !== null) {
-                    if (data > 0) {
-                        this.props.history.push(`/order-details/:id`.replace(':id', data))
-                    } else {
-                        alert(data)
-                    }
-                }
-                else {
-                    //request failed
-                }
-
-                this.setState({
-                    formIsValid: true
-                });
-            })
+        return data
     }
-
     changeHandler = event => {
         const name = event.target.name;
         const value = event.target.value;
         this.setState(handleChange(name, value, this.state.formControls))
+        console.log(this.state.formControls)
     }
 
     render() {
@@ -338,7 +387,9 @@ export class Payment extends Component {
             cart, 
             merchantId, 
             merchantName,
-            merchantDefaultImageUrl
+            merchantDefaultImageUrl,
+            merchantCallToAction,
+            paymentMethods
         } = this.state
         return (
             <div>
@@ -351,25 +402,40 @@ export class Payment extends Component {
                             <div className="col-md-5 order-md-2 mb-4">
                                 {cart == null
                                     ? <Loading />
-                                    : Payment.renderCart(cart, merchantId, merchantName, merchantDefaultImageUrl)}
+                                    : Payment.renderCart(cart, merchantId, merchantName, merchantDefaultImageUrl, merchantCallToAction)}
                             </div>
                             <div className="col-md-7 order-md-1">
                                 <h1 className="mb-1 h5 text-primary text-uppercase">
                                     Your Order Details
                                 </h1>
                                 <h3>
-                                    Delivery Information
+                                    Pickup & Delivery Information
                                 </h3>
+                                <Row>
+                                    <Col md="6">
+                                        <TextInput name="scheduledAt" type="date"
+                                            placeholder={this.state.formControls.scheduledAt.placeholder}
+                                            label={this.state.formControls.scheduledAt.label}
+                                            value={this.state.formControls.scheduledAt.value}
+                                            onChange={this.changeHandler}
+                                            touched={this.state.formControls.scheduledAt.touched ? 1 : 0}
+                                            valid={this.state.formControls.scheduledAt.valid ? 1 : 0}
+                                            errors={this.state.formControls.scheduledAt.errors} />
+                                    </Col>
+                                    <Col md="6">
+                                        <TextInput name="name"
+                                            placeholder={this.state.formControls.name.placeholder}
+                                            label={this.state.formControls.name.label}
+                                            value={this.state.formControls.name.value}
+                                            onChange={this.changeHandler}
+                                            touched={this.state.formControls.name.touched ? 1 : 0}
+                                            valid={this.state.formControls.name.valid ? 1 : 0}
+                                            errors={this.state.formControls.name.errors} />
+                                    </Col>
+                                </Row>
                                 
-                                <TextInput name="name"
-                                    placeholder={this.state.formControls.name.placeholder}
-                                    label={this.state.formControls.name.label}
-                                    value={this.state.formControls.name.value}
-                                    onChange={this.changeHandler}
-                                    touched={this.state.formControls.name.touched ? 1 : 0}
-                                    valid={this.state.formControls.name.valid ? 1 : 0}
-                                    errors={this.state.formControls.name.errors} />
 
+                                
                                 <div className="row">
                                     <div className="col-md-6">
                                         <TextInput name="email"
@@ -400,7 +466,6 @@ export class Payment extends Component {
                                     stateAbbreviation={this.state.formControls.stateAbbreviation}
                                     zip={this.state.formControls.zip}
                                     note={this.state.formControls.note}
-                                    scheduledAt={this.state.formControls.scheduledAt}
                                     changeHandler={this.changeHandler}
                                 />
 
@@ -410,7 +475,23 @@ export class Payment extends Component {
                                     Payment
                                 </h3>
                                 <div>
-                                    
+                                    {paymentMethods === null
+                                        ? <Loading />
+                                        : <div className="form-group">
+                                            <label className="font-weight-bold">Saved payment methods</label>
+                                            <select className="form-control"
+                                                name="stripePaymentMethodId"
+                                                value={this.state.formControls.stripePaymentMethodId.value}
+                                                onChange={this.changeHandler}>
+                                                <option value="">Manually enter card</option>
+                                                {paymentMethods.map(pm =>
+                                                    <option key={pm.id} value={pm.stripePaymentMethodID}>
+                                                        {pm.cardBrand} - {pm.last4} - {pm.expMonth}/{pm.expYear}
+                                                    </option>
+                                                )}
+                                            </select>
+                                        </div>}
+
                                     <TextInput name="cardHolderName"
                                         placeholder={this.state.formControls.cardHolderName.placeholder}
                                         label={this.state.formControls.cardHolderName.label}
@@ -420,14 +501,20 @@ export class Payment extends Component {
                                         valid={this.state.formControls.cardHolderName.valid ? 1 : 0}
                                         errors={this.state.formControls.cardHolderName.errors} />
 
-                                    <Elements stripe={this.stripePromise}>
-                                        <CheckoutForm
-                                            stripeTokenHandler={this.stripeTokenHandler}
-                                            disabled={!this.state.formIsValid}
-                                            cardHolderName={this.state.formControls.cardHolderName.value}
-                                            clientSecret={this.state.clientSecret}
-                                        />
-                                    </Elements>
+                                    {this.state.formControls.stripePaymentMethodId.value.length === 0
+                                        ? <Elements stripe={this.stripePromise}>
+                                            <CheckoutForm
+                                                stripeTokenHandler={this.stripeTokenHandler}
+                                                disabled={!this.state.formIsValid}
+                                                cardHolderName={this.state.formControls.cardHolderName.value}
+                                                clientSecret={this.state.clientSecret}
+                                            />
+                                        </Elements>
+                                        : <button type="button" className="btn btn-dark btn-block my-3" disabled={!this.state.formIsValid} onClick={this.stripePaymentMethodHandler}>
+                                            Complete Checkout with Stored Payment
+                                        </button>}
+                                    
+
                                 </div>
                             </div>
                         </div>
@@ -438,7 +525,7 @@ export class Payment extends Component {
     }
 
 
-    static renderCart(cart, merchantId, merchantName, merchantDefaultImageUrl) {
+    static renderCart(cart, merchantId, merchantName, merchantDefaultImageUrl, merchantCallToAction) {
         let cartItems = cart.cartItems;
         return (
             <div className="card border-0 shadow mb-3">
@@ -446,6 +533,7 @@ export class Payment extends Component {
                     <div className="media">
                         <div className="media-body">
                             <h5>{merchantName}</h5>
+                            <small className="text-muted">{merchantCallToAction}</small>
                         </div>
                         <img src={merchantDefaultImageUrl} className="ml-3 rounded" width={100} />
                     </div>

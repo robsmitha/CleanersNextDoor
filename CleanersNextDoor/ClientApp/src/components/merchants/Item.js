@@ -117,6 +117,9 @@ export class Item extends Component {
         } = this.state;
         return (
             <div>
+                <div className="progress rounded-0 sticky-top">
+                    <div className="progress-bar" role="progressbar" style={{ width: 25 + '%' }} aria-valuenow={25} aria-valuemin={25} aria-valuemax="100"></div>
+                </div>
                 <section className="py-5">
                     <div className="container">
                         <div className="row">

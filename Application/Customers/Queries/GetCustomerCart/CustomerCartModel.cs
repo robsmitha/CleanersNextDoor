@@ -10,13 +10,15 @@ namespace Application.Customers.Queries.GetCustomerCart
         public string DisplayPrice { get; set; }
         public string MerchantName { get; set; }
         public int MerchantID { get; set; }
+        public decimal Total { get; set; }
         public List<CustomerCartItemModel> CartItems { get; set; }
         public CustomerCartModel(List<CustomerCartItemModel> cartItems = null, 
             string displayPrice = null, 
             string clientSecret = null, 
             int orderId = 0,
             int merchantId = 0,
-            string merchantName = null)
+            string merchantName = null,
+            decimal total = 0)
         {
             CartItems = cartItems ?? new List<CustomerCartItemModel>();
             DisplayPrice = displayPrice ?? 0.ToString("C");
@@ -24,6 +26,7 @@ namespace Application.Customers.Queries.GetCustomerCart
             OrderID = orderId;
             MerchantID = orderId;
             MerchantName = merchantName;
+            Total = total;
         }
     }
 }

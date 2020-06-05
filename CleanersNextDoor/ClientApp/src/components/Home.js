@@ -124,7 +124,7 @@ export class Home extends Component {
         return (
             <div>
                 <div className="container-fluid mt-3">
-                    <h1 className="mb-1 h5 text-primary text-uppercase">Local Services</h1>
+                    <h1 className="mb-1 h5 text-primary text-uppercase">Nearby Laundry Services</h1>
                     <h2 className="h3 mb-1">
                         {displayLocation == null || displayLocation.length == 0
                             ? <span>All locations</span>

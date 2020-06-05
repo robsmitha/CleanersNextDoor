@@ -76,8 +76,11 @@ export class Cart extends Component {
                     <div>
                         {!authenticated
                             ? <Redirect to='/sign-in' />
-                            : <section className="my-3">
-                                <div className="container">
+                            : <section>
+                                <div className="progress rounded-0 sticky-top">
+                                    <div className="progress-bar" role="progressbar" style={{ width: 50 + '%' }} aria-valuenow={50} aria-valuemin={50} aria-valuemax="100"></div>
+                                </div>
+                                <div className="container my-3">
                                     <div className="row">
                                         <div className="col-md-8">
                                             <h1 className="h2">Shopping cart</h1>

@@ -59,5 +59,11 @@ namespace Infrastructure.Services
             var paymentIntent = service.Create(options);
             return paymentIntent;
         }
+        public Stripe.PaymentIntent CreatePaymentIntent(Stripe.PaymentIntentCreateOptions options)
+        {
+            var service = new Stripe.PaymentIntentService();
+            var paymentIntent = service.Create(options);
+            return paymentIntent;
+        }
     }
 }

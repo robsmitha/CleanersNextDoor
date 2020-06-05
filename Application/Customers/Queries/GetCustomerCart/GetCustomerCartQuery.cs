@@ -76,7 +76,8 @@ namespace Application.Customers.Queries.GetCustomerCart
                 clientSecret: paymentIntent?.ClientSecret,
                 orderId: order.ID,
                 merchantId: order.MerchantID,
-                merchantName: order.Merchant.Name);
+                merchantName: order.Merchant.Name,
+                total: total);
         }
     }
 }

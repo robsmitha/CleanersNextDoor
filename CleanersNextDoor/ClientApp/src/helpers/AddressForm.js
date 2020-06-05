@@ -1,29 +1,37 @@
 ﻿import React from 'react';
 import TextInput from './TextInput'
+import { Row, Col } from 'reactstrap';
 
 const AddressForm = props => {
 
     const { disabled } = props.disabled !== undefined ? props.disabled : false
     return (
         <div>
-            <TextInput name="street1"
-                placeholder={props.street1.placeholder}
-                label={props.street1.label}
-                value={props.street1.value}
-                onChange={props.changeHandler}
-                touched={props.street1.touched ? 1 : 0}
-                valid={props.street1.valid ? 1 : 0}
-                errors={props.street1.errors}
-                disabled={disabled} />
-            <TextInput name="street2"
-                placeholder={props.street2.placeholder}
-                label={props.street2.label}
-                value={props.street2.value}
-                onChange={props.changeHandler}
-                touched={props.street2.touched ? 1 : 0}
-                valid={props.street2.valid ? 1 : 0}
-                errors={props.street2.errors}
-                disabled={disabled} />
+            <Row>
+                <Col md="8">
+                    <TextInput name="street1"
+                        placeholder={props.street1.placeholder}
+                        label={props.street1.label}
+                        value={props.street1.value}
+                        onChange={props.changeHandler}
+                        touched={props.street1.touched ? 1 : 0}
+                        valid={props.street1.valid ? 1 : 0}
+                        errors={props.street1.errors}
+                        disabled={disabled} />
+                </Col>
+                <Col md="4">
+                    <TextInput name="street2"
+                        placeholder={props.street2.placeholder}
+                        label={props.street2.label}
+                        value={props.street2.value}
+                        onChange={props.changeHandler}
+                        touched={props.street2.touched ? 1 : 0}
+                        valid={props.street2.valid ? 1 : 0}
+                        errors={props.street2.errors}
+                        disabled={disabled} />
+                </Col>
+            </Row>
+            
             <div className="form-row">
                 <div className="col-md-4">
                     <TextInput name="city"
@@ -71,15 +79,6 @@ const AddressForm = props => {
                 touched={props.note.touched ? 1 : 0}
                 valid={props.note.valid ? 1 : 0}
                 errors={props.note.errors}
-                disabled={disabled} />
-            <TextInput name="scheduledAt" type="date"
-                placeholder={props.scheduledAt.placeholder}
-                label={props.scheduledAt.label}
-                value={props.scheduledAt.value}
-                onChange={props.changeHandler}
-                touched={props.scheduledAt.touched ? 1 : 0}
-                valid={props.scheduledAt.valid ? 1 : 0}
-                errors={props.scheduledAt.errors}
                 disabled={disabled} />
         </div>
     )

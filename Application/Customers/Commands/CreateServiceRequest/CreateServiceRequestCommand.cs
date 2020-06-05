@@ -53,7 +53,7 @@ namespace Application.Customers.Commands.CreateServiceRequest
                        from srst in tmp_srst.DefaultIfEmpty()
                        where o.ID == request.OrderID
                        select new { o, li, srst };
-
+            var rows = data.ToList();
             var order = data.First().o;
             var serviceRequestStatusType = data.First().srst;
 
@@ -62,10 +62,12 @@ namespace Application.Customers.Commands.CreateServiceRequest
                                 .FirstOrDefault(o => o.Name.ToUpper() == "PAID");
             var paymentTypeID = _context.PaymentTypes
                 .FirstOrDefault(o => o.Name.ToUpper() == "CREDIT CARD MANUAL");
+            //pull price from server
+            var price = rows.Sum(r => r.li.ItemAmount);
             var payment = new Payment
             {
                 OrderID = order.ID,
-                Amount = request.Payment.DecimalAmount,
+                Amount = price, //request.Payment.DecimalAmount,
                 PaymentTypeID = paymentTypeID.ID,
                 PaymentStatusTypeID = paymentStatusTypePaid.ID,
                 StripePaymentMethodID = request.Payment.StripePaymentMethodID,

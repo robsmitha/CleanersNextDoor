@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Application.Common.Interfaces;
 using Application.Customers;
@@ -19,10 +21,11 @@ using Application.Customers.Queries.GetCustomerOrder;
 using Application.Customers.Queries.GetOrderHistory;
 using Application.Customers.Queries.GetPaymentMethods;
 using Domain.Entities;
-using Infrastructure.Identity;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Stripe;
+
 namespace CleanersNextDoor.Controllers
 {
     [Authorize]
@@ -141,6 +144,51 @@ namespace CleanersNextDoor.Controllers
         public IStripePublicKey StripePublicKey()
         {
             return _stripe.StripePublicKey();
+        }
+
+        [HttpPost("TryPayWithPaymentMethod")]
+        public async Task<ActionResult<int>> TryPayWithPaymentMethod(CreateServiceRequestModel model)
+        {
+            PaymentIntent paymentIntent;
+            try
+            {
+                //TODO: optimize/consolidate TryPayWithPaymentMethod
+                var customer = await _mediator.Send(new GetCustomerQuery(_user.ClaimID));
+                var cart = await _mediator.Send(new GetCustomerCartQuery(customer.ID, model.MerchantID));
+                var amount = cart.Total;
+
+                paymentIntent = _stripe.CreatePaymentIntent(new PaymentIntentCreateOptions
+                {
+                    Amount = Convert.ToInt64(amount) * 100,
+                    Currency = "usd",
+                    PaymentMethod = model.Payment.StripePaymentMethodID,
+                    Customer = customer.StripeCustomerID,
+                    // A PaymentIntent can be confirmed some time after creation,
+                    // but here we want to confirm (collect payment) immediately.
+                    Confirm = true,
+
+                    // If the payment requires any follow-up actions from the
+                    // customer, like two-factor authentication, Stripe will error
+                    // and you will need to prompt them for a new payment method.
+                    ErrorOnRequiresAction = true,
+                });
+
+            }
+            catch (StripeException e)
+            {
+                return StatusCode(501, e.StripeError.Message);
+            }
+
+            if (paymentIntent?.Status == "succeeded")
+            {
+                // Handle post-payment fulfillment
+                return await CreateServiceRequest(model);
+            }
+            else
+            {
+                // Any other status would be unexpected, so error
+                return StatusCode(500, new { error = "Invalid PaymentIntent status" });
+            }
         }
 
         [HttpGet("orderHistory")]

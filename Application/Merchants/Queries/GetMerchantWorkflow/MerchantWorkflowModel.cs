@@ -11,6 +11,7 @@ namespace Application.Merchants.Queries.GetMerchantWorkflow
         public int WorkflowID { get; set; }
         public int MerchantID { get; set; }
         public string MerchantName { get; set; }
+        public string MerchantCallToAction { get; set; }
         public string MerchantDefaultImageUrl { get; set; }
     }
 }
